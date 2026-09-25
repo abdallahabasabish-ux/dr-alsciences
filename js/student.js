@@ -117,6 +117,30 @@ async function loadDashboardData(uid, userDoc) {
       </a>`).join('')
     : emptyStateHTML('i-list-check', 'لم تحل أي اختبار بعد', 'اختبارات صفك ستظهر هنا مع درجاتك فور حلّها.');
 }
+/* ==================== سجل النتائج (results.html) ==================== */
+
+async function initResults() {
+  const user = await requireAuth();
+  if (!user) return;
+  const list = $id('resultsList');
+  try {
+    const snap = await getDocs(query(collection(db, 'results'), where('userId', '==', user.uid)));
+    const items = snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort(byNewest);
+    list.innerHTML = items.length
+      ? items.map((r) => `
+        <a class="item-row" href="quiz.html?id=${encodeURIComponent(r.quizId)}">
+          <span class="item-icon"><svg class="icon"><use href="#i-award"/></svg></span>
+          <span class="item-text"><b>${esc(r.quizTitle || 'اختبار')}</b>
+            <span class="item-meta">${formatNumber(r.score)} / ${formatNumber(r.total)} · ${formatDate(r.createdAt)}</span>
+          </span>
+          <span class="item-end"><span class="score-pill ${r.passed ? 'score-pass' : 'score-fail'}">${formatNumber(r.percent)}%</span></span>
+        </a>`).join('')
+      : emptyStateHTML('i-list-check', 'لا توجد نتائج بعد', 'حل أول اختبار وستظهر نتيجتك هنا فورًا.');
+  } catch (err) {
+    console.error('خطأ في تحميل النتائج:', err);
+    list.innerHTML = emptyStateHTML('i-x-circle', 'تعذر تحميل النتائج',
+      'حدث خطأ أثناء الاتصال، حدّث الصفحة لإعادة المحاولة.');
+  }
 
 /* ==================== الملف الشخصي ==================== */
 
@@ -177,3 +201,4 @@ async function initProfile() {
 const page = document.body.dataset.page;
 if (page === 'dashboard') initDashboard();
 if (page === 'profile') initProfile();
+if (page === 'results') initResults();
