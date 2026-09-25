@@ -10,6 +10,7 @@ import {
 
 const { doc, getDoc, addDoc, updateDoc, deleteDoc, collection, serverTimestamp } = fbStoreNS;
 const { signOut, onAuthStateChanged } = fbAuthNS;
+const { ref, uploadBytesResumable, getDownloadURL } = fbStorageNS;
 
 /* ---------- حماية صفحات الأدمن ---------- */
 export async function requireAdmin() {
@@ -173,3 +174,63 @@ export function actionBtns(key, published) {
 export const errorState = () =>
   `<div class="empty-state"><svg class="icon"><use href="#i-x-circle"/></svg>
     <h3>تعذر تحميل البيانات</h3><p>حدّث الصفحة لإعادة المحاولة.</p></div>`;
+/* ---------- رفع الملفات إلى Firebase Storage ---------- */
+
+/** يرفع ملفًا ويعيد رابط التحميل — مع تقارير تقدم */
+export function uploadFile(file, path, onProgress) {
+  return new Promise((resolve, reject) => {
+    const task = uploadBytesResumable(ref(storage, path), file);
+    task.on('state_changed',
+      (snap) => onProgress?.(Math.round((snap.bytesTransferred / snap.totalBytes) * 100) || 0),
+      (err) => reject(new Error(
+        err.code === 'storage/unauthorized'
+          ? 'تعذر رفع الملف — تحقق من تفعيل Storage وقواعده'
+          : 'تعذر رفع الملف، حاول مرة أخرى'
+      )),
+      async () => resolve(await getDownloadURL(task.snapshot.ref)),
+    );
+  });
+}
+
+/** يقرأ حقل ملف من نموذج مودال — يعيد '' إذا لم يُختر ملف */
+export async function uploadFormFile(form, fieldName, folder) {
+  const input = form.elements[fieldName];
+  const file = input?.files?.[0];
+  if (!file) return '';
+  const safeName = Date.now() + '_' + file.name.replace(/[^\w.\-]/g, '_');
+  const wrap = input.closest('.form-group')?.querySelector('[data-progress]');
+  const bar = wrap?.querySelector('.progress-fill');
+  wrap?.removeAttribute('hidden');
+  const url = await uploadFile(file, `${folder}/${safeName}`,
+    (p) => { if (bar) bar.style.width = p + '%'; });
+  if (wrap) wrap.hidden = true;
+  return url;
+}
+
+/** حقل رفع ملف داخل المودال — مع عرض رابط الملف الحالي إن وجد */
+export function fileField(name, label, { hint = '', accept = '', currentUrl = '' } = {}) {
+  const current = currentUrl
+    ? `<p class="form-hint">الحالي: <a href="${esc(currentUrl)}" target="_blank" rel="noopener" dir="ltr">فتح الملف</a></p>`
+    : '';
+  return `<div class="form-group">
+    <label class="form-label" for="f-${name}">${esc(label)}</label>
+    <input class="form-input" id="f-${name}" name="${name}" type="file"${accept ? ` accept="${accept}"` : ''}>
+    <div class="progress-track" style="height:8px;margin-top:8px" data-progress hidden><span class="progress-fill"></span></div>
+    ${current}
+    ${hint ? `<p class="form-hint">${esc(hint)}</p>` : ''}
+  </div>`;
+}
+
+/** تفويض أحداث صفوف الجدول: أسئلة/نشر/تعديل/حذف — المفتاح "collection:id" */
+export function bindRowActions(container, handlers) {
+  container.addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-questions],[data-toggle],[data-edit],[data-del]');
+    if (!btn) return;
+    const key = btn.dataset.questions || btn.dataset.toggle || btn.dataset.edit || btn.dataset.del;
+    const [coll, id] = key.split(':');
+    if (btn.dataset.questions && handlers.onQuestions) return handlers.onQuestions(coll, id);
+    if (btn.dataset.toggle && handlers.onToggle) await handlers.onToggle(coll, id);
+    if (btn.dataset.edit && handlers.onEdit) await handlers.onEdit(coll, id);
+    if (btn.dataset.del && handlers.onDelete) await handlers.onDelete(coll, id);
+  });
+}
