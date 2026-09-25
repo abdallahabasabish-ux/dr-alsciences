@@ -198,3 +198,20 @@ export function courseCardHTML(course) {
     </div>
   </article>`;
 }
+/* ---------- بطاقة اختبار (مشتركة: صفحة الاختبارات + الصف + المادة) ---------- */
+export function quizCardHTML(quiz) {
+  const meta = [
+    quiz.gradeName,
+    quiz.durationMinutes ? `${quiz.durationMinutes} دقائق` : null,
+    `النجاح ${quiz.passScore ?? 50}%`,
+  ].filter(Boolean).join(' · ');
+  return `
+  <a class="quiz-card" href="quiz.html?id=${encodeURIComponent(quiz.id)}">
+    <span class="item-icon"><svg class="icon"><use href="#i-list-check"/></svg></span>
+    <span class="quiz-info">
+      <b>${esc(quiz.title)}</b>
+      <span class="item-meta">${meta}</span>
+    </span>
+    <svg class="icon quiz-arrow"><use href="#i-arrow-left"/></svg>
+  </a>`;
+}
