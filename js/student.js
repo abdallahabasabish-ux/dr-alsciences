@@ -5,7 +5,7 @@
 import { auth, db, fbAuthNS, fbStoreNS } from './firebase-config.js';
 import { initLayout } from './layout.js';
 import { requireAuth, getUserDoc, populateGradeSelect } from './auth.js';
-import { esc, showToast, setBtnLoading, formatNumber, formatDate } from './utils.js';
+import { esc, showToast, setBtnLoading, formatNumber, formatDate, emptyStateHTML } from './utils.js';
 
 initLayout();
 
@@ -14,10 +14,6 @@ const { updateProfile } = fbAuthNS;
 
 const $id = (id) => document.getElementById(id);
 const byNewest = (a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0);
-
-function emptyStateHTML(icon, title, text) {
-  return `<div class="empty-state"><svg class="icon"><use href="#${icon}"/></svg><h3>${esc(title)}</h3><p>${esc(text)}</p></div>`;
-}
 
 /* ==================== لوحة الطالب ==================== */
 
@@ -34,7 +30,7 @@ async function initDashboard() {
 async function loadDashboardData(uid, userDoc) {
   const gradeId = userDoc?.gradeId || null;
 
-  /* الصف + إجمالي الدروس المنشورة فيه (قابل للتوسع لاحقًا) */
+  /* الصف + إجمالي الدروس المنشورة فيه */
   let gradeName = null;
   let totalLessons = 0;
   if (gradeId) {
@@ -81,12 +77,9 @@ async function loadDashboardData(uid, userDoc) {
   if (!gradeId) {
     progressPanel.innerHTML = `
       <div class="panel-head"><h2>متابعة التعلم</h2></div>
-      <div class="empty-state">
-        <svg class="icon"><use href="#i-cap"/></svg>
-        <h3>حدد صفك الدراسي</h3>
-        <p>اختر صفك من ملفك الشخصي لتتبع نسبة تقدمك في الدروس.</p>
-        <a href="profile.html" class="btn btn-outline btn-sm">تحديد الصف الآن</a>
-      </div>`;
+      ${emptyStateHTML('i-cap', 'حدد صفك الدراسي',
+        'اختر صفك من ملفك الشخصي لتتبع نسبة تقدمك في الدروس.',
+        { action: '<a href="profile.html" class="btn btn-outline btn-sm">تحديد الصف الآن</a>' })}`;
   } else {
     progressPanel.innerHTML = `
       <div class="panel-head"><h2>متابعة التعلم</h2><a href="stages.html">استكشف الدروس</a></div>
