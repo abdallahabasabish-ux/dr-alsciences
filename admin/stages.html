@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>المراحل والصفوف | لوحة الإدارة</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body data-page="adminStages">
+
+  <div class="admin-topbar">
+    <div class="admin-topbar-inner">
+      <button class="menu-btn" id="adminMenuBtn" aria-label="فتح القائمة">
+        <svg class="icon"><use href="#i-menu"/></svg>
+      </button>
+      <a class="admin-brand" href="index.html">
+        <span class="brand-mark"><svg class="icon"><use href="#i-atom"/></svg></span>
+        لوحة الإدارة
+      </a>
+      <div class="admin-user">
+        <span class="avatar" id="adminInitial">أ</span>
+        <span id="adminName">…</span>
+        <button class="btn btn-ghost btn-sm" id="adminLogoutBtn">
+          <svg class="icon"><use href="#i-logout"/></svg> خروج
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="adminSidebar">
+      <nav aria-label="قائمة الإدارة">
+        <a href="index.html"><svg class="icon"><use href="#i-chart"/></svg> لوحة التحكم</a>
+        <a href="students.html"><svg class="icon"><use href="#i-users"/></svg> الطلاب</a>
+        <span class="sep">المحتوى التعليمي</span>
+        <a href="stages.html" class="is-active"><svg class="icon"><use href="#i-layers"/></svg> المراحل والصفوف</a>
+        <a href="subjects.html"><svg class="icon"><use href="#i-flask"/></svg> المواد</a>
+        <span class="sep">عام</span>
+        <a href="../index.html"><svg class="icon"><use href="#i-atom"/></svg> عرض الموقع</a>
+      </nav>
+    </aside>
+    <div class="admin-backdrop" id="adminBackdrop"></div>
+
+    <main class="admin-main" id="stagesSection">
+      <div class="admin-head">
+        <div>
+          <h1>المراحل والصفوف</h1>
+          <p>الأسماء تظهر للطلاب كما تُدخلها هنا — لا أسماء ثابتة في الكود.</p>
+        </div>
+        <div class="admin-head-actions">
+          <button class="btn btn-outline" id="addStageBtn">
+            <svg class="icon"><use href="#i-plus"/></svg> إضافة مرحلة</button>
+          <button class="btn btn-primary" id="addGradeBtn">
+            <svg class="icon"><use href="#i-plus"/></svg> إضافة صف</button>
+        </div>
+      </div>
+
+      <section aria-labelledby="stagesH" style="margin-bottom:36px">
+        <h2 id="stagesH" class="section-title" style="font-size:1.1rem;margin-bottom:14px">المراحل الدراسية</h2>
+        <div class="table-card">
+          <table class="admin-table">
+            <thead><tr><th>المرحلة</th><th>الترتيب</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+            <tbody id="stagesBody">
+              <tr><td colspan="4"><div class="sk sk-line"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="gradesH">
+        <div class="admin-head" style="margin-bottom:14px">
+          <h2 id="gradesH" style="font-size:1.1rem">الصفوف الدراسية</h2>
+          <select class="form-select" id="stageFilter" style="max-width:220px">
+            <option value="">كل المراحل</option>
+          </select>
+        </div>
+        <div class="table-card">
+          <table class="admin-table">
+            <thead><tr><th>الصف</th><th>المرحلة</th><th>الترتيب</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+            <tbody id="gradesBody">
+              <tr><td colspan="5"><div class="sk sk-line"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="../js/admin.js"></script>
+</body>
+</html>
