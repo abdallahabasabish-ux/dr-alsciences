@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الدروس | لوحة الإدارة</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body data-page="adminLessons">
+
+  <div class="admin-topbar">
+    <div class="admin-topbar-inner">
+      <button class="menu-btn" id="adminMenuBtn" aria-label="فتح القائمة">
+        <svg class="icon"><use href="#i-menu"/></svg>
+      </button>
+      <a class="admin-brand" href="index.html">
+        <span class="brand-mark"><svg class="icon"><use href="#i-atom"/></svg></span>
+        لوحة الإدارة
+      </a>
+      <div class="admin-user">
+        <span class="avatar" id="adminInitial">أ</span>
+        <span id="adminName">…</span>
+        <button class="btn btn-ghost btn-sm" id="adminLogoutBtn">
+          <svg class="icon"><use href="#i-logout"/></svg> خروج
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="adminSidebar">
+      <!-- الصق القائمة الجانبية المحدّثة هنا مع is-active على رابط الدروس -->
+      <nav aria-label="قائمة الإدارة">
+        <a href="index.html"><svg class="icon"><use href="#i-chart"/></svg> لوحة التحكم</a>
+        <a href="students.html"><svg class="icon"><use href="#i-users"/></svg> الطلاب</a>
+        <span class="sep">المحتوى التعليمي</span>
+        <a href="stages.html"><svg class="icon"><use href="#i-layers"/></svg> المراحل والصفوف</a>
+        <a href="subjects.html"><svg class="icon"><use href="#i-flask"/></svg> المواد</a>
+        <a href="lessons.html" class="is-active"><svg class="icon"><use href="#i-book"/></svg> الدروس</a>
+        <a href="quizzes.html"><svg class="icon"><use href="#i-list-check"/></svg> الاختبارات</a>
+        <a href="courses.html"><svg class="icon"><use href="#i-cap"/></svg> الكورسات</a>
+        <span class="sep">التقارير</span>
+        <a href="results.html"><svg class="icon"><use href="#i-award"/></svg> النتائج</a>
+        <span class="sep">عام</span>
+        <a href="../index.html"><svg class="icon"><use href="#i-atom"/></svg> عرض الموقع</a>
+      </nav>
+    </aside>
+    <div class="admin-backdrop" id="adminBackdrop"></div>
+
+    <main class="admin-main" id="lessonsSection">
+      <div class="admin-head">
+        <div>
+          <h1>الدروس</h1>
+          <p>كل درس مرتبط بمادة — وترتيبه يحدد تسلسله أمام الطالب. اختيار المادة يحدد الصف تلقائيًا.</p>
+        </div>
+        <div class="admin-head-actions">
+          <select class="form-select" id="subjectFilter" style="max-width:240px" aria-label="تصفية حسب المادة">
+            <option value="">كل المواد</option>
+          </select>
+          <button class="btn btn-primary" id="addLessonBtn">
+            <svg class="icon"><use href="#i-plus"/></svg> إضافة درس
+          </button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>الدرس</th><th>المادة</th><th>الترتيب</th>
+              <th>المرفقات</th><th>الحالة</th><th>إجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="lessonsBody">
+            <tr><td colspan="6"><div class="sk sk-line"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="../js/admin-content.js"></script>
+</body>
+</html>
