@@ -1,8 +1,10 @@
 // ============================================================
-// أدوات مشتركة: أيقونات، توست، مودال تأكيد، أخطاء عربية، تنسيقات
+// أدوات مشتركة لكل الصفحات:
+// الأيقونات (Sprite)، تنسيقات، توست، مودال تأكيد، أخطاء عربية،
+// مكوّنات عرض مشتركة (بطاقات، حالة فراغ، مسار تنقل)
 // ============================================================
 
-// نفس Sprite الموجود في index.html — يُحقن تلقائيًا في باقي الصفحات
+// Sprite الأيقونات — يُحقن تلقائيًا في أي صفحة عبر injectIcons()
 const SPRITE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" style="display:none" id="icon-sprite">
   <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
   <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></symbol>
@@ -147,6 +149,7 @@ export function confirmDialog({ title = 'تأكيد', message = '', confirmText 
     });
   });
 }
+
 /* ---------- قراءة معاملات الرابط ---------- */
 export function getQueryParam(name) {
   return new URLSearchParams(location.search).get(name);
@@ -172,7 +175,7 @@ export function emptyStateHTML(icon, title, text, { action = '', compact = false
   </div>`;
 }
 
-/* ---------- بطاقة كورس (مشتركة: الرئيسية + صفحة الصف) ---------- */
+/* ---------- بطاقة كورس (مشتركة: الرئيسية + قائمة الكورسات + البحث) ---------- */
 export function courseCardHTML(course) {
   const meta = [course.stageName, course.gradeName].filter(Boolean).join(' · ');
   const badge = course.isFree
@@ -199,6 +202,7 @@ export function courseCardHTML(course) {
     </div>
   </article>`;
 }
+
 /* ---------- بطاقة اختبار (مشتركة: صفحة الاختبارات + الصف + المادة) ---------- */
 export function quizCardHTML(quiz) {
   const meta = [
@@ -216,6 +220,7 @@ export function quizCardHTML(quiz) {
     <svg class="icon quiz-arrow"><use href="#i-arrow-left"/></svg>
   </a>`;
 }
+
 /* ---------- مسار التنقل (Breadcrumb) ---------- */
 export function breadcrumbHTML(items) {
   return items.map((item, i) =>
