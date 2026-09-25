@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>المراحل والصفوف | لوحة الإدارة</title>
+  <title>المواد | لوحة الإدارة</title>
   <meta name="robots" content="noindex">
   <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/responsive.css">
 </head>
-<body data-page="adminStages">
+<body data-page="adminSubjects">
 
   <div class="admin-topbar">
     <div class="admin-topbar-inner">
@@ -39,8 +39,9 @@
         <a href="index.html"><svg class="icon"><use href="#i-chart"/></svg> لوحة التحكم</a>
         <a href="students.html"><svg class="icon"><use href="#i-users"/></svg> الطلاب</a>
         <span class="sep">المحتوى التعليمي</span>
-        <a href="stages.html" class="is-active"><svg class="icon"><use href="#i-layers"/></svg> المراحل والصفوف</a>
-        <a href="subjects.html"><svg class="icon"><use href="#i-flask"/></svg> المواد</a>
+        <a href="stages.html"><svg class="icon"><use href="#i-layers"/></svg> المراحل والصفوف</a>
+        <a href="subjects.html" class="is-active"><svg class="icon"><use href="#i-flask"/></svg> المواد</a>
+        <!-- تُضاف روابط: الدروس / الاختبارات / الكورسات / النتائج في الجزء الثاني -->
         <span class="sep">عام</span>
         <a href="../index.html"><svg class="icon"><use href="#i-atom"/></svg> عرض الموقع</a>
       </nav>
@@ -51,18 +52,27 @@
       <div class="admin-head">
         <div>
           <h1>المواد الدراسية</h1>
-          <p>كل مادة مرتبطة بصف دراسي — اسم المادة يظهر كما هو للطلاب.</p>
+          <p>كل مادة مرتبطة بصف دراسي — اسم المادة يظهر للطلاب كما تُدخله هنا.</p>
         </div>
         <div class="admin-head-actions">
           <button class="btn btn-primary" id="addSubjectBtn">
-            <svg class="icon"><use href="#i-plus"/></svg> إضافة مادة</button>
+            <svg class="icon"><use href="#i-plus"/></svg> إضافة مادة
+          </button>
         </div>
       </div>
+
       <div class="table-card">
         <table class="admin-table">
-          <thead><tr>
-            <th>المادة</th><th>الصف</th><th>الدروس</th><th>الاختبارات</th><th>الحالة</th><th>إجراءات</th>
-          </tr></thead>
+          <thead>
+            <tr>
+              <th>المادة</th>
+              <th>الصف</th>
+              <th>الدروس</th>
+              <th>الاختبارات</th>
+              <th>الحالة</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
           <tbody id="subjectsBody">
             <tr><td colspan="6"><div class="sk sk-line"></div></td></tr>
           </tbody>
