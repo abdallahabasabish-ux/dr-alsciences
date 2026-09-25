@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>المراحل والصفوف | لوحة الإدارة</title>
+  <title>الطلاب | لوحة الإدارة</title>
   <meta name="robots" content="noindex">
   <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/responsive.css">
 </head>
-<body data-page="adminStages">
+<body data-page="adminStudents">
 
   <div class="admin-topbar">
     <div class="admin-topbar-inner">
@@ -37,10 +37,11 @@
     <aside class="admin-sidebar" id="adminSidebar">
       <nav aria-label="قائمة الإدارة">
         <a href="index.html"><svg class="icon"><use href="#i-chart"/></svg> لوحة التحكم</a>
-        <a href="students.html"><svg class="icon"><use href="#i-users"/></svg> الطلاب</a>
+        <a href="students.html" class="is-active"><svg class="icon"><use href="#i-users"/></svg> الطلاب</a>
         <span class="sep">المحتوى التعليمي</span>
-        <a href="stages.html" class="is-active"><svg class="icon"><use href="#i-layers"/></svg> المراحل والصفوف</a>
+        <a href="stages.html"><svg class="icon"><use href="#i-layers"/></svg> المراحل والصفوف</a>
         <a href="subjects.html"><svg class="icon"><use href="#i-flask"/></svg> المواد</a>
+        <!-- تُضاف روابط: الدروس / الاختبارات / الكورسات / النتائج في الجزء الثاني -->
         <span class="sep">عام</span>
         <a href="../index.html"><svg class="icon"><use href="#i-atom"/></svg> عرض الموقع</a>
       </nav>
@@ -58,15 +59,25 @@
                  placeholder="ابحث بالاسم أو البريد…" aria-label="بحث في الطلاب">
         </div>
       </div>
+
       <div class="admin-note">
         <svg class="icon"><use href="#i-info"/></svg>
-        <span>التعطيل يمنع الطالب من استخدام المنصة فورًا. حسابات الأدمن محمية من التعطيل.</span>
+        <span>التعطيل يمنع الطالب من تسجيل الدخول واستخدام المنصة فورًا. حسابات الأدمن محمية من التعطيل.</span>
       </div>
+
       <div class="table-card">
         <table class="admin-table">
-          <thead><tr>
-            <th>الحساب</th><th>الهاتف</th><th>الصف</th><th>الدور</th><th>التسجيل</th><th>الحالة</th><th>إجراءات</th>
-          </tr></thead>
+          <thead>
+            <tr>
+              <th>الحساب</th>
+              <th>الهاتف</th>
+              <th>الصف</th>
+              <th>الدور</th>
+              <th>التسجيل</th>
+              <th>الحالة</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
           <tbody id="studentsBody">
             <tr><td colspan="7"><div class="sk sk-line"></div></td></tr>
           </tbody>
