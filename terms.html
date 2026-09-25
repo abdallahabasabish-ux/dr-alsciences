@@ -15,11 +15,16 @@
 </head>
 <body data-page="terms">
 
-  <!-- الهيدر: مطابق لهيدر about.html (بدون is-active) — انسخه كما هو -->
+  <div id="siteHeaderRoot"></div>
 
   <main id="main">
     <div class="page-hero">
       <div class="container">
+        <nav class="breadcrumb" aria-label="مسار التنقل">
+          <a href="index.html">الرئيسية</a>
+          <span class="sep" aria-hidden="true">/</span>
+          <span aria-current="page">الشروط والأحكام</span>
+        </nav>
         <h1>الشروط والأحكام</h1>
         <p class="page-desc">باستخدامك المنصة فأنت توافق على الشروط التالية.</p>
       </div>
@@ -63,11 +68,7 @@
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="footer-bar container">
-      <span>© <span id="year"></span> الدكتور في العلوم — جميع الحقوق محفوظة.</span>
-    </div>
-  </footer>
+  <div id="siteFooterRoot"></div>
 
   <script type="module">
     import { initLayout } from './js/layout.js';
