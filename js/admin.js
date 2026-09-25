@@ -7,7 +7,7 @@ import { db, fbStoreNS } from './firebase-config.js';
 import {
   requireAdmin, initAdminShell, field, textareaField, selectField, opt,
   checkboxField, openFormModal, createIn, updateIn, removeIn,
-  pubPill, actionBtns, errorState,
+  pubPill, actionBtns, bindRowActions, errorState,
 } from './admin-core.js';
 import { esc, showToast, formatNumber, formatDate } from './utils.js';
 
@@ -15,19 +15,6 @@ const { collection, getDocs, getCountFromServer, query, where } = fbStoreNS;
 
 const byOrder = (a, b) => (a.order ?? 9999) - (b.order ?? 9999);
 const byNewest = (a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0);
-
-/** تفويض أحداث صفوف الجدول: نشر/تعديل/حذف — المفتاح "collection:id" */
-function bindRowActions(container, handlers) {
-  container.addEventListener('click', async (e) => {
-    const btn = e.target.closest('[data-toggle],[data-edit],[data-del]');
-    if (!btn) return;
-    const key = btn.dataset.toggle || btn.dataset.edit || btn.dataset.del;
-    const [coll, id] = key.split(':');
-    if (btn.dataset.toggle && handlers.onToggle) await handlers.onToggle(coll, id);
-    if (btn.dataset.edit && handlers.onEdit) await handlers.onEdit(coll, id);
-    if (btn.dataset.del && handlers.onDelete) await handlers.onDelete(coll, id);
-  });
-}
 
 /* ==================== admin/index.html — الإحصائيات ==================== */
 async function initAdminHome() {
@@ -176,6 +163,13 @@ async function initAdminStages() {
         showToast('لا يمكن حذف مرحلة بها صفوف — احذف صفوفها أولًا', 'error');
         return;
       }
+      if (coll === 'grades') {
+        const subSnap = await getDocs(query(collection(db, 'subjects'), where('gradeId', '==', id)));
+        if (!subSnap.empty) {
+          showToast('لا يمكن حذف صف به مواد — انقل موادّه أو احذفها أولًا', 'error');
+          return;
+        }
+      }
       if (await removeIn(coll, id, `"${item?.name}"`)) refresh();
     },
   });
@@ -285,6 +279,18 @@ async function initAdminSubjects() {
     onEdit: async (_c, id) => subjectModal(subjects.find((x) => x.id === id)),
     onDelete: async (_c, id) => {
       const item = subjects.find((x) => x.id === id);
+      try {
+        const [lSnap, qSnap] = await Promise.all([
+          getDocs(query(collection(db, 'lessons'), where('subjectId', '==', id))),
+          getDocs(query(collection(db, 'quizzes'), where('subjectId', '==', id))),
+        ]);
+        if (!lSnap.empty || !qSnap.empty) {
+          showToast('لا يمكن حذف مادة تحتوي دروسًا أو اختبارات — احذفها أولًا', 'error');
+          return;
+        }
+      } catch (err) {
+        console.warn('تعذر فحص محتوى المادة:', err.message);
+      }
       if (await removeIn('subjects', id, `مادة "${item?.name}"`)) refresh();
     },
   });
