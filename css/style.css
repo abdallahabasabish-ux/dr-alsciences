@@ -488,3 +488,60 @@ a.meta-chip:hover{border-color:var(--c-brand);color:var(--c-brand)}
 .review-q b{line-height:1.7}
 .review-options .option{padding:10px 14px;font-size:.93rem}
 .unanswered-note{color:#8a6210;background:var(--c-accent-soft);border-radius:8px;padding:8px 14px;font-size:.85rem;margin-top:12px;display:inline-block}
+/* ============================================================
+   21) لوحة الإدارة
+============================================================ */
+.form-hint{color:var(--c-ink-2);font-size:.82rem;margin-top:5px}
+.req{color:var(--c-danger)}
+.check-row{display:flex;gap:10px;align-items:center;margin:16px 0;font-weight:600;font-size:.95rem;cursor:pointer}
+.check-row input{width:18px;height:18px;accent-color:var(--c-brand)}
+.modal-lg{max-width:640px}
+
+.admin-topbar{position:sticky;top:0;z-index:60;background:#fff;border-bottom:1px solid var(--c-line);height:64px}
+.admin-topbar-inner{display:flex;align-items:center;gap:14px;height:100%;padding-inline:16px}
+.admin-topbar .menu-btn{display:none}
+.admin-brand{display:flex;align-items:center;gap:10px;font-weight:700}
+.admin-brand .brand-mark{width:38px;height:38px;border-radius:11px}
+.admin-brand .brand-mark .icon{width:21px;height:21px}
+.admin-user{margin-inline-start:auto;display:flex;align-items:center;gap:10px}
+.admin-user .avatar{width:34px;height:34px;font-size:.9rem}
+
+.admin-shell{display:flex;min-height:calc(100dvh - 64px)}
+.admin-sidebar{width:250px;flex-shrink:0;background:#fff;border-inline-end:1px solid var(--c-line);padding:16px 10px;position:sticky;top:64px;height:calc(100dvh - 64px);overflow:auto}
+.admin-sidebar a{display:flex;gap:10px;align-items:center;padding:11px 14px;border-radius:10px;color:var(--c-ink-2);font-weight:500;margin-bottom:2px;font-size:.95rem;transition:.2s}
+.admin-sidebar a:hover{background:var(--c-paper);color:var(--c-brand)}
+.admin-sidebar a.is-active{background:var(--c-brand);color:#fff;font-weight:600}
+.admin-sidebar .icon{width:19px;height:19px}
+.admin-sidebar .sep{font-size:.75rem;color:var(--c-ink-2);padding:14px 14px 6px;display:block}
+.admin-backdrop{display:none}
+.admin-main{flex:1;padding:28px;min-width:0}
+
+.admin-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.admin-head h1{font-size:1.4rem}
+.admin-head p{color:var(--c-ink-2);font-size:.9rem;margin-top:4px}
+.admin-head-actions{display:flex;gap:10px;flex-wrap:wrap}
+
+.table-card{background:#fff;border:1px solid var(--c-line);border-radius:var(--radius);overflow:auto}
+.admin-table{width:100%;border-collapse:collapse;font-size:.92rem;min-width:560px}
+.admin-table th{background:var(--c-paper);text-align:start;padding:12px 16px;font-size:.8rem;color:var(--c-ink-2);border-bottom:1px solid var(--c-line);white-space:nowrap}
+.admin-table td{padding:12px 16px;border-bottom:1px solid var(--c-line);vertical-align:middle}
+.admin-table tr:last-child td{border-bottom:0}
+.admin-table .cell-main b{display:block}
+.admin-table .cell-main span{color:var(--c-ink-2);font-size:.8rem}
+.row-actions{display:flex;gap:6px}
+.icon-btn{width:34px;height:34px;border:1px solid var(--c-line);background:#fff;border-radius:9px;display:inline-grid;place-items:center;color:var(--c-ink-2);cursor:pointer;transition:.2s}
+.icon-btn:hover{color:var(--c-brand);border-color:var(--c-brand);background:var(--c-brand-soft)}
+.icon-btn.danger:hover{color:var(--c-danger);border-color:var(--c-danger);background:#fbeae8}
+.icon-btn .icon{width:16px;height:16px}
+
+.pill{display:inline-flex;padding:.28em .95em;border-radius:999px;font-size:.78rem;font-weight:700;white-space:nowrap}
+.pill-on{background:var(--c-brand-soft);color:var(--c-brand)}
+.pill-off{background:#eef0ec;color:var(--c-ink-2)}
+.pill-admin{background:var(--c-accent-soft);color:#8a6210}
+.pill-student{background:#eef4f8;color:#2c6a8f}
+.pill-blocked{background:#fbeae8;color:var(--c-danger)}
+
+.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:26px}
+.search-input{max-width:320px}
+.admin-note{background:var(--c-accent-soft);color:#8a6210;border-radius:10px;padding:10px 14px;font-size:.85rem;margin-bottom:16px;display:flex;gap:8px;align-items:flex-start}
+.admin-note .icon{flex-shrink:0;margin-top:3px}
