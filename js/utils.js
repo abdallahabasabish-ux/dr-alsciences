@@ -145,3 +145,55 @@ export function confirmDialog({ title = 'تأكيد', message = '', confirmText 
     });
   });
 }
+/* ---------- قراءة معاملات الرابط ---------- */
+export function getQueryParam(name) {
+  return new URLSearchParams(location.search).get(name);
+}
+
+/* ---------- تحديث عنوان الصفحة ووصفها (SEO) ---------- */
+export function setPageMeta(title, description) {
+  document.title = title ? `${title} | الدكتور في العلوم` : 'الدكتور في العلوم';
+  if (description) {
+    const meta = document.querySelector('meta[name="description"]');
+    if (meta) meta.setAttribute('content', description);
+  }
+}
+
+/* ---------- حالة فراغ جاهزة (تُستخدم في كل الصفحات) ----------
+   ملاحظة: action يُحقن كما هو (HTML نتحكم فيه نحن)، أما النصوص فمحمية */
+export function emptyStateHTML(icon, title, text, { action = '', compact = false } = {}) {
+  return `<div class="empty-state ${compact ? 'empty-compact' : ''}">
+    <svg class="icon"><use href="#${icon}"/></svg>
+    <h3>${esc(title)}</h3>
+    <p>${esc(text)}</p>
+    ${action}
+  </div>`;
+}
+
+/* ---------- بطاقة كورس (مشتركة: الرئيسية + صفحة الصف) ---------- */
+export function courseCardHTML(course) {
+  const meta = [course.stageName, course.gradeName].filter(Boolean).join(' · ');
+  const badge = course.isFree
+    ? '<span class="badge badge-free">مجاني</span>'
+    : '<span class="badge badge-paid">مدفوع</span>';
+  const price = course.isFree
+    ? ''
+    : `<span class="course-price">${esc(course.price ?? '')} ${esc(CURRENCY)}</span>`;
+  return `
+  <article class="course-card">
+    <div class="course-thumb">
+      ${course.imageUrl
+        ? `<img src="${esc(course.imageUrl)}" alt="${esc(course.title)}" loading="lazy">`
+        : '<svg class="icon course-fallback"><use href="#i-cap"/></svg>'}
+    </div>
+    <div class="course-body">
+      <div class="course-badges">${badge}${meta ? `<span class="course-stage">${esc(meta)}</span>` : ''}</div>
+      <h3>${esc(course.title)}</h3>
+      ${course.description ? `<p class="course-desc">${esc(course.description)}</p>` : ''}
+      <div class="course-foot">
+        ${price || '<span></span>'}
+        <a class="btn btn-outline btn-sm" href="course.html?id=${encodeURIComponent(course.id)}">التفاصيل</a>
+      </div>
+    </div>
+  </article>`;
+}
