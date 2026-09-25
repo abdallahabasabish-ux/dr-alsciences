@@ -85,3 +85,10 @@
   .lesson-nav{grid-template-columns:1fr}
   .lesson-content{padding:20px}
 }
+/* الاختبارات */
+@media (max-width:640px){
+  .qcard{padding:20px 16px}
+  .qtext{font-size:1.05rem}
+  .quiz-nav .btn{flex:1}
+  .opt-tag{display:none}
+}
