@@ -1,6 +1,7 @@
 // ============================================================
 // لوحة الإدارة — منطق الصفحات (الجزء 1):
-// admin/index (إحصائيات) / stages (مراحل + صفوف) / subjects / students
+// admin/index (إحصائيات + تحديث عدادات الرئيسية) /
+// stages (مراحل + صفوف) / subjects / students
 // الصفحات المتبقية (دروس/اختبارات/كورسات/نتائج) في js/admin-content.js
 // ============================================================
 import { db, fbStoreNS } from './firebase-config.js';
@@ -9,9 +10,11 @@ import {
   checkboxField, openFormModal, createIn, updateIn, removeIn,
   pubPill, actionBtns, bindRowActions, errorState,
 } from './admin-core.js';
-import { esc, showToast, formatNumber, formatDate } from './utils.js';
+import {
+  esc, showToast, formatNumber, formatDate, confirmDialog, setBtnLoading,
+} from './utils.js';
 
-const { collection, getDocs, getCountFromServer, query, where } = fbStoreNS;
+const { collection, getDocs, getCountFromServer, query, where, doc, setDoc } = fbStoreNS;
 
 const byOrder = (a, b) => (a.order ?? 9999) - (b.order ?? 9999);
 const byNewest = (a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0);
@@ -37,6 +40,28 @@ async function initAdminHome() {
       el.textContent = '—';
     }
   }));
+
+  /* تحديث عدادات الصفحة الرئيسية العامة (stats/counters) */
+  document.getElementById('refreshStatsBtn')?.addEventListener('click', async () => {
+    const btn = document.getElementById('refreshStatsBtn');
+    setBtnLoading(btn, true);
+    try {
+      const [l, c, q, u] = await Promise.all(
+        ['lessons', 'courses', 'quizzes', 'users'].map((n) => getCountFromServer(collection(db, n))));
+      await setDoc(doc(db, 'stats', 'counters'), {
+        lessons: l.data().count,
+        courses: c.data().count,
+        quizzes: q.data().count,
+        students: u.data().count,
+      }, { merge: true });
+      showToast('تم تحديث إحصائيات الصفحة الرئيسية');
+    } catch (err) {
+      console.error(err);
+      showToast('تعذر تحديث الإحصائيات', 'error');
+    } finally {
+      setBtnLoading(btn, false);
+    }
+  });
 }
 
 /* ==================== admin/stages.html — المراحل + الصفوف ==================== */
