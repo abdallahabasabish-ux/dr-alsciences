@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم | الدكتور في العلوم</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body data-page="adminHome">
+
+  <!-- ===== التوب بار (ثابت في كل صفحات الأدمن) ===== -->
+  <div class="admin-topbar">
+    <div class="admin-topbar-inner">
+      <button class="menu-btn" id="adminMenuBtn" aria-label="فتح القائمة">
+        <svg class="icon"><use href="#i-menu"/></svg>
+      </button>
+      <a class="admin-brand" href="index.html">
+        <span class="brand-mark"><svg class="icon"><use href="#i-atom"/></svg></span>
+        لوحة الإدارة
+      </a>
+      <div class="admin-user">
+        <span class="avatar" id="adminInitial">أ</span>
+        <span id="adminName">…</span>
+        <button class="btn btn-ghost btn-sm" id="adminLogoutBtn">
+          <svg class="icon"><use href="#i-logout"/></svg> خروج
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-shell">
+    <!-- ===== الشريط الجانبي (الرابط النشط يتغير حسب الصفحة) ===== -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <nav aria-label="قائمة الإدارة">
+        <a href="index.html" class="is-active"><svg class="icon"><use href="#i-chart"/></svg> لوحة التحكم</a>
+        <a href="students.html"><svg class="icon"><use href="#i-users"/></svg> الطلاب</a>
+        <span class="sep">المحتوى التعليمي</span>
+        <a href="stages.html"><svg class="icon"><use href="#i-layers"/></svg> المراحل والصفوف</a>
+        <a href="subjects.html"><svg class="icon"><use href="#i-flask"/></svg> المواد</a>
+        <!-- تُضاف روابط: الدروس / الاختبارات / الكورسات / النتائج في الجزء الثاني -->
+        <span class="sep">عام</span>
+        <a href="../index.html"><svg class="icon"><use href="#i-atom"/></svg> عرض الموقع</a>
+      </nav>
+    </aside>
+    <div class="admin-backdrop" id="adminBackdrop"></div>
+
+    <!-- ===== المحتوى ===== -->
+    <main class="admin-main">
+      <div class="admin-head">
+        <div>
+          <h1>لوحة التحكم</h1>
+          <p>مرحبًا، <span id="adminWelcome">…</span> — نظرة سريعة على المنصة.</p>
+        </div>
+      </div>
+
+      <section class="stat-cards" aria-label="إحصائيات المنصة">
+        <div class="stat-card"><span class="stat-icon"><svg class="icon"><use href="#i-book"/></svg></span>
+          <div><b class="stat-value" id="statLessons">—</b><span class="stat-label">درس</span></div></div>
+        <div class="stat-card"><span class="stat-icon"><svg class="icon"><use href="#i-list-check"/></svg></span>
+          <div><b class="stat-value" id="statQuizzes">—</b><span class="stat-label">اختبار</span></div></div>
+        <div class="stat-card"><span class="stat-icon"><svg class="icon"><use href="#i-layers"/></svg></span>
+          <div><b class="stat-value" id="statCourses">—</b><span class="stat-label">كورس</span></div></div>
+        <div class="stat-card"><span class="stat-icon"><svg class="icon"><use href="#i-flask"/></svg></span>
+          <div><b class="stat-value" id="statSubjects">—</b><span class="stat-label">مادة</span></div></div>
+        <div class="stat-card"><span class="stat-icon"><svg class="icon"><use href="#i-cap"/></svg></span>
+          <div><b class="stat-value" id="statGrades">—</b><span class="stat-label">صف دراسي</span></div></div>
+        <div class="stat-card"><span class="stat-icon"><svg class="icon"><use href="#i-users"/></svg></span>
+          <div><b class="stat-value" id="statStudents">—</b><span class="stat-label">حساب مسجل</span></div></div>
+      </section>
+
+      <section class="quick-grid" aria-label="إجراءات سريعة">
+        <a class="grade-card" href="stages.html">
+          <h3>المراحل والصفوف</h3>
+          <p>أضف وعدّل المراحل الدراسية والصفوف وترتيبها ونشرها.</p>
+          <span class="grade-link">إدارة <svg class="icon"><use href="#i-arrow-left"/></svg></span>
+        </a>
+        <a class="grade-card" href="subjects.html">
+          <h3>المواد</h3>
+          <p>أضف مواد لكل صف بأسمائها المناسبة لكل مرحلة.</p>
+          <span class="grade-link">إدارة <svg class="icon"><use href="#i-arrow-left"/></svg></span>
+        </a>
+        <a class="grade-card" href="students.html">
+          <h3>الطلاب</h3>
+          <p>اعرض الحسابات، ابحث، وعلّق/فعّل حساب أي طالب.</p>
+          <span class="grade-link">إدارة <svg class="icon"><use href="#i-arrow-left"/></svg></span>
+        </a>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="../js/admin.js"></script>
+</body>
+</html>
