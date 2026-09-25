@@ -117,6 +117,10 @@ export function mapAuthError(err) {
     'auth/wrong-password': 'كلمة المرور غير صحيحة.',
     'auth/user-not-found': 'لا يوجد حساب بهذا البريد الإلكتروني.',
     'auth/invalid-credential': 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
+    'auth/invalid-login-credentials': 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
+    'auth/operation-not-allowed': 'تسجيل الدخول بالبريد الإلكتروني غير مفعّل في إعدادات Firebase — فعّله من Authentication ← Sign-in method.',
+    'auth/user-disabled': 'تم تعطيل هذا الحساب. تواصل مع إدارة المنصة.',
+    'auth/unauthorized-domain': 'هذا النطاق غير مصرح له — أضفه من Authentication ← Settings ← Authorized domains.',
     'auth/too-many-requests': 'محاولات كثيرة — انتظر قليلًا ثم أعد المحاولة.',
     'auth/network-request-failed': 'تعذر الاتصال بالشبكة، تحقق من اتصالك بالإنترنت.',
   };
