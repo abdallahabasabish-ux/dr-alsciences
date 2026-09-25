@@ -552,3 +552,27 @@ a.meta-chip:hover{border-color:var(--c-brand);color:var(--c-brand)}
 .question-row .cell-main span{color:var(--c-ink-2);font-size:.8rem;display:block;margin-top:2px}
 .option-form-row{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;margin-bottom:10px}
 .option-form-row input[type="radio"]{width:20px;height:20px;accent-color:var(--c-brand);cursor:pointer;flex-shrink:0}
+/* ============================================================
+   23) صفحات الكورسات
+============================================================ */
+.filter-bar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:26px}
+.filter-bar .form-select{max-width:230px;flex:1;min-width:160px}
+
+.hero-thumb{width:132px;height:132px;border-radius:18px;object-fit:cover;border:1px solid var(--c-line);flex-shrink:0}
+.hero-fallback{width:132px;height:132px;border-radius:18px;background:var(--c-brand-soft);color:var(--c-brand);display:grid;place-items:center;flex-shrink:0}
+.hero-fallback .icon{width:52px;height:52px}
+
+.lesson-row.is-locked{opacity:.68;cursor:default}
+.lesson-row.is-locked:hover{border-color:var(--c-line);transform:none}
+.lesson-num.lock .icon{width:15px;height:15px}
+
+.enroll-panel{background:var(--c-card);border:1px solid var(--c-line);border-radius:var(--radius);padding:20px 22px;margin-top:26px;display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
+.enroll-info{display:flex;gap:12px;align-items:flex-start;flex:1;min-width:230px}
+.enroll-info .icon{color:var(--c-brand);margin-top:4px;flex-shrink:0;width:22px;height:22px}
+.enroll-info b{display:block}
+.enroll-info p{color:var(--c-ink-2);font-size:.9rem;margin-top:2px}
+.enroll-progress{flex:2;min-width:230px}
+
+.locked-banner{background:var(--c-accent-soft);color:#8a6210;border-radius:12px;padding:14px 18px;margin-top:26px;display:flex;gap:12px;align-items:flex-start;font-size:.93rem;line-height:1.75}
+.locked-banner .icon{flex-shrink:0;margin-top:4px}
+.locked-banner b{font-weight:700}
