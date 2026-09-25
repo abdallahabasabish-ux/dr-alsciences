@@ -184,6 +184,12 @@ async function initLoginPage() {
     setBtnLoading(btn, true);
     try {
       const user = await loginUser(email, password);
+      const uDoc = await getUserDoc(user.uid);
+      if (uDoc?.isBlocked) {
+        await logoutUser();
+        showBanner('تم تعطيل هذا الحساب. تواصل مع إدارة المنصة.');
+        return;
+      }
       showToast(`مرحبًا بك مجددًا${user.displayName ? '، ' + user.displayName : ''}`);
       location.replace(safeNextParam() || await homeFor(user));
     } catch (err) {
