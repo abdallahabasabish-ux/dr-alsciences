@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>المراحل والصفوف | لوحة الإدارة</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body data-page="adminStages">
+
+  <div class="admin-topbar">
+    <div class="admin-topbar-inner">
+      <button class="menu-btn" id="adminMenuBtn" aria-label="فتح القائمة">
+        <svg class="icon"><use href="#i-menu"/></svg>
+      </button>
+      <a class="admin-brand" href="index.html">
+        <span class="brand-mark"><svg class="icon"><use href="#i-atom"/></svg></span>
+        لوحة الإدارة
+      </a>
+      <div class="admin-user">
+        <span class="avatar" id="adminInitial">أ</span>
+        <span id="adminName">…</span>
+        <button class="btn btn-ghost btn-sm" id="adminLogoutBtn">
+          <svg class="icon"><use href="#i-logout"/></svg> خروج
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="adminSidebar">
+      <nav aria-label="قائمة الإدارة">
+        <a href="index.html"><svg class="icon"><use href="#i-chart"/></svg> لوحة التحكم</a>
+        <a href="students.html"><svg class="icon"><use href="#i-users"/></svg> الطلاب</a>
+        <span class="sep">المحتوى التعليمي</span>
+        <a href="stages.html" class="is-active"><svg class="icon"><use href="#i-layers"/></svg> المراحل والصفوف</a>
+        <a href="subjects.html"><svg class="icon"><use href="#i-flask"/></svg> المواد</a>
+        <span class="sep">عام</span>
+        <a href="../index.html"><svg class="icon"><use href="#i-atom"/></svg> عرض الموقع</a>
+      </nav>
+    </aside>
+    <div class="admin-backdrop" id="adminBackdrop"></div>
+
+    <main class="admin-main" id="subjectsSection">
+      <div class="admin-head">
+        <div>
+          <h1>المواد الدراسية</h1>
+          <p>كل مادة مرتبطة بصف دراسي — اسم المادة يظهر كما هو للطلاب.</p>
+        </div>
+        <div class="admin-head-actions">
+          <button class="btn btn-primary" id="addSubjectBtn">
+            <svg class="icon"><use href="#i-plus"/></svg> إضافة مادة</button>
+        </div>
+      </div>
+      <div class="table-card">
+        <table class="admin-table">
+          <thead><tr>
+            <th>المادة</th><th>الصف</th><th>الدروس</th><th>الاختبارات</th><th>الحالة</th><th>إجراءات</th>
+          </tr></thead>
+          <tbody id="subjectsBody">
+            <tr><td colspan="6"><div class="sk sk-line"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="../js/admin.js"></script>
+</body>
+</html>
