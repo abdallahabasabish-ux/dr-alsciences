@@ -9,7 +9,7 @@
 import { db, isConfigured, fbStoreNS } from './firebase-config.js';
 import { initLayout } from './layout.js';
 import { waitForAuth } from './auth.js';
-import { esc, showToast, emptyStateHTML, getQueryParam, setPageMeta } from './utils.js';
+import { esc, showToast, emptyStateHTML, getQueryParam, setPageMeta, breadcrumbHTML } from './utils.js';
 
 initLayout();
 
