@@ -1,18 +1,12 @@
 // ============================================================
 // إعداد Firebase — منصة «الدكتور في العلوم»
-// خطوات الربط:
-//   1) أنشئ مشروعًا على https://console.firebase.google.com
-//   2) Project Settings → Your apps → أضف تطبيق ويب (</>) وانسخ القيم أدناه
-//   3) Authentication → Sign-in method → فعّل Email/Password
-//   4) Firestore Database → Create database
-// حتى تستبدل قيم PASTE- يعمل الموقع في «وضع العرض» بدون قاعدة بيانات.
-// ملاحظة أمان: هذه القيم ليست سرية بذاتها، لكن الحماية الحقيقية تتم
-// عبر Firestore Security Rules (تُسلّم في المرحلة 13) — لا تضع مفاتيح
-// خدمة (Service Account) في كود الواجهة أبدًا.
+// استبدل قيم PASTE- ببيانات مشروعك من Firebase Console.
+// حتى ذلك الحين يعمل الموقع في «وضع العرض» بدون قاعدة بيانات.
 // ============================================================
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
 import * as fbAuthNS from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
 import * as fbStoreNS from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+import * as fbStorageNS from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDS8rJsB1PgB3oxJ6X2XU2WcI0TpO8bryk',
@@ -27,11 +21,13 @@ const isConfigured = !Object.values(firebaseConfig).some(v => String(v).startsWi
 
 let auth = null;
 let db = null;
+let storage = null;
 
 if (isConfigured) {
   const app = initializeApp(firebaseConfig);
   auth = fbAuthNS.getAuth(app);
   db = fbStoreNS.getFirestore(app);
+  storage = fbStorageNS.getStorage(app);
 } else {
   console.warn(
     '[الدكتور في العلوم] Firebase غير مربوط بعد. ' +
@@ -39,4 +35,4 @@ if (isConfigured) {
   );
 }
 
-export { firebaseConfig, isConfigured, auth, db, fbAuthNS, fbStoreNS };
+export { firebaseConfig, isConfigured, auth, db, storage, fbAuthNS, fbStoreNS, fbStorageNS };
