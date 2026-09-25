@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة الطالب | الدكتور في العلوم</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body data-page="dashboard" data-protected="true">
+
+  <!-- نفس هيدر index.html بالكامل (الشعار، القائمة، حالة الدخول) -->
+  <header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+      <a href="index.html" class="brand" aria-label="الدكتور في العلوم">
+        <span class="brand-mark"><svg class="icon"><use href="#i-atom"/></svg></span>
+        <span class="brand-name">الدكتور <b>في العلوم</b></span>
+      </a>
+      <nav class="main-nav" id="mainNav" aria-label="التنقل الرئيسي">
+        <a href="index.html">الرئيسية</a>
+        <a href="stages.html">المراحل الدراسية</a>
+        <a href="courses.html">الكورسات</a>
+        <a href="quizzes.html">الاختبارات</a>
+        <a href="about.html">من نحن</a>
+        <a href="contact.html">تواصل معنا</a>
+        <div class="nav-auth">
+          <a href="login.html" class="btn btn-outline">تسجيل الدخول</a>
+          <a href="register.html" class="btn btn-primary">إنشاء حساب</a>
+        </div>
+      </nav>
+      <div class="header-actions">
+        <div class="auth-links" id="authLinks">
+          <a href="login.html" class="btn btn-ghost btn-sm">تسجيل الدخول</a>
+          <a href="register.html" class="btn btn-primary btn-sm">إنشاء حساب</a>
+        </div>
+        <div class="user-chip" id="userChip" hidden>
+          <button id="userChipBtn" class="user-chip-btn" aria-haspopup="true">
+            <span class="avatar" id="userInitial">ب</span>
+            <span class="user-name" id="userName">حسابي</span>
+            <svg class="icon"><use href="#i-chevron-down"/></svg>
+          </button>
+          <div class="user-menu" id="userMenu" hidden>
+            <a href="student-dashboard.html"><svg class="icon"><use href="#i-chart"/></svg> لوحة الطالب</a>
+            <a href="profile.html"><svg class="icon"><use href="#i-user"/></svg> ملفي الشخصي</a>
+            <button id="logoutBtn" class="danger"><svg class="icon"><use href="#i-logout"/></svg> تسجيل الخروج</button>
+          </div>
+        </div>
+        <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mainNav" aria-label="فتح القائمة">
+          <svg class="icon icon-open"><use href="#i-menu"/></svg>
+          <svg class="icon icon-close" hidden><use href="#i-close"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="nav-backdrop" id="navBackdrop"></div>
+
+  <main class="container dash-page">
+    <div class="page-head">
+      <h1>مرحبًا، <span id="welcomeName">…</span></h1>
+      <p>تابع تقدمك وأكمل ما بدأته — كل درس يقرّبك خطوة من هدفك.</p>
+    </div>
+
+    <!-- الإحصائيات -->
+    <section class="stat-cards" aria-label="إحصائياتك">
+      <div class="stat-card">
+        <span class="stat-icon"><svg class="icon"><use href="#i-book"/></svg></span>
+        <div><b class="stat-value" id="statLessons">—</b><span class="stat-label">درس مكتمل</span></div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><svg class="icon"><use href="#i-list-check"/></svg></span>
+        <div><b class="stat-value" id="statQuizzes">—</b><span class="stat-label">اختبار تم حلّه</span></div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><svg class="icon"><use href="#i-award"/></svg></span>
+        <div><b class="stat-value" id="statAvg">—</b><span class="stat-label">متوسط النتائج</span></div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><svg class="icon"><use href="#i-chart"/></svg></span>
+        <div><b class="stat-value" id="statProgress">—</b><span class="stat-label">نسبة التقدم الكلية</span></div>
+      </div>
+    </section>
+
+    <section class="dash-grid">
+      <!-- متابعة التعلم -->
+      <div class="panel" id="progressPanel">
+        <div class="panel-head"><h2>متابعة التعلم</h2></div>
+        <div class="sk sk-line w60"></div><div class="sk sk-line"></div><div class="sk sk-line w40"></div>
+      </div>
+      <!-- الدروس الأخيرة -->
+      <div class="panel">
+        <div class="panel-head"><h2>الدروس الأخيرة</h2></div>
+        <div class="item-list" id="recentLessons">
+          <div class="sk sk-line"></div><div class="sk sk-line w60"></div><div class="sk sk-line"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- آخر النتائج -->
+    <section class="panel results-panel">
+      <div class="panel-head"><h2>آخر نتائج الاختبارات</h2><a href="results.html">كل النتائج</a></div>
+      <div class="item-list" id="recentResults">
+        <div class="sk sk-line"></div><div class="sk sk-line w60"></div><div class="sk sk-line"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- نفس فوتر index.html -->
+  <footer class="site-footer">
+    <div class="footer-bar container">
+      <span>© <span id="year"></span> الدكتور في العلوم — جميع الحقوق محفوظة.</span>
+      <span><a href="privacy.html">سياسة الخصوصية</a> · <a href="terms.html">الشروط والأحكام</a></span>
+    </div>
+  </footer>
+
+  <script type="module" src="js/student.js"></script>
+</body>
+</html>
