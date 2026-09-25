@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /login.html
+Disallow: /register.html
+Disallow: /student-dashboard.html
+Disallow: /profile.html
+Disallow: /results.html
+Disallow: /quiz.html
