@@ -15,12 +15,12 @@ import * as fbAuthNS from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-a
 import * as fbStoreNS from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 
 const firebaseConfig = {
-  apiKey: 'PASTE-YOUR-API-KEY',
-  authDomain: 'PASTE-YOUR-PROJECT.firebaseapp.com',
-  projectId: 'PASTE-YOUR-PROJECT',
-  storageBucket: 'PASTE-YOUR-PROJECT.appspot.com',
-  messagingSenderId: 'PASTE-YOUR-SENDER-ID',
-  appId: 'PASTE-YOUR-APP-ID',
+  apiKey: 'AIzaSyDS8rJsB1PgB3oxJ6X2XU2WcI0TpO8bryk',
+  authDomain: 'master-prompt-5cb85.firebaseapp.com',
+  projectId: 'master-prompt-5cb85',
+  storageBucket: 'master-prompt-5cb85.firebasestorage.app',
+  messagingSenderId: '111755994926',
+  appId: '1:111755994926:web:055b776f8b49501d7d7cbf',
 };
 
 const isConfigured = !Object.values(firebaseConfig).some(v => String(v).startsWith('PASTE-'));
