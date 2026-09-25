@@ -35,7 +35,7 @@
   </div>
 
   <div class="admin-shell">
-    <!-- ===== الشريط الجانبي (الرابط النشط يتغير حسب الصفحة) ===== -->
+    <!-- ===== الشريط الجانبي ===== -->
     <aside class="admin-sidebar" id="adminSidebar">
       <nav aria-label="قائمة الإدارة">
         <a href="index.html" class="is-active"><svg class="icon"><use href="#i-chart"/></svg> لوحة التحكم</a>
@@ -43,7 +43,11 @@
         <span class="sep">المحتوى التعليمي</span>
         <a href="stages.html"><svg class="icon"><use href="#i-layers"/></svg> المراحل والصفوف</a>
         <a href="subjects.html"><svg class="icon"><use href="#i-flask"/></svg> المواد</a>
-        <!-- تُضاف روابط: الدروس / الاختبارات / الكورسات / النتائج في الجزء الثاني -->
+        <a href="lessons.html"><svg class="icon"><use href="#i-book"/></svg> الدروس</a>
+        <a href="quizzes.html"><svg class="icon"><use href="#i-list-check"/></svg> الاختبارات</a>
+        <a href="courses.html"><svg class="icon"><use href="#i-cap"/></svg> الكورسات</a>
+        <span class="sep">التقارير</span>
+        <a href="results.html"><svg class="icon"><use href="#i-award"/></svg> النتائج</a>
         <span class="sep">عام</span>
         <a href="../index.html"><svg class="icon"><use href="#i-atom"/></svg> عرض الموقع</a>
       </nav>
@@ -83,6 +87,21 @@
         <a class="grade-card" href="subjects.html">
           <h3>المواد</h3>
           <p>أضف مواد لكل صف بأسمائها المناسبة لكل مرحلة.</p>
+          <span class="grade-link">إدارة <svg class="icon"><use href="#i-arrow-left"/></svg></span>
+        </a>
+        <a class="grade-card" href="lessons.html">
+          <h3>الدروس</h3>
+          <p>أضف الدروس بالفيديو والشرح النصي وملفات PDF ورتّبها.</p>
+          <span class="grade-link">إدارة <svg class="icon"><use href="#i-arrow-left"/></svg></span>
+        </a>
+        <a class="grade-card" href="quizzes.html">
+          <h3>الاختبارات</h3>
+          <p>أنشئ اختبارات وأسئلتها مع نسبة نجاح قابلة للتعديل.</p>
+          <span class="grade-link">إدارة <svg class="icon"><use href="#i-arrow-left"/></svg></span>
+        </a>
+        <a class="grade-card" href="courses.html">
+          <h3>الكورسات</h3>
+          <p>كورسات مجانية ومدفوعة — الدفع يُربط لاحقًا دون تغيير البنية.</p>
           <span class="grade-link">إدارة <svg class="icon"><use href="#i-arrow-left"/></svg></span>
         </a>
         <a class="grade-card" href="students.html">
