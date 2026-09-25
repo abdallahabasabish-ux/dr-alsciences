@@ -383,3 +383,42 @@ p{margin:0}
 .mini-badge.accent{background:var(--c-accent-soft);color:#8a6210}
 .empty-compact{padding:26px 18px}
 .empty-compact .icon{width:32px;height:32px;margin-bottom:8px}
+/* ============================================================
+   19) صفحة الدرس
+============================================================ */
+a.meta-chip{color:var(--c-ink-2);transition:border-color .2s,color .2s}
+a.meta-chip:hover{border-color:var(--c-brand);color:var(--c-brand)}
+.done-note{display:inline-flex;align-items:center;gap:.4em;color:var(--c-success);font-weight:600;font-size:.88rem}
+.done-note .icon{width:1.1em;height:1.1em}
+
+.lesson-layout{display:grid;grid-template-columns:1fr 320px;gap:26px;align-items:start}
+.video-frame{aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;background:#0e1512;border:1px solid var(--c-line)}
+.video-frame iframe{width:100%;height:100%;border:0;display:block}
+.lesson-content{background:var(--c-card);border:1px solid var(--c-line);border-radius:var(--radius);padding:28px;margin-top:22px}
+.lesson-content p{margin:0 0 1em;line-height:2.05;font-size:1.02rem}
+.lesson-content p:last-child{margin-bottom:0}
+.lesson-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+.btn-success{background:var(--c-success);color:#fff}
+.btn-success:hover{background:#177146;box-shadow:var(--shadow-sm)}
+.btn-success-outline{border-color:var(--c-success);color:var(--c-success);background:transparent}
+.btn-success-outline:hover{background:#eaf5ef}
+
+.lesson-nav{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:26px}
+.lesson-nav a{display:flex;flex-direction:column;gap:4px;background:var(--c-card);border:1px solid var(--c-line);border-radius:var(--radius);padding:16px 18px;transition:border-color .2s,transform .2s}
+.lesson-nav a:hover{border-color:var(--c-brand);transform:translateY(-3px)}
+.lesson-nav .nav-label{font-size:.8rem;color:var(--c-ink-2)}
+.lesson-nav .nav-title{font-weight:600;font-size:.94rem}
+.lesson-nav .is-next{text-align:start}
+.lesson-nav .nav-disabled{display:flex;flex-direction:column;gap:4px;border:1px dashed var(--c-line);border-radius:var(--radius);padding:16px 18px;color:var(--c-ink-2);font-size:.9rem;opacity:.6}
+
+.lesson-aside{position:sticky;top:calc(var(--header-h) + 20px)}
+.aside-panel{background:var(--c-card);border:1px solid var(--c-line);border-radius:var(--radius);padding:18px}
+.aside-panel h2{font-size:1rem;margin-bottom:12px}
+.aside-sub{color:var(--c-ink-2);font-size:.82rem;margin:-8px 0 12px}
+.aside-list{display:grid;gap:2px;max-height:60vh;overflow:auto;padding-inline-end:4px}
+.aside-item{display:flex;gap:10px;align-items:center;padding:9px 10px;border-radius:9px;font-size:.9rem;color:var(--c-ink-2);transition:background .2s}
+.aside-item:hover{background:var(--c-paper)}
+.aside-item.is-current{background:var(--c-brand-soft);color:var(--c-brand);font-weight:600}
+.aside-item b{white-space:normal;line-height:1.5}
+.aside-num{width:26px;height:26px;border-radius:50%;border:1px solid var(--c-line);display:grid;place-items:center;font-size:.75rem;flex-shrink:0}
+.aside-item.is-done .aside-num{background:var(--c-brand);border-color:var(--c-brand);color:#fff}
