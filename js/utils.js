@@ -229,3 +229,30 @@ export function breadcrumbHTML(items) {
       : `<span aria-current="page">${esc(item.text)}</span>`
   ).join('<span class="sep" aria-hidden="true">/</span>');
 }
+/* ============================================================
+   شاشة التحميل (Preloader)
+   تظهر تلقائيًا من style.css في كل صفحة، وتُخفى عبر hidePreloader()
+   عند جهوزية الواجهة — مع شبكة أمان تمنع تعليقها أكثر من 7 ثوانٍ.
+============================================================ */
+window.__preloaderStart = window.__preloaderStart || Date.now();
+
+/* شبكة أمان: إخفاء قسري بعد 7 ثوانٍ مهما حدث */
+setTimeout(() => {
+  document.documentElement.classList.remove('preloading', 'preloading-done');
+}, 7000);
+
+/* عند العودة من زر "رجوع" (bfcache) لا تعلق الشاشة */
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted) hidePreloader();
+});
+
+export function hidePreloader() {
+  const root = document.documentElement;
+  if (!root.classList.contains('preloading') || root.classList.contains('preloading-done')) return;
+  /* حد أدنى للعرض (400ms) حتى لا ترمش بسرعة على التحميل السريع */
+  const wait = Math.max(0, 400 - (Date.now() - window.__preloaderStart));
+  setTimeout(() => {
+    root.classList.add('preloading-done');
+    setTimeout(() => root.classList.remove('preloading', 'preloading-done'), 320);
+  }, wait);
+}
