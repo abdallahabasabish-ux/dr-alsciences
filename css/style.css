@@ -1,0 +1,263 @@
+/* ============================================================
+   «الدكتور في العلوم» — ورقة الأنماط الأساسية
+   01) متغيرات الهوية  02) أساسيات  03) مكوّنات عامة
+   04) الهيدر  05) الهيرو  06) المراحل  07) المزايا
+   08) الكورسات  09) الإحصائيات  10) دعوة التسجيل
+   11) الفوتر  12) توست/مودال/سكيبتون/فراغ  13) نماذج  14) حركات
+============================================================ */
+
+/* ---------- 01) متغيرات الهوية — عدّل الألوان من هنا ---------- */
+:root{
+  --c-brand:#0d6b58;          /* الأخضر الزمردي الأساسي */
+  --c-brand-strong:#0a5244;
+  --c-brand-soft:#e9f3ef;
+  --c-accent:#c9932e;         /* العنبري للتمييز */
+  --c-accent-soft:#f8ecd6;
+  --c-ink:#1a2420;            /* لون النص الأساسي */
+  --c-ink-2:#57655f;          /* نص ثانوي */
+  --c-paper:#faf9f6;          /* خلفية الصفحة */
+  --c-card:#ffffff;
+  --c-line:#e6e8e3;
+  --c-danger:#bb3a2e;
+  --c-success:#1f8a5b;
+  --radius:14px; --radius-sm:10px;
+  --shadow-sm:0 1px 2px rgba(26,36,32,.05),0 3px 12px rgba(26,36,32,.06);
+  --shadow-md:0 10px 30px rgba(26,36,32,.12);
+  --container:1160px;
+  --header-h:72px;
+  --font:'IBM Plex Sans Arabic',Tahoma,Arial,sans-serif;
+}
+
+/* ---------- 02) أساسيات ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--font);color:var(--c-ink);background:var(--c-paper);line-height:1.7;font-size:16px;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+ul{margin:0;padding:0;list-style:none}
+h1,h2,h3,h4{margin:0;line-height:1.35;font-weight:700}
+p{margin:0}
+[hidden]{display:none!important}
+.container{max-width:var(--container);margin-inline:auto;padding-inline:20px}
+.icon{width:1.25em;height:1.25em;flex-shrink:0}
+.skip-link{position:absolute;inset-inline-start:-999px;top:8px;background:var(--c-brand);color:#fff;padding:.6em 1.2em;border-radius:10px;z-index:500}
+.skip-link:focus{inset-inline-start:8px}
+
+/* ---------- 03) مكوّنات عامة ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5em;padding:.72em 1.6em;border-radius:12px;border:1.5px solid transparent;font-family:inherit;font-size:1rem;font-weight:600;cursor:pointer;user-select:none;transition:background .2s,color .2s,border-color .2s,transform .15s,box-shadow .2s}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--c-brand);color:#fff}
+.btn-primary:hover{background:var(--c-brand-strong);box-shadow:var(--shadow-sm)}
+.btn-outline{border-color:var(--c-brand);color:var(--c-brand);background:transparent}
+.btn-outline:hover{background:var(--c-brand-soft)}
+.btn-ghost{color:var(--c-ink-2)}
+.btn-ghost:hover{color:var(--c-brand);background:var(--c-brand-soft)}
+.btn-accent{background:var(--c-accent);color:#241a07}
+.btn-accent:hover{background:#b9851f}
+.btn-danger{background:var(--c-danger);color:#fff}
+.btn-danger:hover{background:#a02f24}
+.btn-lg{padding:.9em 2.1em;font-size:1.06rem}
+.btn-sm{padding:.45em 1.2em;font-size:.9rem}
+.btn[disabled],.btn.loading{opacity:.6;pointer-events:none}
+.spinner{width:1em;height:1em;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
+
+.badge{display:inline-flex;align-items:center;gap:.35em;padding:.25em .85em;border-radius:999px;font-size:.8rem;font-weight:600}
+.badge-free{background:var(--c-brand-soft);color:var(--c-brand)}
+.badge-paid{background:var(--c-accent-soft);color:#8a6210}
+
+.section{padding-block:76px}
+.section-alt{background:var(--c-card);border-block:1px solid var(--c-line)}
+.section-kicker{display:inline-block;color:var(--c-brand);font-weight:600;font-size:.95rem;margin-bottom:10px}
+.section-kicker::before{content:"";display:inline-block;width:26px;height:2px;background:var(--c-accent);margin-inline-end:10px;vertical-align:middle}
+.section-head{max-width:640px;margin-bottom:44px}
+.section-head.center{margin-inline:auto;text-align:center}
+.section-head h2{font-size:clamp(1.5rem,3vw,2.1rem)}
+.section-head p{color:var(--c-ink-2);margin-top:10px}
+.section-head.row{max-width:none;display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
+
+/* ---------- 04) الهيدر ---------- */
+.site-header{position:sticky;top:0;z-index:100;background:rgba(250,249,246,.92);backdrop-filter:blur(8px);border-bottom:1px solid transparent;transition:border-color .25s,box-shadow .25s}
+.site-header.is-scrolled{border-bottom-color:var(--c-line);box-shadow:0 2px 14px rgba(26,36,32,.05)}
+.header-inner{display:flex;align-items:center;gap:24px;height:var(--header-h)}
+.brand{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.brand-mark{width:44px;height:44px;border-radius:13px;background:var(--c-brand);color:#fff;display:grid;place-items:center}
+.brand-mark .icon{width:26px;height:26px}
+.brand-name{font-size:1.1rem;font-weight:600;line-height:1.25}
+.brand-name b{display:block;color:var(--c-brand);font-weight:700}
+.main-nav{display:flex;align-items:center;gap:2px;margin-inline:auto}
+.main-nav a{padding:.5em .85em;border-radius:10px;color:var(--c-ink-2);font-weight:500;font-size:.97rem;transition:.2s;position:relative}
+.main-nav a:hover{color:var(--c-brand);background:var(--c-brand-soft)}
+.main-nav a.is-active{color:var(--c-brand);font-weight:600}
+.main-nav a.is-active::after{content:"";position:absolute;inset-inline:14px;bottom:2px;height:2px;border-radius:2px;background:var(--c-accent)}
+.nav-auth{display:none}
+.header-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.menu-btn{display:none;width:44px;height:44px;border:1px solid var(--c-line);background:var(--c-card);border-radius:12px;place-items:center;cursor:pointer;color:var(--c-ink)}
+.menu-btn .icon{width:22px;height:22px}
+
+/* بطاقة المستخدم المسجل */
+.user-chip{position:relative}
+.user-chip-btn{display:flex;align-items:center;gap:10px;background:var(--c-card);border:1px solid var(--c-line);border-radius:999px;padding:5px 12px;cursor:pointer;font:inherit;color:var(--c-ink);transition:border-color .2s}
+.user-chip-btn:hover{border-color:var(--c-brand)}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--c-brand);color:#fff;display:grid;place-items:center;font-weight:700;font-size:.95rem}
+.user-chip-btn>.icon{width:16px;height:16px;color:var(--c-ink-2)}
+.user-menu{position:absolute;top:calc(100% + 8px);inset-inline-end:0;background:#fff;border:1px solid var(--c-line);border-radius:12px;box-shadow:var(--shadow-md);min-width:200px;padding:6px;z-index:120}
+.user-menu a,.user-menu button{display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:0;background:none;font:inherit;color:var(--c-ink);border-radius:8px;cursor:pointer;text-align:start}
+.user-menu :is(a,button):hover{background:var(--c-paper)}
+.user-menu .icon{width:18px;height:18px;color:var(--c-ink-2)}
+.user-menu .danger,.user-menu .danger .icon{color:var(--c-danger)}
+
+/* ---------- 05) الهيرو ---------- */
+.hero{padding-block:84px 96px;overflow:hidden;background-image:radial-gradient(rgba(13,107,88,.07) 1.1px,transparent 1.1px);background-size:22px 22px}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.hero-kicker{display:inline-flex;align-items:center;gap:.5em;background:var(--c-brand-soft);color:var(--c-brand);font-weight:600;font-size:.9rem;padding:.4em 1.1em;border-radius:999px;margin-bottom:18px}
+.hero h1{font-size:clamp(1.9rem,4.2vw,3rem);letter-spacing:-.5px}
+.hl{background-image:linear-gradient(180deg,transparent 64%,#f2d9a0 64%)} /* علامة قلم تحديد */
+.hero-copy>p{color:var(--c-ink-2);font-size:1.1rem;margin-top:16px;max-width:520px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.hero-points{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:28px;color:var(--c-ink-2);font-size:.95rem}
+.hero-points li{display:flex;align-items:center;gap:.45em}
+.hero-points .icon{color:var(--c-success);width:1.1em;height:1.1em}
+
+/* لوحة عرض «درس حي» داخل الهيرو */
+.hero-visual{position:relative;padding:10px}
+.demo-panel{background:#fff;border:1px solid var(--c-line);border-radius:18px;box-shadow:var(--shadow-md);overflow:hidden;transition:transform .3s}
+.hero-visual:hover .demo-panel{transform:translateY(-4px)}
+.demo-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;border-bottom:1px solid var(--c-line)}
+.demo-badge{background:var(--c-brand);color:#fff;font-size:.78rem;font-weight:600;padding:.2em .9em;border-radius:999px}
+.demo-stage{color:var(--c-ink-2);font-size:.82rem}
+.demo-media{position:relative;background:var(--c-brand-strong);color:rgba(255,255,255,.9);height:190px;display:grid;place-items:center;overflow:hidden}
+.atom-svg{width:150px;height:150px}
+.atom-svg ellipse{fill:none;stroke:currentColor;stroke-width:1.6;opacity:.55}
+.orbit{transform-origin:60px 60px;transform-box:view-box}
+.demo-media:hover .orbit{animation:orbit 6s linear infinite} /* الذرة تدور عند التحويم فقط */
+.demo-play{position:absolute;inset:0;margin:auto;width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.65);color:#fff;display:grid;place-items:center;transition:.25s;cursor:pointer}
+.demo-play .icon{width:26px;height:26px;margin-inline-start:-3px}
+.demo-media:hover .demo-play{transform:scale(1.1);background:rgba(255,255,255,.26)}
+.demo-body{padding:18px 20px 20px}
+.demo-body h3{font-size:1.05rem}
+.demo-progress{height:8px;border-radius:99px;background:#edf0ec;margin-top:14px;overflow:hidden}
+.demo-progress span{display:block;height:100%;width:70%;background:var(--c-brand);border-radius:99px}
+.demo-meta{display:flex;justify-content:space-between;color:var(--c-ink-2);font-size:.82rem;margin-top:8px}
+.demo-score{position:absolute;inset-inline-end:-14px;bottom:34px;display:flex;gap:12px;align-items:center;background:#fff;border:1px solid var(--c-line);border-radius:14px;box-shadow:var(--shadow-md);padding:12px 16px}
+.demo-score .icon{width:30px;height:30px;color:var(--c-accent)}
+.demo-score b{display:block;font-size:.95rem}
+.demo-score span{color:var(--c-success);font-size:.78rem;font-weight:600}
+
+/* ---------- 06) المراحل الدراسية ---------- */
+.stages-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.stage-card{position:relative;display:flex;flex-direction:column;background:var(--c-card);border:1px solid var(--c-line);border-radius:var(--radius);padding:30px 26px;overflow:hidden;transition:transform .25s,box-shadow .25s}
+.stage-card::before{content:"";position:absolute;inset-inline:0;top:0;height:3px;background:var(--c-brand);transform:scaleX(0);transform-origin:right;transition:transform .3s}
+.stage-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-md)}
+.stage-card:hover::before{transform:scaleX(1)}
+.stage-num{position:absolute;top:6px;inset-inline-end:16px;font-size:3.4rem;font-weight:700;color:var(--c-ink);opacity:.06;line-height:1}
+.stage-icon{width:58px;height:58px;border-radius:16px;background:var(--c-brand-soft);color:var(--c-brand);display:grid;place-items:center;margin-bottom:18px}
+.stage-icon .icon{width:28px;height:28px}
+.stage-card h3{font-size:1.2rem;margin-bottom:8px}
+.stage-card p{color:var(--c-ink-2);font-size:.95rem;margin-bottom:20px}
+.stage-card .btn{margin-top:auto;align-self:flex-start}
+
+/* ---------- 07) المزايا (شبكة تحريرية بفواصل) ---------- */
+.features-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--c-line);border:1px solid var(--c-line);border-radius:var(--radius);overflow:hidden}
+.feature{background:#fff;padding:26px 22px;display:flex;gap:14px;align-items:flex-start;transition:background .2s}
+.feature:hover{background:var(--c-brand-soft)}
+.feature .icon{width:24px;height:24px;color:var(--c-brand);margin-top:4px}
+.feature h3{font-size:1rem;margin-bottom:4px}
+.feature p{color:var(--c-ink-2);font-size:.86rem;line-height:1.65}
+
+/* ---------- 08) الكورسات ---------- */
+.courses-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.course-card{background:#fff;border:1px solid var(--c-line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s}
+.course-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-md)}
+.course-thumb{aspect-ratio:16/9;background:var(--c-brand-soft);position:relative;overflow:hidden}
+.course-thumb img{width:100%;height:100%;object-fit:cover}
+.course-fallback{position:absolute;inset:0;margin:auto;width:52px;height:52px;color:var(--c-brand);opacity:.45}
+.course-body{padding:20px;display:flex;flex-direction:column;gap:10px;flex:1}
+.course-badges{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.course-stage{color:var(--c-ink-2);font-size:.82rem}
+.course-body h3{font-size:1.08rem}
+.course-desc{color:var(--c-ink-2);font-size:.9rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.course-foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;padding-top:8px}
+.course-price{font-weight:700;color:var(--c-brand)}
+
+/* ---------- 09) شريط الإحصائيات ---------- */
+.stats-strip{background:#fff;border-block:1px solid var(--c-line)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr)}
+.stat{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:46px 16px;text-align:center}
+.stat+.stat::before{content:"";position:absolute;inset-inline-start:0;top:30%;height:40%;width:1px;background:var(--c-line)}
+.stat .icon{width:26px;height:26px;color:var(--c-brand)}
+.stat-num{font-size:2.4rem;font-weight:700;line-height:1.2;direction:ltr}
+.stat>span{color:var(--c-ink-2)}
+
+/* ---------- 10) دعوة التسجيل ---------- */
+.cta{background:var(--c-brand-strong);color:#fff;padding-block:84px;background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px);background-size:24px 24px}
+.cta-inner{text-align:center;max-width:640px;margin-inline:auto}
+.cta h2{font-size:clamp(1.7rem,3.4vw,2.4rem)}
+.cta p{color:rgba(255,255,255,.78);margin:14px 0 30px;font-size:1.05rem}
+
+/* ---------- 11) الفوتر ---------- */
+.site-footer{background:#141b18;color:#c9d2cd;padding-top:64px}
+.site-footer .brand-name{color:#fff}
+.site-footer .brand-name b{color:#7fc7b4}
+.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.2fr;gap:40px;padding-bottom:44px}
+.footer-brand p{font-size:.92rem;margin-top:14px;color:#93a29b;line-height:1.85}
+.site-footer h4{color:#fff;font-size:1rem;margin-bottom:16px}
+.footer-links li{margin-bottom:10px}
+.footer-links a{color:#93a29b;transition:color .2s}
+.footer-links a:hover{color:#fff}
+.footer-contact li{display:flex;gap:10px;align-items:flex-start;color:#93a29b;margin-bottom:12px;font-size:.93rem}
+.footer-contact .icon{color:#7fc7b4;margin-top:4px}
+.footer-legal{margin-top:20px;display:flex;gap:18px;font-size:.9rem}
+.footer-bar{border-top:1px solid rgba(255,255,255,.08);padding-block:20px;display:flex;justify-content:space-between;gap:10px;font-size:.85rem;color:#7d8c85;flex-wrap:wrap}
+
+/* ---------- 12) توست / مودال / سكيبتون / فراغ ---------- */
+.toast-wrap{position:fixed;bottom:22px;inset-inline-start:22px;z-index:300;display:flex;flex-direction:column;gap:10px;max-width:min(92vw,380px)}
+.toast{display:flex;align-items:flex-start;gap:10px;background:#1e2a26;color:#fff;padding:13px 16px;border-radius:12px;box-shadow:var(--shadow-md);font-size:.93rem;line-height:1.6;animation:toast-in .3s ease}
+.toast .icon{margin-top:3px}
+.toast.success .icon{color:#6fd39c}
+.toast.error .icon{color:#ff8d80}
+.toast.info .icon{color:#8fc7ff}
+.toast.hide{opacity:0;transform:translateY(8px);transition:.3s}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(20,27,24,.55);z-index:250;display:grid;place-items:center;padding:20px;animation:fade-in .2s ease}
+.modal{background:#fff;border-radius:16px;max-width:420px;width:100%;padding:28px;box-shadow:var(--shadow-md);animation:pop-in .22s ease}
+.modal-icon{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;margin-bottom:16px;background:var(--c-brand-soft);color:var(--c-brand)}
+.modal-icon.danger{background:#fbeae8;color:var(--c-danger)}
+.modal-icon .icon{width:26px;height:26px}
+.modal h3{font-size:1.15rem;margin-bottom:8px}
+.modal p{color:var(--c-ink-2);font-size:.95rem}
+.modal-actions{display:flex;gap:10px;margin-top:24px}
+
+.skeleton-card{background:#fff;border:1px solid var(--c-line);border-radius:var(--radius);overflow:hidden}
+.sk{background:#e9ebe6;border-radius:8px;animation:sk-pulse 1.4s ease-in-out infinite}
+.sk-img{aspect-ratio:16/9;border-radius:0}
+.sk-body{padding:18px;display:grid;gap:10px}
+.sk-line{height:14px}
+.w60{width:60%}.w40{width:40%}
+
+.empty-state{text-align:center;padding:52px 20px;border:1.5px dashed var(--c-line);border-radius:var(--radius);background:#fff;grid-column:1/-1}
+.empty-state .icon{width:44px;height:44px;color:var(--c-ink-2);opacity:.45;margin:0 auto 14px;display:block}
+.empty-state h3{margin-bottom:6px}
+.empty-state p{color:var(--c-ink-2);font-size:.95rem}
+
+/* ---------- 13) النماذج (تُستخدم في صفحات التسجيل واللوحات) ---------- */
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-weight:600;font-size:.92rem;margin-bottom:6px}
+.form-input,.form-select,.form-textarea{width:100%;padding:.7em 1em;border:1.5px solid var(--c-line);border-radius:10px;font:inherit;background:#fff;color:var(--c-ink);transition:border-color .2s,box-shadow .2s}
+:is(.form-input,.form-select,.form-textarea):focus{outline:none;border-color:var(--c-brand);box-shadow:0 0 0 3px rgba(13,107,88,.12)}
+.form-error{color:var(--c-danger);font-size:.85rem;margin-top:5px;display:none}
+.form-group.has-error .form-input{border-color:var(--c-danger)}
+.form-group.has-error .form-error{display:block}
+
+/* ---------- 14) حركات ---------- */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
+.reveal.is-visible{opacity:1;transform:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes orbit{to{transform:rotate(360deg)}}
+@keyframes toast-in{from{opacity:0;transform:translateY(12px)}}
+@keyframes fade-in{from{opacity:0}}
+@keyframes pop-in{from{opacity:0;transform:scale(.96) translateY(8px)}}
+@keyframes sk-pulse{0%,100%{opacity:.55}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .reveal{opacity:1;transform:none;transition:none}
+}
