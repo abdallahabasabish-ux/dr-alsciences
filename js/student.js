@@ -1,36 +1,33 @@
 // ============================================================
-// لوحة الطالب (student-dashboard.html) والملف الشخصي (profile.html)
+// لوحة الطالب / الملف الشخصي (مع رفع صورة) / سجل النتائج
 // مصدر البيانات: Firestore فقط — يعمل حسب data-page في <body>.
 // ============================================================
-import { auth, db, fbAuthNS, fbStoreNS } from './firebase-config.js';
-import { initLayout } from './layout.js';
-import { requireAuth, getUserDoc, populateGradeSelect } from './auth.js';
+import { auth, db, storage, fbAuthNS, fbStoreNS, fbStorageNS } from './firebase-config.js';
+import { initLayout, refreshHeaderUser } from './layout.js';
+import { requireAuth, getUserDoc, populateGradeSelect, populateCountrySelect, bindCountryGovernorate } from './auth.js';
 import { esc, showToast, setBtnLoading, formatNumber, formatDate, emptyStateHTML } from './utils.js';
 
 initLayout();
 
 const { doc, getDoc, updateDoc, collection, query, where, getDocs } = fbStoreNS;
 const { updateProfile } = fbAuthNS;
+const { ref, uploadBytes, getDownloadURL } = fbStorageNS;
 
 const $id = (id) => document.getElementById(id);
 const byNewest = (a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0);
 
 /* ==================== لوحة الطالب ==================== */
-
 async function initDashboard() {
   const user = await requireAuth();
   if (!user) return;
-
   const userDoc = await getUserDoc(user.uid);
   $id('welcomeName').textContent = userDoc?.name || user.displayName || 'طالبنا';
-
   await loadDashboardData(user.uid, userDoc);
 }
 
 async function loadDashboardData(uid, userDoc) {
   const gradeId = userDoc?.gradeId || null;
 
-  /* الصف + إجمالي الدروس المنشورة فيه */
   let gradeName = null;
   let totalLessons = 0;
   if (gradeId) {
@@ -41,14 +38,10 @@ async function loadDashboardData(uid, userDoc) {
       ]);
       if (gradeSnap.exists()) gradeName = gradeSnap.data().name;
       totalLessons = lessonsSnap.size;
-    } catch (err) {
-      console.warn('تعذر حساب تقدم الصف:', err.message);
-    }
+    } catch (err) { console.warn('تعذر حساب تقدم الصف:', err.message); }
   }
 
-  /* نتائج الاختبارات + الدروس المكتملة (بيانات الطالب نفسه فقط) */
-  let results = [];
-  let progress = [];
+  let results = [], progress = [];
   try {
     const [resultsSnap, progressSnap] = await Promise.all([
       getDocs(query(collection(db, 'results'), where('userId', '==', uid))),
@@ -56,14 +49,10 @@ async function loadDashboardData(uid, userDoc) {
     ]);
     results = resultsSnap.docs.map((d) => ({ id: d.id, ...d.data() })).sort(byNewest);
     progress = progressSnap.docs.map((d) => ({ id: d.id, ...d.data() })).sort(byNewest);
-  } catch (err) {
-    console.warn('تعذر تحميل بياناتك:', err.message);
-  }
+  } catch (err) { console.warn('تعذر تحميل بياناتك:', err.message); }
 
-  /* البطاقات الإحصائية */
   const avg = results.length
-    ? Math.round(results.reduce((sum, r) => sum + (Number(r.percent) || 0), 0) / results.length)
-    : null;
+    ? Math.round(results.reduce((s, r) => s + (Number(r.percent) || 0), 0) / results.length) : null;
   const completedInGrade = gradeId ? progress.filter((p) => p.gradeId === gradeId).length : 0;
   const percent = totalLessons ? Math.round((completedInGrade / totalLessons) * 100) : null;
 
@@ -72,7 +61,6 @@ async function loadDashboardData(uid, userDoc) {
   $id('statAvg').textContent = avg === null ? '—' : `${avg}%`;
   $id('statProgress').textContent = percent === null ? '—' : `${percent}%`;
 
-  /* متابعة التعلم */
   const progressPanel = $id('progressPanel');
   if (!gradeId) {
     progressPanel.innerHTML = `
@@ -91,9 +79,7 @@ async function loadDashboardData(uid, userDoc) {
       <div class="progress-track"><span class="progress-fill" style="width:${percent ?? 0}%"></span></div>`;
   }
 
-  /* الدروس الأخيرة */
-  const lessonsList = $id('recentLessons');
-  lessonsList.innerHTML = progress.length
+  $id('recentLessons').innerHTML = progress.length
     ? progress.slice(0, 5).map((p) => `
       <a class="item-row" href="lesson.html?id=${encodeURIComponent(p.lessonId)}">
         <span class="item-icon"><svg class="icon"><use href="#i-book"/></svg></span>
@@ -104,9 +90,7 @@ async function loadDashboardData(uid, userDoc) {
       </a>`).join('')
     : emptyStateHTML('i-book', 'لم تكمل أي درس بعد', 'ابدأ أول درس اليوم وستظهر دروسك المكتملة هنا.');
 
-  /* آخر النتائج */
-  const resultsList = $id('recentResults');
-  resultsList.innerHTML = results.length
+  $id('recentResults').innerHTML = results.length
     ? results.slice(0, 5).map((r) => `
       <a class="item-row" href="quiz.html?id=${encodeURIComponent(r.quizId)}">
         <span class="item-icon"><svg class="icon"><use href="#i-award"/></svg></span>
@@ -117,8 +101,121 @@ async function loadDashboardData(uid, userDoc) {
       </a>`).join('')
     : emptyStateHTML('i-list-check', 'لم تحل أي اختبار بعد', 'اختبارات صفك ستظهر هنا مع درجاتك فور حلّها.');
 }
-/* ==================== سجل النتائج (results.html) ==================== */
 
+/* ==================== الملف الشخصي ==================== */
+
+function showAvatar(photoUrl, name) {
+  const img = $id('avatarImg'), init = $id('profileInitial');
+  if (photoUrl) {
+    img.src = photoUrl; img.hidden = false; init.hidden = true;
+  } else {
+    img.hidden = true; init.hidden = false;
+    init.textContent = (name || 'ب').charAt(0);
+  }
+}
+
+async function initProfile() {
+  const user = await requireAuth();
+  if (!user) return;
+
+  const userDoc = await getUserDoc(user.uid);
+  const name = userDoc?.name || user.displayName || '';
+  const email = userDoc?.email || user.email || '';
+
+  $id('profileName').textContent = name || 'بدون اسم';
+  $id('profileEmail').textContent = email;
+  $id('profileLocation').textContent = userDoc?.governorate
+    ? `${userDoc.governorate}${userDoc.city ? ' - ' + userDoc.city : ''}` : '';
+  $id('profileSince').textContent = userDoc?.createdAt ? `عضو منذ ${formatDate(userDoc.createdAt)}` : '';
+  showAvatar(userDoc?.photoUrl, name);
+
+  const form = $id('profileForm');
+  form.elements.name.value = name;
+  form.elements.phone.value = userDoc?.phone || '';
+  form.elements.city.value = userDoc?.city || '';
+  $id('emailField').value = email;
+  populateGradeSelect($id('grade'), userDoc?.gradeId || '');
+  populateCountrySelect($id('country'), userDoc?.countryCode || 'EG');
+  const getGovernorate = bindCountryGovernorate($id('country'), $id('governorate'), $id('governorateText'));
+  /* ضبط المحافظة المحفوظة بعد تعبئة القائمة */
+  setTimeout(() => {
+    if (userDoc?.governorate) {
+      const sel = $id('governorate');
+      if (!sel.hidden && [...sel.options].some((o) => o.value === userDoc.governorate)) {
+        sel.value = userDoc.governorate;
+      } else if (!$id('governorateText').hidden) {
+        $id('governorateText').value = userDoc.governorate;
+      }
+    }
+  }, 0);
+
+  /* ---- رفع صورة الملف الشخصي ---- */
+  $id('avatarBtn').addEventListener('click', () => $id('avatarInput').click());
+  $id('avatarInput').addEventListener('change', async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    if (!file.type.startsWith('image/')) { showToast('اختر ملف صورة صحيح', 'error'); return; }
+    if (file.size > 2 * 1024 * 1024) { showToast('حجم الصورة يجب أن يكون أقل من 2 ميجابايت', 'error'); return; }
+
+    $id('avatarBtn').disabled = true;
+    try {
+      const r = ref(storage, `avatars/${user.uid}`);
+      await uploadBytes(r, file, { contentType: file.type });
+      const url = await getDownloadURL(r);
+      await updateDoc(doc(db, 'users', user.uid), { photoUrl: url });
+      showAvatar(url, name);
+      refreshHeaderUser();
+      showToast('تم تحديث صورتك الشخصية');
+    } catch (err) {
+      console.error('خطأ في رفع الصورة:', err);
+      showToast(err?.message || 'تعذر رفع الصورة، حاول مرة أخرى', 'error');
+    } finally {
+      $id('avatarBtn').disabled = false;
+    }
+  });
+
+  /* ---- حفظ البيانات ---- */
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const newName = form.elements.name.value.trim();
+    const newPhone = form.elements.phone.value.trim();
+    const newGov = getGovernorate();
+    const newCity = form.elements.city.value.trim();
+    const newGrade = form.elements.grade.value;
+
+    if (newName.length < 3) { showToast('يرجى إدخال الاسم كاملًا', 'error'); return; }
+    if (!/^\d{7,12}$/.test(newPhone)) { showToast('أدخل رقم هاتف صحيح بدون كود الدولة', 'error'); return; }
+    if (!newGov) { showToast('يرجى تحديد المحافظة', 'error'); return; }
+
+    const btn = $id('saveBtn');
+    setBtnLoading(btn, true);
+    try {
+      await updateDoc(doc(db, 'users', user.uid), {
+        name: newName,
+        phone: newPhone,
+        countryCode: form.elements.country.value,
+        governorate: newGov,
+        city: newCity || null,
+        gradeId: newGrade || null,
+      });
+      if (newName !== user.displayName) {
+        await updateProfile(auth.currentUser, { displayName: newName });
+      }
+      $id('profileName').textContent = newName;
+      $id('profileLocation').textContent = `${newGov}${newCity ? ' - ' + newCity : ''}`;
+      refreshHeaderUser();
+      showToast('تم حفظ التغييرات بنجاح');
+    } catch (err) {
+      console.error(err);
+      showToast('تعذر حفظ التغييرات، حاول مرة أخرى', 'error');
+    } finally {
+      setBtnLoading(btn, false);
+    }
+  });
+}
+
+/* ==================== سجل النتائج ==================== */
 async function initResults() {
   const user = await requireAuth();
   if (!user) return;
@@ -141,60 +238,6 @@ async function initResults() {
     list.innerHTML = emptyStateHTML('i-x-circle', 'تعذر تحميل النتائج',
       'حدث خطأ أثناء الاتصال، حدّث الصفحة لإعادة المحاولة.');
   }
-
-/* ==================== الملف الشخصي ==================== */
-
-async function initProfile() {
-  const user = await requireAuth();
-  if (!user) return;
-
-  const userDoc = await getUserDoc(user.uid);
-  const name = userDoc?.name || user.displayName || '';
-  const email = userDoc?.email || user.email || '';
-
-  $id('profileInitial').textContent = (name || 'ب').charAt(0);
-  $id('profileName').textContent = name || 'بدون اسم';
-  $id('profileEmail').textContent = email;
-  $id('profileSince').textContent = userDoc?.createdAt ? `عضو منذ ${formatDate(userDoc.createdAt)}` : '';
-
-  const form = $id('profileForm');
-  form.elements.name.value = name;
-  form.elements.phone.value = userDoc?.phone || '';
-  $id('emailField').value = email;
-  populateGradeSelect($id('grade'), userDoc?.gradeId || '');
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const newName = form.elements.name.value.trim();
-    const newPhone = form.elements.phone.value.trim();
-    const newGrade = form.elements.grade.value;
-
-    if (newName.length < 3) { showToast('يرجى إدخال الاسم كاملًا', 'error'); return; }
-    if (!/^[+\d][\d\s-]{7,15}$/.test(newPhone)) { showToast('يرجى إدخال رقم هاتف صحيح', 'error'); return; }
-
-    const btn = $id('saveBtn');
-    setBtnLoading(btn, true);
-    try {
-      await updateDoc(doc(db, 'users', user.uid), {
-        name: newName,
-        phone: newPhone,
-        gradeId: newGrade || null,
-      });
-      if (newName !== user.displayName) {
-        await updateProfile(auth.currentUser, { displayName: newName });
-        $id('profileInitial').textContent = newName.charAt(0);
-      }
-      $id('profileName').textContent = newName;
-      const chipName = document.getElementById('userName');
-      if (chipName) chipName.textContent = newName;
-      showToast('تم حفظ التغييرات بنجاح');
-    } catch (err) {
-      console.error(err);
-      showToast('تعذر حفظ التغييرات، حاول مرة أخرى', 'error');
-    } finally {
-      setBtnLoading(btn, false);
-    }
-  });
 }
 
 /* ---------- التشغيل حسب الصفحة ---------- */
