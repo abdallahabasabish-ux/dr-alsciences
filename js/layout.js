@@ -17,7 +17,20 @@ export function initLayout() {
       header.classList.toggle('is-scrolled', window.scrollY > 8);
     }, { passive: true });
   }
-
+  /* حقل البحث: في الهيدر (شاشات كبيرة) وفي الدرج (موبايل) */
+  const searchFormHTML = (cls, placeholder) => `
+    <form class="${cls}" action="search.html" role="search">
+      <input type="search" name="q" placeholder="${placeholder}" aria-label="بحث في المنصة">
+      <button type="submit" aria-label="ابحث"><svg class="icon"><use href="#i-search"/></svg></button>
+    </form>`;
+  const headerActions = document.querySelector('.header-actions');
+  if (headerActions && !document.querySelector('.header-search')) {
+    headerActions.insertAdjacentHTML('afterbegin', searchFormHTML('header-search', 'ابحث…'));
+  }
+  const nav = document.getElementById('mainNav');
+  if (nav && !document.querySelector('.nav-search')) {
+    nav.insertAdjacentHTML('afterbegin', searchFormHTML('nav-search', 'ابحث عن درس أو كورس…'));
+  }
   /* قائمة الموبايل */
   const menuBtn = document.getElementById('menuBtn');
   const mainNav = document.getElementById('mainNav');
