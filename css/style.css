@@ -545,3 +545,10 @@ a.meta-chip:hover{border-color:var(--c-brand);color:var(--c-brand)}
 .search-input{max-width:320px}
 .admin-note{background:var(--c-accent-soft);color:#8a6210;border-radius:10px;padding:10px 14px;font-size:.85rem;margin-bottom:16px;display:flex;gap:8px;align-items:flex-start}
 .admin-note .icon{flex-shrink:0;margin-top:3px}
+/* ============================================================
+   22) ملحقات الجزء الثاني: محرر الأسئلة
+============================================================ */
+.question-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--c-line);border-radius:12px;margin-top:10px}
+.question-row .cell-main span{color:var(--c-ink-2);font-size:.8rem;display:block;margin-top:2px}
+.option-form-row{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;margin-bottom:10px}
+.option-form-row input[type="radio"]{width:20px;height:20px;accent-color:var(--c-brand);cursor:pointer;flex-shrink:0}
