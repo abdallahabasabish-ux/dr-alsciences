@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>من نحن | الدكتور في العلوم</title>
+  <meta name="description" content="تعرّف على منصة الدكتور في العلوم: رسالتنا في تبسيط العلوم للطلاب العرب من الابتدائية حتى الثانوية، وما نقدمه من دروس واختبارات ومتابعة تقدم.">
+  <link rel="canonical" href="https://www.dr-alsciences.com/about.html">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body data-page="about">
+
+  <!-- الهيدر: مطابق لهيدر stages.html مع is-active على «من نحن» -->
+  <header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+      <a href="index.html" class="brand" aria-label="الدكتور في العلوم">
+        <span class="brand-mark"><svg class="icon"><use href="#i-atom"/></svg></span>
+        <span class="brand-name">الدكتور <b>في العلوم</b></span>
+      </a>
+      <nav class="main-nav" id="mainNav" aria-label="التنقل الرئيسي">
+        <a href="index.html">الرئيسية</a>
+        <a href="stages.html">المراحل الدراسية</a>
+        <a href="courses.html">الكورسات</a>
+        <a href="quizzes.html">الاختبارات</a>
+        <a href="about.html" class="is-active" aria-current="page">من نحن</a>
+        <a href="contact.html">تواصل معنا</a>
+        <div class="nav-auth">
+          <a href="login.html" class="btn btn-outline">تسجيل الدخول</a>
+          <a href="register.html" class="btn btn-primary">إنشاء حساب</a>
+        </div>
+      </nav>
+      <div class="header-actions">
+        <div class="auth-links" id="authLinks">
+          <a href="login.html" class="btn btn-ghost btn-sm">تسجيل الدخول</a>
+          <a href="register.html" class="btn btn-primary btn-sm">إنشاء حساب</a>
+        </div>
+        <div class="user-chip" id="userChip" hidden>
+          <button id="userChipBtn" class="user-chip-btn" aria-haspopup="true">
+            <span class="avatar" id="userInitial">ب</span>
+            <span class="user-name" id="userName">حسابي</span>
+            <svg class="icon"><use href="#i-chevron-down"/></svg>
+          </button>
+          <div class="user-menu" id="userMenu" hidden>
+            <a href="student-dashboard.html"><svg class="icon"><use href="#i-chart"/></svg> لوحة الطالب</a>
+            <a href="profile.html"><svg class="icon"><use href="#i-user"/></svg> ملفي الشخصي</a>
+            <button id="logoutBtn" class="danger"><svg class="icon"><use href="#i-logout"/></svg> تسجيل الخروج</button>
+          </div>
+        </div>
+        <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mainNav" aria-label="فتح القائمة">
+          <svg class="icon icon-open"><use href="#i-menu"/></svg>
+          <svg class="icon icon-close" hidden><use href="#i-close"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="nav-backdrop" id="navBackdrop"></div>
+
+  <main id="main">
+    <div class="page-hero">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="مسار التنقل">
+          <a href="index.html">الرئيسية</a>
+          <span class="sep" aria-hidden="true">/</span>
+          <span aria-current="page">من نحن</span>
+        </nav>
+        <h1>من نحن</h1>
+        <p class="page-desc">منصة عربية متخصصة في تعليم العلوم — نبسّط المفاهيم ونقيس التقدم.</p>
+      </div>
+    </div>
+
+    <section class="section">
+      <div class="container prose">
+        <h2>رسالتنا</h2>
+        <p>تأسست منصة «الدكتور في العلوم» على قناعة بسيطة: العلوم ليست مادة صعبة، لكنها تحتاج إلى من يشرحها بلغة الطالب. نقدم دروسًا منظمة لكل صف دراسي، من الصف الأول الابتدائي حتى الثانوية، بشرح مبسط وفيديوهات قصيرة وملخصات قابلة للتحميل.</p>
+
+        <h2>ما الذي نقدمه؟</h2>
+        <ul>
+          <li>دروس مرتبة حسب المنهج لكل مادة وكل صف.</li>
+          <li>فيديوهات تعليمية مركزة وملفات PDF للمراجعة.</li>
+          <li>اختبارات إلكترونية بتصحيح فوري ومراجعة للإجابات.</li>
+          <li>متابعة دقيقة لتقدم الطالب: نسبة الإنجاز وآخر الدروس والنتائج.</li>
+          <li>محتوى مناسب لكل مرحلة — أسماء المواد والمحتوى مصمم لكل صف على حدة.</li>
+        </ul>
+
+        <h2>مبادئنا</h2>
+        <ul>
+          <li><b>الوضوح أولًا:</b> لا ننتقل لخطوة جديدة قبل إتقان السابقة.</li>
+          <li><b>القياس المستمر:</b> كل درس واختبار يغذي تقدم الطالب تلقائيًا.</li>
+          <li><b>الوصول للجميع:</b> كورسات مجانية دائمة إلى جانب المحتوى المدفوع.</li>
+        </ul>
+
+        <h2>انضم إلينا</h2>
+        <p>أنشئ حسابك المجاني وابدأ أول درس اليوم. وإن كان لديك سؤال أو اقتراح، يسعدنا تواصلك معنا في أي وقت.</p>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="container cta-inner">
+        <h2>ابدأ رحلتك التعليمية الآن</h2>
+        <p>التسجيل مجاني — دروسك واختباراتك وتقدمك في مكان واحد.</p>
+        <a href="register.html" class="btn btn-accent btn-lg">إنشاء حساب مجاني</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-bar container">
+      <span>© <span id="year"></span> الدكتور في العلوم — جميع الحقوق محفوظة.</span>
+      <span><a href="privacy.html">سياسة الخصوصية</a> · <a href="terms.html">الشروط والأحكام</a></span>
+    </div>
+  </footer>
+
+  <script type="module" src="js/layout.js"></script>
+  <script type="module">
+    // تشغيل سلوكيات الهيدر فقط (صفحة ثابتة بلا بيانات)
+    import { initLayout } from './js/layout.js';
+  </script>
+</body>
+</html>
