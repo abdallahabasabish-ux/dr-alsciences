@@ -66,3 +66,13 @@
   .panel{padding:18px}
   .item-end{display:none}
 }
+/* صفحات التصفح */
+@media (max-width:900px){
+  .grades-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:640px){
+  .grades-grid{grid-template-columns:1fr}
+  .quiz-list{grid-template-columns:1fr}
+  .lesson-badges .mini-badge:not(.accent){display:none}
+  .page-hero-flex{flex-direction:column}
+}
