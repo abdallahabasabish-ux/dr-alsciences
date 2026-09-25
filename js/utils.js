@@ -215,3 +215,11 @@ export function quizCardHTML(quiz) {
     <svg class="icon quiz-arrow"><use href="#i-arrow-left"/></svg>
   </a>`;
 }
+/* ---------- مسار التنقل (Breadcrumb) ---------- */
+export function breadcrumbHTML(items) {
+  return items.map((item, i) =>
+    item.href && i < items.length - 1
+      ? `<a href="${item.href}">${esc(item.text)}</a>`
+      : `<span aria-current="page">${esc(item.text)}</span>`
+  ).join('<span class="sep" aria-hidden="true">/</span>');
+}
