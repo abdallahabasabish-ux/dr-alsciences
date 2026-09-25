@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
+  <script>document.documentElement.classList.add('preloading');window.__preloaderStart=Date.now();setTimeout(function(){document.documentElement.classList.remove('preloading','preloading-done')},7000);</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لوحة التحكم | الدكتور في العلوم</title>
   <meta name="robots" content="noindex">
@@ -14,14 +15,18 @@
 </head>
 <body data-page="adminHome">
 
-  <!-- ===== التوب بار (ثابت في كل صفحات الأدمن) ===== -->
+<!-- لا يُكشف أي شيء حتى ينجح التحقق من الأدمن (requireAdmin) -->
+<div id="adminRoot" hidden>
+
   <div class="admin-topbar">
     <div class="admin-topbar-inner">
       <button class="menu-btn" id="adminMenuBtn" aria-label="فتح القائمة">
         <svg class="icon"><use href="#i-menu"/></svg>
       </button>
       <a class="admin-brand" href="index.html">
-        <span class="brand-mark"><svg class="icon"><use href="#i-atom"/></svg></span>
+        <img class="brand-logo" src="../assets/icons/logo.svg" alt="شعار الدكتور في العلوم"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
+        <span class="brand-mark" style="display:none"><svg class="icon"><use href="#i-atom"/></svg></span>
         لوحة الإدارة
       </a>
       <div class="admin-user">
@@ -35,7 +40,6 @@
   </div>
 
   <div class="admin-shell">
-    <!-- ===== الشريط الجانبي ===== -->
     <aside class="admin-sidebar" id="adminSidebar">
       <nav aria-label="قائمة الإدارة">
         <a href="index.html" class="is-active"><svg class="icon"><use href="#i-chart"/></svg> لوحة التحكم</a>
@@ -54,7 +58,6 @@
     </aside>
     <div class="admin-backdrop" id="adminBackdrop"></div>
 
-    <!-- ===== المحتوى ===== -->
     <main class="admin-main">
       <div class="admin-head">
         <div>
@@ -62,9 +65,7 @@
           <p>مرحبًا، <span id="adminWelcome">…</span> — نظرة سريعة على المنصة.</p>
         </div>
         <div class="admin-head-actions">
-          <button class="btn btn-outline btn-sm" id="refreshStatsBtn">
-            تحديث إحصائيات الموقع
-          </button>
+          <button class="btn btn-outline btn-sm" id="refreshStatsBtn">تحديث إحصائيات الموقع</button>
         </div>
       </div>
 
@@ -118,6 +119,8 @@
     </main>
   </div>
 
-  <script type="module" src="../js/admin.js"></script>
+</div><!-- /adminRoot -->
+
+<script type="module" src="../js/admin.js"></script>
 </body>
 </html>
