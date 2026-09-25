@@ -1,8 +1,8 @@
 // ============================================================
 // الهوية المشتركة: توليد الهيدر والفوتر لكل الصفحات تلقائيًا
 // - الشعار من assets/icons/logo.svg (مع بديل تلقائي إن غاب)
-// - حالة الدخول (إخفاء أزرار الدخول + اسم وصورة الطالب في الهيدر)
-// - قائمة موبايل محصّنة (تفويض أحداث) + البحث + حركات الظهور + Preloader
+// - زر القائمة عنصر مستقل أقصى اليسار على الهاتف (لا يتزاحم أبدًا)
+// - قائمة موبايل محصّنة (تفويض أحداث) + حالة الدخول + Preloader
 // ============================================================
 import { auth, isConfigured, fbAuthNS, fbStoreNS } from './firebase-config.js';
 import { injectIcons, showToast, hidePreloader } from './utils.js';
@@ -50,14 +50,17 @@ function headerHTML() {
         ${logoHTML()}
         <span class="brand-name">الدكتور <b>في العلوم</b></span>
       </a>
+
+      <!-- القائمة: أفقية على الكمبيوتر / درج جانبي على الهاتف -->
       <nav class="main-nav" id="mainNav" aria-label="التنقل الرئيسي">
         ${searchForm('nav-search', 'ابحث عن درس أو كورس…')}
         ${links}
-        <div class="nav-auth">
+        <div class="nav-auth" id="navAuth">
           <a href="${ROOT}login.html" class="btn btn-outline">تسجيل الدخول</a>
           <a href="${ROOT}register.html" class="btn btn-primary">إنشاء حساب</a>
         </div>
       </nav>
+
       <div class="header-actions">
         ${searchForm('header-search', 'ابحث…')}
         <div class="auth-links" id="authLinks">
@@ -76,11 +79,13 @@ function headerHTML() {
             <button id="logoutBtn" class="danger"><svg class="icon"><use href="#i-logout"/></svg> تسجيل الخروج</button>
           </div>
         </div>
-        <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mainNav" aria-label="فتح القائمة">
-          <svg class="icon icon-open"><use href="#i-menu"/></svg>
-          <svg class="icon icon-close" hidden><use href="#i-close"/></svg>
-        </button>
       </div>
+
+      <!-- زر القائمة: عنصر مستقل — يثبت أقصى اليسار على الهاتف دائمًا -->
+      <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mainNav" aria-label="فتح القائمة">
+        <svg class="icon icon-open"><use href="#i-menu"/></svg>
+        <svg class="icon icon-close" hidden><use href="#i-close"/></svg>
+      </button>
     </div>
   </header>
   <div class="nav-backdrop" id="navBackdrop"></div>`;
@@ -232,19 +237,22 @@ export function initLayout() {
     } catch { showToast('تعذر تسجيل الخروج، حاول مرة أخرى', 'error'); }
   });
 
-  /* حالة الدخول: إخفاء أزرار الدخول وعرض بيانات الطالب */
+  /* حالة الدخول: إخفاء أزرار الدخول (الشريط + داخل القائمة) وعرض بيانات الطالب */
   if (isConfigured) {
     onAuthStateChanged(auth, async (user) => {
       currentUser = user;
       const links = document.getElementById('authLinks');
       const chip = document.getElementById('userChip');
+      const navAuth = document.getElementById('navAuth');
       if (!user) {
         if (links) links.hidden = false;
         if (chip) chip.hidden = true;
+        if (navAuth) navAuth.hidden = false;
         return;
       }
       if (links) links.hidden = true;
       if (chip) chip.hidden = false;
+      if (navAuth) navAuth.hidden = true;
       applyUser(null, user.displayName);
       try {
         const s = await getDoc(doc(db, 'users', user.uid));
