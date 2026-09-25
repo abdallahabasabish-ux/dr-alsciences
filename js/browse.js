@@ -8,7 +8,7 @@ import { db, isConfigured, fbStoreNS } from './firebase-config.js';
 import { initLayout } from './layout.js';
 import { waitForAuth } from './auth.js';
 import {
-  esc, formatNumber, emptyStateHTML, courseCardHTML,
+  esc, formatNumber, emptyStateHTML, courseCardHTML, quizCardHTML,
   getQueryParam, setPageMeta,
 } from './utils.js';
 
