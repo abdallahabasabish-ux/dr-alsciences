@@ -1,10 +1,9 @@
 // ============================================================
-// منطق الصفحة الرئيسية (index.html): الإحصائيات + الكورسات
-// سلوكيات الهيدر وحالة الدخول أصبحت في js/layout.js
+// الصفحة الرئيسية (index.html): الإحصائيات + الكورسات
 // ============================================================
 import { db, isConfigured, fbStoreNS } from './firebase-config.js';
 import { initLayout } from './layout.js';
-import { esc, CURRENCY } from './utils.js';
+import { emptyStateHTML as emptyHTML, courseCardHTML } from './utils.js';
 
 initLayout();
 
@@ -51,38 +50,6 @@ new IntersectionObserver((entries, obs) => {
 
 /* ---------- الكورسات المنشورة ---------- */
 const coursesGrid = document.getElementById('coursesGrid');
-
-const emptyHTML = (title, text) => `
-  <div class="empty-state">
-    <svg class="icon"><use href="#i-layers"/></svg>
-    <h3>${esc(title)}</h3>
-    <p>${esc(text)}</p>
-  </div>`;
-
-function courseCardHTML(course) {
-  const meta = [course.stageName, course.gradeName].filter(Boolean).join(' · ');
-  const badge = course.isFree
-    ? '<span class="badge badge-free">مجاني</span>'
-    : '<span class="badge badge-paid">مدفوع</span>';
-  const price = course.isFree ? '' : `<span class="course-price">${esc(course.price ?? '')} ${esc(CURRENCY)}</span>`;
-  return `
-  <article class="course-card">
-    <div class="course-thumb">
-      ${course.imageUrl
-        ? `<img src="${esc(course.imageUrl)}" alt="${esc(course.title)}" loading="lazy">`
-        : '<svg class="icon course-fallback"><use href="#i-cap"/></svg>'}
-    </div>
-    <div class="course-body">
-      <div class="course-badges">${badge}${meta ? `<span class="course-stage">${esc(meta)}</span>` : ''}</div>
-      <h3>${esc(course.title)}</h3>
-      ${course.description ? `<p class="course-desc">${esc(course.description)}</p>` : ''}
-      <div class="course-foot">
-        ${price || '<span></span>'}
-        <a class="btn btn-outline btn-sm" href="course.html?id=${encodeURIComponent(course.id)}">التفاصيل</a>
-      </div>
-    </div>
-  </article>`;
-}
 
 async function loadCourses() {
   if (!isConfigured) {
