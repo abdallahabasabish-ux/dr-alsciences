@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تواصل معنا | الدكتور في العلوم</title>
+  <meta name="description" content="تواصل مع فريق منصة الدكتور في العلوم — استفسارات ومقترحات ودعم فني، ونرد عليك في أسرع وقت.">
+  <link rel="canonical" href="https://www.dr-alsciences.com/contact.html">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body data-page="contact">
+
+  <!-- الهيدر: مطابق لهيدر stages.html مع is-active على «تواصل معنا» -->
+  <header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+      <a href="index.html" class="brand" aria-label="الدكتور في العلوم">
+        <span class="brand-mark"><svg class="icon"><use href="#i-atom"/></svg></span>
+        <span class="brand-name">الدكتور <b>في العلوم</b></span>
+      </a>
+      <nav class="main-nav" id="mainNav" aria-label="التنقل الرئيسي">
+        <a href="index.html">الرئيسية</a>
+        <a href="stages.html">المراحل الدراسية</a>
+        <a href="courses.html">الكورسات</a>
+        <a href="quizzes.html">الاختبارات</a>
+        <a href="about.html">من نحن</a>
+        <a href="contact.html" class="is-active" aria-current="page">تواصل معنا</a>
+        <div class="nav-auth">
+          <a href="login.html" class="btn btn-outline">تسجيل الدخول</a>
+          <a href="register.html" class="btn btn-primary">إنشاء حساب</a>
+        </div>
+      </nav>
+      <div class="header-actions">
+        <div class="auth-links" id="authLinks">
+          <a href="login.html" class="btn btn-ghost btn-sm">تسجيل الدخول</a>
+          <a href="register.html" class="btn btn-primary btn-sm">إنشاء حساب</a>
+        </div>
+        <div class="user-chip" id="userChip" hidden>
+          <button id="userChipBtn" class="user-chip-btn" aria-haspopup="true">
+            <span class="avatar" id="userInitial">ب</span>
+            <span class="user-name" id="userName">حسابي</span>
+            <svg class="icon"><use href="#i-chevron-down"/></svg>
+          </button>
+          <div class="user-menu" id="userMenu" hidden>
+            <a href="student-dashboard.html"><svg class="icon"><use href="#i-chart"/></svg> لوحة الطالب</a>
+            <a href="profile.html"><svg class="icon"><use href="#i-user"/></svg> ملفي الشخصي</a>
+            <button id="logoutBtn" class="danger"><svg class="icon"><use href="#i-logout"/></svg> تسجيل الخروج</button>
+          </div>
+        </div>
+        <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mainNav" aria-label="فتح القائمة">
+          <svg class="icon icon-open"><use href="#i-menu"/></svg>
+          <svg class="icon icon-close" hidden><use href="#i-close"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="nav-backdrop" id="navBackdrop"></div>
+
+  <main id="main">
+    <div class="page-hero">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="مسار التنقل">
+          <a href="index.html">الرئيسية</a>
+          <span class="sep" aria-hidden="true">/</span>
+          <span aria-current="page">تواصل معنا</span>
+        </nav>
+        <h1>تواصل معنا</h1>
+        <p class="page-desc">لديك سؤال أو اقتراح؟ اكتب لنا وسنرد عليك في أسرع وقت.</p>
+      </div>
+    </div>
+
+    <div class="container browse-page">
+      <div class="contact-grid">
+        <!-- بيانات التواصل — عدّلها ببياناتك الحقيقية -->
+        <aside class="panel">
+          <h2 style="font-size:1.05rem;margin-bottom:14px">معلومات التواصل</h2>
+          <div class="item-list">
+            <div class="item-row">
+              <span class="item-icon"><svg class="icon"><use href="#i-mail"/></svg></span>
+              <span class="item-text"><b>البريد الإلكتروني</b><span class="item-meta" dir="ltr">support@example.com</span></span>
+            </div>
+            <div class="item-row">
+              <span class="item-icon"><svg class="icon"><use href="#i-phone"/></svg></span>
+              <span class="item-text"><b>الهاتف / واتساب</b><span class="item-meta" dir="ltr">+20 100 000 0000</span></span>
+            </div>
+            <div class="item-row">
+              <span class="item-icon"><svg class="icon"><use href="#i-clock"/></svg></span>
+              <span class="item-text"><b>أوقات الرد</b><span class="item-meta">يوميًا من 10 صباحًا حتى 6 مساءً</span></span>
+            </div>
+          </div>
+        </aside>
+
+        <form class="panel" id="contactForm" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="name">الاسم <span class="req">*</span></label>
+            <input class="form-input" type="text" id="name" name="name" autocomplete="name" required>
+            <p class="form-error"></p>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="email">البريد الإلكتروني <span class="req">*</span></label>
+            <input class="form-input" type="email" id="email" name="email" dir="ltr" autocomplete="email" required>
+            <p class="form-error"></p>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="phone">رقم الهاتف <span class="optional">(اختياري)</span></label>
+            <input class="form-input" type="tel" id="phone" name="phone" dir="ltr" inputmode="tel">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="message">رسالتك <span class="req">*</span></label>
+            <textarea class="form-textarea" id="message" name="message" rows="6" required
+              placeholder="اكتب استفسارك أو اقتراحك… (10 أحرف على الأقل)"></textarea>
+            <p class="form-error"></p>
+          </div>
+          <button class="btn btn-primary btn-lg" id="sendBtn" type="submit">إرسال الرسالة</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-bar container">
+      <span>© <span id="year"></span> الدكتور في العلوم — جميع الحقوق محفوظة.</span>
+      <span><a href="privacy.html">سياسة الخصوصية</a> · <a href="terms.html">الشروط والأحكام</a></span>
+    </div>
+  </footer>
+
+  <script type="module" src="js/contact.js"></script>
+</body>
+</html>
