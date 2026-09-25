@@ -2,7 +2,7 @@
 // المصادقة: تسجيل/دخول/حماية الصفحات + بيانات الموقع (دولة/محافظة/مدينة)
 // ============================================================
 import { auth, db, isConfigured, fbAuthNS, fbStoreNS } from './firebase-config.js';
-import { injectIcons, mapAuthError, showToast, setBtnLoading } from './utils.js';
+import { injectIcons, mapAuthError, showToast, setBtnLoading, hidePreloader } from './utils.js';
 
 injectIcons();
 
@@ -177,7 +177,8 @@ function safeNextParam() {
 const CONFIG_MSG = 'لم يتم ربط Firebase بعد — استبدل قيم PASTE- في ملف js/firebase-config.js ببيانات مشروعك ثم أعد المحاولة.';
 
 async function initLoginPage() {
-  redirectIfAuthenticated();
+  await redirectIfAuthenticated();
+  hidePreloader();
   bindPasswordToggle('togglePassword', 'password');
   if (!isConfigured) showBanner(CONFIG_MSG, 'info');
 
@@ -215,7 +216,8 @@ async function initLoginPage() {
 
 /* ================= صفحة التسجيل ================= */
 async function initRegisterPage() {
-  redirectIfAuthenticated();
+  await redirectIfAuthenticated();
+  hidePreloader();
   bindPasswordToggle('togglePassword', 'password');
   populateGradeSelect(document.getElementById('grade'));
   populateCountrySelect(document.getElementById('country'));
