@@ -47,28 +47,24 @@
     </aside>
     <div class="admin-backdrop" id="adminBackdrop"></div>
 
-    <main class="admin-main">
+    <main class="admin-main" id="subjectsSection">
       <div class="admin-head">
         <div>
-          <h1>الطلاب</h1>
-          <p><span id="studentsCount"></span> — ابحث بالاسم أو البريد الإلكتروني.</p>
+          <h1>المواد الدراسية</h1>
+          <p>كل مادة مرتبطة بصف دراسي — اسم المادة يظهر كما هو للطلاب.</p>
         </div>
         <div class="admin-head-actions">
-          <input type="search" class="form-input search-input" id="studentSearch"
-                 placeholder="ابحث بالاسم أو البريد…" aria-label="بحث في الطلاب">
+          <button class="btn btn-primary" id="addSubjectBtn">
+            <svg class="icon"><use href="#i-plus"/></svg> إضافة مادة</button>
         </div>
-      </div>
-      <div class="admin-note">
-        <svg class="icon"><use href="#i-info"/></svg>
-        <span>التعطيل يمنع الطالب من استخدام المنصة فورًا. حسابات الأدمن محمية من التعطيل.</span>
       </div>
       <div class="table-card">
         <table class="admin-table">
           <thead><tr>
-            <th>الحساب</th><th>الهاتف</th><th>الصف</th><th>الدور</th><th>التسجيل</th><th>الحالة</th><th>إجراءات</th>
+            <th>المادة</th><th>الصف</th><th>الدروس</th><th>الاختبارات</th><th>الحالة</th><th>إجراءات</th>
           </tr></thead>
-          <tbody id="studentsBody">
-            <tr><td colspan="7"><div class="sk sk-line"></div></td></tr>
+          <tbody id="subjectsBody">
+            <tr><td colspan="6"><div class="sk sk-line"></div></td></tr>
           </tbody>
         </table>
       </div>
