@@ -643,3 +643,38 @@ a.meta-chip:hover{border-color:var(--c-brand);color:var(--c-brand)}
   background:var(--c-brand);color:#fff;border:2px solid #fff;display:grid;place-items:center;cursor:pointer}
 .avatar-cam:hover{background:var(--c-brand-strong)}
 .avatar-cam .icon{width:14px;height:14px}
+/* ============================================================
+   26) شاشة التحميل Preloader — تعمل تلقائيًا في كل الصفحات
+   بدون أي HTML إضافي: تظهر مع أول رسم وتختفي بانسيابية عند الجهوزية
+============================================================ */
+html.preloading body{overflow:hidden}
+html.preloading body::before{
+  content:"";
+  position:fixed;inset:0;z-index:9999;
+  background:
+    url("../assets/icons/logo.svg") center 45% / 82px 82px no-repeat,
+    var(--c-paper);
+  transition:opacity .3s ease;
+}
+html.preloading body::after{
+  content:"";
+  position:fixed;top:45%;left:50%;z-index:10000;
+  width:116px;height:116px;
+  border:4px solid var(--c-brand-soft);
+  border-top-color:var(--c-brand);
+  border-radius:50%;
+  animation:pre-spin .9s linear infinite;
+  transition:opacity .3s ease;
+}
+@keyframes pre-spin{
+  from{transform:translate(-50%,-50%) rotate(0deg)}
+  to{transform:translate(-50%,-50%) rotate(360deg)}
+}
+/* انحلال سلس عند الإخفاء */
+html.preloading.preloading-done body::before,
+html.preloading.preloading-done body::after{opacity:0;pointer-events:none}
+/* التوست يظهر فوق شاشة التحميل (رسالة الحساب المعطّل مثلًا) */
+.toast-wrap{z-index:10001}
+@media (prefers-reduced-motion:reduce){
+  html.preloading body::after{animation-duration:2.4s}
+}
