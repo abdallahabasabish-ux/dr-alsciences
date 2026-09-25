@@ -5,7 +5,7 @@
 // - قائمة الموبايل + البحث + حركات الظهور
 // ============================================================
 import { auth, isConfigured, fbAuthNS, fbStoreNS } from './firebase-config.js';
-import { injectIcons, showToast } from './utils.js';
+import { injectIcons, showToast, hidePreloader } from './utils.js';
 
 const { onAuthStateChanged, signOut } = fbAuthNS;
 const { doc, getDoc } = fbStoreNS;
