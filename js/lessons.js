@@ -38,14 +38,6 @@ const errorHTML = () => emptyStateHTML(
   'حدث خطأ أثناء الاتصال بقاعدة البيانات. حدّث الصفحة لإعادة المحاولة.'
 );
 
-function breadcrumbHTML(items) {
-  return items.map((item, i) =>
-    item.href && i < items.length - 1
-      ? `<a href="${item.href}">${esc(item.text)}</a>`
-      : `<span aria-current="page">${esc(item.text)}</span>`
-  ).join('<span class="sep" aria-hidden="true">/</span>');
-}
-
 /* ---------- أدوات العرض ---------- */
 
 /** تحويل أي صيغة رابط YouTube إلى رابط embed (بدون كوكيز - خصوصية أفضل) */
