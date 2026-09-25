@@ -15,58 +15,61 @@
 </head>
 <body data-page="login">
 
-  <header class="site-header">
-    <div class="container header-inner">
-      <a href="index.html" class="brand" aria-label="الدكتور في العلوم — الصفحة الرئيسية">
-        <span class="brand-mark"><svg class="icon"><use href="#i-atom"/></svg></span>
-        <span class="brand-name">الدكتور <b>في العلوم</b></span>
-      </a>
-      <a href="index.html" class="btn btn-ghost btn-sm" style="margin-inline-start:auto">العودة للرئيسية</a>
-    </div>
-  </header>
+  <div class="auth-split">
+    <!-- الجانب التعريفي (يظهر على الكمبيوتر) -->
+    <aside class="auth-side">
+      <img class="side-logo" src="assets/icons/logo.svg" alt="شعار الدكتور في العلوم">
+      <h2>الدكتور <b>في العلوم</b></h2>
+      <p>تعلَّم العلوم بطريقة أسهل وأوضح — دروس منظمة، اختبارات فورية، ومتابعة دقيقة لتقدمك من الابتدائي حتى الثانوية.</p>
+      <ul class="auth-points">
+        <li><svg class="icon"><use href="#i-check"/></svg> شرح مبسط خطوة بخطوة</li>
+        <li><svg class="icon"><use href="#i-check"/></svg> اختبارات إلكترونية بنتيجة فورية</li>
+        <li><svg class="icon"><use href="#i-check"/></svg> متابعة تقدمك أولًا بأول</li>
+      </ul>
+      <span class="auth-side-footer">© <span id="sideYear"></span> الدكتور في العلوم</span>
+    </aside>
 
-  <main class="auth-main">
-    <div class="auth-card">
-      <div class="auth-head">
-        <span class="auth-mark"><svg class="icon"><use href="#i-atom"/></svg></span>
-        <h1>تسجيل الدخول</h1>
-        <p>أكمل رحلتك التعليمية من حيث توقفت</p>
-      </div>
-
-      <div class="form-banner info" id="formBanner" hidden>
-        <svg class="icon"><use href="#i-info"/></svg>
-        <span></span>
-      </div>
-
-      <form id="loginForm" novalidate>
-        <div class="form-group">
-          <label class="form-label" for="email">البريد الإلكتروني</label>
-          <input class="form-input" type="email" id="email" name="email" autocomplete="email" dir="ltr" placeholder="name@example.com">
-          <p class="form-error"></p>
+    <!-- نموذج الدخول -->
+    <main class="auth-panel">
+      <div class="auth-card">
+        <div class="auth-top">
+          <img src="assets/icons/logo.svg" alt="شعار الدكتور في العلوم" style="width:46px;height:46px;object-fit:contain">
+          <a href="index.html" class="btn btn-ghost btn-sm">العودة للرئيسية</a>
         </div>
-        <div class="form-group">
-          <label class="form-label" for="password">كلمة المرور</label>
-          <div class="input-wrap">
-            <input class="form-input" type="password" id="password" name="password" autocomplete="current-password" dir="ltr" placeholder="••••••••">
-            <button type="button" class="input-toggle" id="togglePassword" aria-label="إظهار كلمة المرور">
-              <svg class="icon"><use href="#i-eye"/></svg>
-            </button>
+        <div class="auth-head" style="text-align:start;margin-bottom:22px">
+          <h1 style="font-size:1.5rem">تسجيل الدخول</h1>
+          <p style="color:var(--c-ink-2);font-size:.95rem;margin-top:6px">أكمل رحلتك التعليمية من حيث توقفت</p>
+        </div>
+
+        <div class="form-banner info" id="formBanner" hidden>
+          <svg class="icon"><use href="#i-info"/></svg><span></span>
+        </div>
+
+        <form id="loginForm" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="email">البريد الإلكتروني</label>
+            <input class="form-input" type="email" id="email" name="email" autocomplete="email" dir="ltr" placeholder="name@example.com">
+            <p class="form-error"></p>
           </div>
-          <p class="form-error"></p>
-        </div>
-        <button class="btn btn-primary btn-lg btn-block" id="loginBtn" type="submit">تسجيل الدخول</button>
-      </form>
+          <div class="form-group">
+            <label class="form-label" for="password">كلمة المرور</label>
+            <div class="input-wrap">
+              <input class="form-input" type="password" id="password" name="password" autocomplete="current-password" dir="ltr" placeholder="••••••••">
+              <button type="button" class="input-toggle" id="togglePassword" aria-label="إظهار كلمة المرور">
+                <svg class="icon"><use href="#i-eye"/></svg>
+              </button>
+            </div>
+            <p class="form-error"></p>
+          </div>
+          <button class="btn btn-primary btn-lg btn-block" id="loginBtn" type="submit">تسجيل الدخول</button>
+        </form>
 
-      <p class="auth-alt">ليس لديك حساب؟ <a href="register.html">أنشئ حسابًا مجانيًا</a></p>
-    </div>
-  </main>
+        <p class="auth-alt">ليس لديك حساب؟ <a href="register.html">أنشئ حسابًا مجانيًا</a></p>
+      </div>
+    </main>
+  </div>
 
-  <footer class="site-footer footer-minimal">
-    <div class="footer-bar container">
-      <span>© <span id="year"></span> الدكتور في العلوم — جميع الحقوق محفوظة.</span>
-    </div>
-  </footer>
-
+  <script>document.getElementById('sideYear').textContent = new Date().getFullYear();</script>
   <script type="module" src="js/auth.js"></script>
 </body>
 </html>
