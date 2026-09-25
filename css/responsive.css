@@ -76,3 +76,12 @@
   .lesson-badges .mini-badge:not(.accent){display:none}
   .page-hero-flex{flex-direction:column}
 }
+/* صفحة الدرس */
+@media (max-width:960px){
+  .lesson-layout{grid-template-columns:1fr}
+  .lesson-aside{position:static;order:2}
+}
+@media (max-width:520px){
+  .lesson-nav{grid-template-columns:1fr}
+  .lesson-content{padding:20px}
+}
