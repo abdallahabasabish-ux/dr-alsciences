@@ -1,0 +1,30 @@
+    <main class="admin-main">
+      <div class="admin-head">
+        <div>
+          <h1>نتائج الطلاب</h1>
+          <p><span id="resultsCount"></span> — ابحث باسم الطالب أو بريده أو عنوان الاختبار.</p>
+        </div>
+        <div class="admin-head-actions">
+          <input type="search" class="form-input search-input" id="resultsSearch"
+                 placeholder="ابحث…" aria-label="بحث في النتائج">
+        </div>
+      </div>
+
+      <div class="admin-note">
+        <svg class="icon"><use href="#i-info"/></svg>
+        <span>النتائج للقراءة فقط — لا يمكن تعديل درجات الطلاب أو حذفها حفاظًا على المصداقية (مفروض من قواعد Firestore).</span>
+      </div>
+
+      <div class="table-card">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>الطالب</th><th>الاختبار</th><th>الدرجة</th><th>النسبة</th><th>التاريخ</th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody">
+            <tr><td colspan="5"><div class="sk sk-line"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
