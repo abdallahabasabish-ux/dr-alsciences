@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
+  <script>document.documentElement.classList.add('preloading');window.__preloaderStart=Date.now();setTimeout(function(){document.documentElement.classList.remove('preloading','preloading-done')},7000);</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>الدروس | لوحة الإدارة</title>
   <meta name="robots" content="noindex">
@@ -14,13 +15,17 @@
 </head>
 <body data-page="adminLessons">
 
+<div id="adminRoot" hidden>
+
   <div class="admin-topbar">
     <div class="admin-topbar-inner">
       <button class="menu-btn" id="adminMenuBtn" aria-label="فتح القائمة">
         <svg class="icon"><use href="#i-menu"/></svg>
       </button>
       <a class="admin-brand" href="index.html">
-        <span class="brand-mark"><svg class="icon"><use href="#i-atom"/></svg></span>
+        <img class="brand-logo" src="../assets/icons/logo.svg" alt="شعار الدكتور في العلوم"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
+        <span class="brand-mark" style="display:none"><svg class="icon"><use href="#i-atom"/></svg></span>
         لوحة الإدارة
       </a>
       <div class="admin-user">
@@ -35,7 +40,6 @@
 
   <div class="admin-shell">
     <aside class="admin-sidebar" id="adminSidebar">
-      <!-- الصق القائمة الجانبية المحدّثة هنا مع is-active على رابط الدروس -->
       <nav aria-label="قائمة الإدارة">
         <a href="index.html"><svg class="icon"><use href="#i-chart"/></svg> لوحة التحكم</a>
         <a href="students.html"><svg class="icon"><use href="#i-users"/></svg> الطلاب</a>
@@ -85,6 +89,8 @@
     </main>
   </div>
 
-  <script type="module" src="../js/admin-content.js"></script>
+</div><!-- /adminRoot -->
+
+<script type="module" src="../js/admin-content.js"></script>
 </body>
 </html>
