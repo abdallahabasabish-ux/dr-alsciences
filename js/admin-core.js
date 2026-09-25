@@ -10,9 +10,17 @@ const { doc, getDoc, addDoc, updateDoc, deleteDoc, collection, serverTimestamp }
 const { signOut, onAuthStateChanged } = fbAuthNS;
 const { ref, uploadBytesResumable, getDownloadURL } = fbStorageNS;
 
-/* ---------- حماية صفحات الأدمن ---------- */
+/* ---------- حماية صفحات الأدمن ----------
+   الصفحات كاملة داخل <div id="adminRoot" hidden> — لا يُكشف أي شيء
+   إلا بعد التحقق الناجح من الجلسة والدور */
 export async function requireAdmin() {
+  const reveal = () => {
+    const root = document.getElementById('adminRoot');
+    if (root) root.hidden = false;
+  };
+
   if (!isConfigured) {
+    reveal();
     document.querySelector('.admin-main').innerHTML =
       `<div class="empty-state"><svg class="icon"><use href="#i-info"/></svg>
         <h3>لوحة الإدارة تحتاج ربط Firebase</h3>
@@ -31,9 +39,11 @@ export async function requireAdmin() {
   const userDoc = snap.exists() ? snap.data() : null;
   if (userDoc?.isBlocked) { await signOut(auth); location.replace('../index.html'); return null; }
   if (userDoc?.role !== 'admin') { location.replace('../student-dashboard.html'); return null; }
+
+  /* نجاح التحقق: كشف الصفحة الآن فقط */
+  reveal();
   return { user, userDoc };
 }
-
 /* ---------- هيكل الشل (الشريط الجانبي + التوب بار) ---------- */
 export function initAdminShell(ctx) {
   injectIcons();
