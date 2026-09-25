@@ -1,8 +1,8 @@
 // ============================================================
 // الهوية المشتركة: توليد الهيدر والفوتر لكل الصفحات تلقائيًا
 // - الشعار من assets/icons/logo.svg (مع بديل تلقائي إن غاب)
-// - حالة الدخول (إخفاء أزرار الدخول + صورة الطالب في الهيدر)
-// - قائمة الموبايل + البحث + حركات الظهور
+// - حالة الدخول (إخفاء أزرار الدخول + اسم وصورة الطالب في الهيدر)
+// - قائمة موبايل محصّنة (تفويض أحداث) + البحث + حركات الظهور + Preloader
 // ============================================================
 import { auth, isConfigured, fbAuthNS, fbStoreNS } from './firebase-config.js';
 import { injectIcons, showToast, hidePreloader } from './utils.js';
@@ -154,7 +154,7 @@ function applyUser(userDoc, fallbackName) {
   }
 }
 
-/** إعادة قراءة بيانات الطالب وتحديث الهيدر (تُستدعى بعد رفع صورة مثلًا) */
+/** إعادة قراءة بيانات الطالب وتحديث الهيدر (تُستدعى بعد رفع صورة أو حفظ الملف) */
 export async function refreshHeaderUser() {
   if (!currentUser) return;
   try {
@@ -251,5 +251,11 @@ export function initLayout() {
         if (s.exists()) applyUser(s.data());
       } catch { /* تجاهل */ }
     });
+  }
+
+  /* إخفاء شاشة التحميل بعد رسم الواجهة.
+     الصفحات المحمية (data-protected) تُخفيها بنفسها بعد التحقق من الجلسة */
+  if (document.body.dataset.protected !== 'true') {
+    requestAnimationFrame(() => requestAnimationFrame(hidePreloader));
   }
 }
