@@ -59,6 +59,13 @@ export async function requireAuth() {
     location.replace(`login.html?next=${next}`);
     return null;
   }
+  const userDoc = await getUserDoc(user.uid);
+  if (userDoc?.isBlocked) {
+    await logoutUser();
+    showToast('تم تعطيل حسابك. تواصل مع إدارة المنصة.', 'error');
+    setTimeout(() => { location.replace('index.html'); }, 1400);
+    return null;
+  }
   return user;
 }
 
