@@ -1,0 +1,56 @@
+/* ============================================================
+   «الدكتور في العلوم» — نقاط التوقف (Mobile First / تحسينات تدريجية)
+============================================================ */
+
+/* أجهزة لوحية أفقية ولابتوب صغير */
+@media (max-width:1080px){
+  .hero{padding-block:60px 72px}
+  .hero-grid{grid-template-columns:1fr;gap:44px}
+  .hero-visual{max-width:540px}
+  .stages-grid{grid-template-columns:1fr;max-width:560px;margin-inline:auto}
+  .courses-grid{grid-template-columns:repeat(2,1fr)}
+  .features-grid{grid-template-columns:repeat(2,1fr)}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .stat:nth-child(2n+1)::before{display:none} /* إخفاء الفاصل أول الصف */
+  .footer-grid{grid-template-columns:1fr 1fr}
+}
+
+/* الهواتف الكبيرة + التابلت العمودي: تحويل القائمة إلى Drawer */
+@media (max-width:992px){
+  .menu-btn{display:grid}
+  .auth-links{display:none}
+  .main-nav{position:fixed;top:var(--header-h);bottom:0;inset-inline-end:0;z-index:90;
+    width:min(320px,85vw);background:#fff;flex-direction:column;align-items:stretch;
+    gap:2px;margin:0;padding:22px;box-shadow:var(--shadow-md);overflow-y:auto;
+    transform:translateX(-105%);transition:transform .3s ease}
+  body.nav-open .main-nav{transform:none}
+  .main-nav a{padding:.8em 1em;font-size:1.02rem}
+  .main-nav a.is-active::after{display:none}
+  .main-nav a.is-active{background:var(--c-brand-soft)}
+  .nav-auth{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-top:18px;border-top:1px solid var(--c-line)}
+  .nav-backdrop{position:fixed;inset:0;top:var(--header-h);z-index:80;background:rgba(20,27,24,.42);
+    opacity:0;pointer-events:none;transition:opacity .3s}
+  body.nav-open .nav-backdrop{opacity:1;pointer-events:auto}
+}
+
+/* الهواتف */
+@media (max-width:720px){
+  .section{padding-block:56px}
+  .hero{padding-block:48px}
+  .hero-actions .btn{flex:1;min-width:150px}
+  .courses-grid{grid-template-columns:1fr}
+  .features-grid{grid-template-columns:1fr}
+  .section-head.row{flex-direction:column;align-items:flex-start}
+  .demo-score{inset-inline-end:12px;bottom:12px} /* إدخال البطاقة العائمة داخل الحدود */
+  .stat-num{font-size:2rem}
+  .footer-grid{grid-template-columns:1fr;gap:32px}
+  .footer-bar{flex-direction:column;text-align:center;align-items:center}
+}
+
+/* هواتف صغيرة */
+@media (max-width:420px){
+  body{font-size:15px}
+  .brand-name{font-size:.95rem}
+  .hero h1{font-size:1.65rem}
+  .user-chip-btn .user-name{display:none}
+}
