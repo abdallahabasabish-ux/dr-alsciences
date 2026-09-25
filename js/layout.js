@@ -1,8 +1,8 @@
 // ============================================================
 // الهوية المشتركة: توليد الهيدر والفوتر لكل الصفحات تلقائيًا
-// - الشعار من assets/icons/logo.svg (مع بديل تلقائي إن غاب)
-// - زر القائمة عنصر مستقل أقصى اليسار على الهاتف (لا يتزاحم أبدًا)
-// - قائمة موبايل محصّنة (تفويض أحداث) + حالة الدخول + Preloader
+// - قائمة الكمبيوتر: أفقية داخل الهيدر
+// - قائمة الهاتف/التابلت: درج مستقل خارج <header> (يجتنب backdrop-filter)
+// - الشعار من assets/icons/logo.svg + حالة الدخول + Preloader
 // ============================================================
 import { auth, isConfigured, fbAuthNS, fbStoreNS } from './firebase-config.js';
 import { injectIcons, showToast, hidePreloader } from './utils.js';
@@ -26,23 +26,20 @@ const ACTIVE_MAP = { home:'home', stages:'stages', grade:'stages', subject:'stag
 
 let currentUser = null;
 
-const searchForm = (cls, ph) => `
-  <form class="${cls}" action="${ROOT}search.html" role="search">
-    <input type="search" name="q" placeholder="${ph}" aria-label="بحث في المنصة">
-    <button type="submit" aria-label="ابحث"><svg class="icon"><use href="#i-search"/></svg></button>
-  </form>`;
-
 const logoHTML = () => `
   <img class="brand-logo" src="${LOGO}" alt="شعار الدكتور في العلوم"
        onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
   <span class="brand-mark" style="display:none"><svg class="icon"><use href="#i-atom"/></svg></span>`;
 
-function headerHTML() {
+const linksHTML = () => {
   const key = ACTIVE_MAP[document.body.dataset.page]
     ?? ((location.pathname.endsWith('index.html') || location.pathname.endsWith('/')) ? 'home' : '');
-  const links = NAV.map((n) =>
+  return NAV.map((n) =>
     `<a href="${ROOT}${n.href}" class="${n.key === key ? 'is-active' : ''}"${n.key === key ? ' aria-current="page"' : ''}>${n.label}</a>`
   ).join('');
+};
+
+function headerHTML() {
   return `
   <header class="site-header" id="siteHeader">
     <div class="container header-inner">
@@ -51,18 +48,14 @@ function headerHTML() {
         <span class="brand-name">الدكتور <b>في العلوم</b></span>
       </a>
 
-      <!-- القائمة: أفقية على الكمبيوتر / درج جانبي على الهاتف -->
-      <nav class="main-nav" id="mainNav" aria-label="التنقل الرئيسي">
-        ${searchForm('nav-search', 'ابحث عن درس أو كورس…')}
-        ${links}
-        <div class="nav-auth" id="navAuth">
-          <a href="${ROOT}login.html" class="btn btn-outline">تسجيل الدخول</a>
-          <a href="${ROOT}register.html" class="btn btn-primary">إنشاء حساب</a>
-        </div>
-      </nav>
+      <!-- قائمة الكمبيوتر (أفقية — تُخفى على الهاتف عبر CSS) -->
+      <nav class="main-nav" id="mainNav" aria-label="التنقل الرئيسي">${linksHTML()}</nav>
 
       <div class="header-actions">
-        ${searchForm('header-search', 'ابحث…')}
+        <form class="header-search" action="${ROOT}search.html" role="search">
+          <input type="search" name="q" placeholder="ابحث…" aria-label="بحث في المنصة">
+          <button type="submit" aria-label="ابحث"><svg class="icon"><use href="#i-search"/></svg></button>
+        </form>
         <div class="auth-links" id="authLinks">
           <a href="${ROOT}login.html" class="btn btn-ghost btn-sm">تسجيل الدخول</a>
           <a href="${ROOT}register.html" class="btn btn-primary btn-sm">إنشاء حساب</a>
@@ -79,16 +72,28 @@ function headerHTML() {
             <button id="logoutBtn" class="danger"><svg class="icon"><use href="#i-logout"/></svg> تسجيل الخروج</button>
           </div>
         </div>
+        <!-- زر القائمة: آخر عنصر في الصف = أقصى اليسار في RTL دائمًا -->
+        <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileNav" aria-label="فتح القائمة">
+          <svg class="icon icon-open"><use href="#i-menu"/></svg>
+          <svg class="icon icon-close" hidden><use href="#i-close"/></svg>
+        </button>
       </div>
-
-      <!-- زر القائمة: عنصر مستقل — يثبت أقصى اليسار على الهاتف دائمًا -->
-      <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mainNav" aria-label="فتح القائمة">
-        <svg class="icon icon-open"><use href="#i-menu"/></svg>
-        <svg class="icon icon-close" hidden><use href="#i-close"/></svg>
-      </button>
     </div>
   </header>
-  <div class="nav-backdrop" id="navBackdrop"></div>`;
+
+  <!-- ⬇️ الدرج والخلفية خارج <header> — هذا هو إصلاح الجذور -->
+  <div class="nav-backdrop" id="navBackdrop"></div>
+  <nav class="mobile-nav" id="mobileNav" aria-label="قائمة الهاتف">
+    <form class="nav-search" action="${ROOT}search.html" role="search">
+      <input type="search" name="q" placeholder="ابحث عن درس أو كورس…" aria-label="بحث في المنصة">
+      <button type="submit" aria-label="ابحث"><svg class="icon"><use href="#i-search"/></svg></button>
+    </form>
+    ${linksHTML()}
+    <div class="nav-auth" id="navAuth">
+      <a href="${ROOT}login.html" class="btn btn-outline">تسجيل الدخول</a>
+      <a href="${ROOT}register.html" class="btn btn-primary">إنشاء حساب</a>
+    </div>
+  </nav>`;
 }
 
 function footerHTML() {
@@ -183,25 +188,26 @@ export function initLayout() {
       header.classList.toggle('is-scrolled', window.scrollY > 8), { passive: true });
   }
 
-  /* قائمة الموبايل — تفويض أحداث محصّن (يعمل حتى مع تكرر العناصر) */
+  /* درج الموبايل — تفويض أحداث محصّن */
   const navOpen = () => document.body.classList.contains('nav-open');
   const setNav = (open) => {
     document.body.classList.toggle('nav-open', open);
     document.documentElement.classList.toggle('nav-locked', open);
-    document.querySelectorAll('#menuBtn').forEach((btn) => {
+    const btn = document.getElementById('menuBtn');
+    if (btn) {
       btn.setAttribute('aria-expanded', String(open));
       btn.setAttribute('aria-label', open ? 'إغلاق القائمة' : 'فتح القائمة');
       const io = btn.querySelector('.icon-open'), ic = btn.querySelector('.icon-close');
       if (io) io.hidden = open;
       if (ic) ic.hidden = !open;
-    });
+    }
   };
   const closeNav = () => setNav(false);
 
   document.addEventListener('click', (e) => {
     if (e.target.closest('#menuBtn')) { e.preventDefault(); setNav(!navOpen()); return; }
     if (navOpen() && e.target.closest('#navBackdrop')) { closeNav(); return; }
-    if (navOpen() && e.target.closest('#mainNav a')) closeNav();
+    if (navOpen() && e.target.closest('#mobileNav a')) closeNav();
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && navOpen()) closeNav(); });
   window.addEventListener('resize', () => { if (window.innerWidth > 992 && navOpen()) closeNav(); });
@@ -237,7 +243,7 @@ export function initLayout() {
     } catch { showToast('تعذر تسجيل الخروج، حاول مرة أخرى', 'error'); }
   });
 
-  /* حالة الدخول: إخفاء أزرار الدخول (الشريط + داخل القائمة) وعرض بيانات الطالب */
+  /* حالة الدخول: إخفاء أزرار الدخول (الشريط + داخل الدرج) وعرض بيانات الطالب */
   if (isConfigured) {
     onAuthStateChanged(auth, async (user) => {
       currentUser = user;
