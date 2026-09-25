@@ -178,30 +178,28 @@ export function initLayout() {
       header.classList.toggle('is-scrolled', window.scrollY > 8), { passive: true });
   }
 
-  /* قائمة الموبايل */
-  const menuBtn = document.getElementById('menuBtn');
-  const mainNav = document.getElementById('mainNav');
-  const backdrop = document.getElementById('navBackdrop');
-  const closeNav = () => {
-    document.body.classList.remove('nav-open');
-    menuBtn?.setAttribute('aria-expanded', 'false');
-    const io = menuBtn?.querySelector('.icon-open'), ic = menuBtn?.querySelector('.icon-close');
-    if (io) io.hidden = false;
-    if (ic) ic.hidden = true;
-  };
-  if (menuBtn && mainNav) {
-    menuBtn.addEventListener('click', () => {
-      const open = !document.body.classList.contains('nav-open');
-      document.body.classList.toggle('nav-open', open);
-      menuBtn.setAttribute('aria-expanded', String(open));
-      menuBtn.setAttribute('aria-label', open ? 'إغلاق القائمة' : 'فتح القائمة');
-      const io = menuBtn.querySelector('.icon-open'), ic = menuBtn.querySelector('.icon-close');
+  /* قائمة الموبايل — تفويض أحداث محصّن (يعمل حتى مع تكرر العناصر) */
+  const navOpen = () => document.body.classList.contains('nav-open');
+  const setNav = (open) => {
+    document.body.classList.toggle('nav-open', open);
+    document.documentElement.classList.toggle('nav-locked', open);
+    document.querySelectorAll('#menuBtn').forEach((btn) => {
+      btn.setAttribute('aria-expanded', String(open));
+      btn.setAttribute('aria-label', open ? 'إغلاق القائمة' : 'فتح القائمة');
+      const io = btn.querySelector('.icon-open'), ic = btn.querySelector('.icon-close');
       if (io) io.hidden = open;
       if (ic) ic.hidden = !open;
     });
-    backdrop?.addEventListener('click', closeNav);
-    mainNav.querySelectorAll('a').forEach((a) => a.addEventListener('click', closeNav));
-  }
+  };
+  const closeNav = () => setNav(false);
+
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#menuBtn')) { e.preventDefault(); setNav(!navOpen()); return; }
+    if (navOpen() && e.target.closest('#navBackdrop')) { closeNav(); return; }
+    if (navOpen() && e.target.closest('#mainNav a')) closeNav();
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && navOpen()) closeNav(); });
+  window.addEventListener('resize', () => { if (window.innerWidth > 992 && navOpen()) closeNav(); });
 
   /* حركات الظهور */
   const revealEls = document.querySelectorAll('.reveal');
