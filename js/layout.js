@@ -2,9 +2,8 @@
 // نظام التنقل:
 // - الكمبيوتر: قائمة أفقية كاملة أعلى الهيدر (بدون Sidebar جانبية)
 // - الهاتف/التابلت: زر القائمة أعلى اليسار + Drawer ينزلق من اليسار
-//   مع Overlay + زر X + إغلاق بالرابط/Escape + منع تمرير الخلفية
 // - Accordion للمراحل + قوائم حسب الدور (زائر/طالب/أدمن)
-// - يُولَّد كله داخل #siteHeaderRoot — الصفحات لا تُعدَّل
+// - ملاحظة: كل بناة الـ HTML هنا دوال تُستدعى بأقواس ()
 // ============================================================
 import { auth, db, isConfigured, fbAuthNS, fbStoreNS } from './firebase-config.js';
 import { injectIcons, showToast, hidePreloader } from './utils.js';
@@ -15,10 +14,13 @@ const { doc, getDoc } = fbStoreNS;
 const ROOT = location.pathname.includes('/admin/') ? '../' : '';
 const LOGO = ROOT + 'assets/icons/logo.svg';
 
-const logoHTML = () => `
+/* ---------- الشعار ---------- */
+function logoHTML() {
+  return `
   <img class="brand-logo" src="${LOGO}" alt="شعار الدكتور في العلوم"
        onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
   <span class="brand-mark" style="display:none"><svg class="icon"><use href="#i-atom"/></svg></span>`;
+}
 
 /* ---------- تعريف عناصر القائمة ---------- */
 const ITEMS = {
@@ -101,15 +103,20 @@ function navListHTML() {
   <ul class="sb-list js-admin-only" hidden>${adminItems}</ul>`;
 }
 
-const authSlotHTML = `
+/* ---------- الدخول/الخروج (دالة) ---------- */
+function authSlotHTML() {
+  return `
   <a class="sb-link js-when-guest" href="${ROOT}login.html">
     <svg class="icon"><use href="#i-user"/></svg><span class="sb-label">تسجيل الدخول</span>
   </a>
   <button class="sb-link js-when-user js-logout" type="button" hidden>
     <svg class="icon"><use href="#i-logout"/></svg><span class="sb-label">تسجيل الخروج</span>
   </button>`;
+}
 
-const userBlockHTML = `
+/* ---------- بطاقة المستخدم (دالة) ---------- */
+function userBlockHTML() {
+  return `
   <a class="sb-user js-when-user" href="${ROOT}profile.html" hidden>
     <span class="avatar sb-avatar" data-av>ب</span>
     <span class="sb-label sb-user-text"><b class="sb-name">…</b><small>ملفي الشخصي</small></span>
@@ -118,6 +125,16 @@ const userBlockHTML = `
     <span class="avatar sb-avatar"><svg class="icon"><use href="#i-user"/></svg></span>
     <span class="sb-label sb-user-text"><b>زائر</b><small>سجّل الدخول للتعلم</small></span>
   </a>`;
+}
+
+/* ---------- حقل البحث داخل الدرج (دالة) ---------- */
+function sbSearchHTML() {
+  return `
+  <form class="sb-search" action="${ROOT}search.html" role="search">
+    <input type="search" name="q" placeholder="ابحث في المنصة…" aria-label="بحث في المنصة">
+    <button type="submit" aria-label="ابحث"><svg class="icon"><use href="#i-search"/></svg></button>
+  </form>`;
+}
 
 /* ---------- الهيدر (كمبيوتر: قائمة أفقية — هاتف: زر القائمة أعلى اليسار) ---------- */
 function headerHTML() {
@@ -135,7 +152,6 @@ function headerHTML() {
       <a href="${ROOT}index.html" class="brand" aria-label="الدكتور في العلوم — الرئيسية">
         ${logoHTML()}<span class="brand-name">الدكتور <b>في العلوم</b></span>
       </a>
-      <!-- قائمة الكمبيوتر الأفقية: مخفية <1024 عبر CSS -->
       <nav class="main-nav top-links" aria-label="التنقل الرئيسي">${fullLinks}</nav>
       <div class="header-actions">
         <form class="header-search" action="${ROOT}search.html" role="search">
@@ -160,7 +176,6 @@ function headerHTML() {
             <button id="logoutBtn" class="danger"><svg class="icon"><use href="#i-logout"/></svg> تسجيل الخروج</button>
           </div>
         </div>
-        <!-- زر القائمة: آخر عنصر في الصف = أعلى اليسار في RTL دائمًا -->
         <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mDrawer" aria-label="فتح القائمة">
           <svg class="icon icon-open"><use href="#i-menu"/></svg>
           <svg class="icon icon-close" hidden><use href="#i-close"/></svg>
@@ -182,12 +197,9 @@ function drawerHTML() {
       </button>
     </div>
     ${userBlockHTML()}
-    <form class="sb-search" action="${ROOT}search.html" role="search">
-      <input type="search" name="q" placeholder="ابحث في المنصة…" aria-label="بحث في المنصة">
-      <button type="submit" aria-label="ابحث"><svg class="icon"><use href="#i-search"/></svg></button>
-    </form>
+    ${sbSearchHTML()}
     <nav class="sb-nav">${navListHTML()}</nav>
-    <div class="sb-foot">${authSlotHTML}</div>
+    <div class="sb-foot">${authSlotHTML()}</div>
   </aside>`;
 }
 
