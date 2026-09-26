@@ -238,7 +238,7 @@ function footerHTML() {
         <h4>تواصل معنا</h4>
         <ul class="footer-contact">
           <li><svg class="icon"><use href="#i-phone"/></svg> <span dir="ltr">+20 155 768 7560</span></li>
-          <li><svg class="icon"><use href="#i-mail"/></svg> <span dir="ltr">support@mr.Wahid.com</span></li>
+          <li><svg class="icon"><use href="#i-mail"/></svg> <span dir="ltr">support@mr.wahid.com</span></li>
           <li><svg class="icon"><use href="#i-map-pin"/></svg> <span>مصر</span></li>
         </ul>
         <div class="footer-legal">
