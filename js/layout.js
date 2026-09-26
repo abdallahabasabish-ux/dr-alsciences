@@ -1,7 +1,7 @@
 // ============================================================
 // نظام التنقل الاحترافي:
-// - Desktop (≥1024): Sidebar ثابتة يمين (RTL) قابلة للتصغير + Tooltips
-// - Tablet/Mobile (<1024): Drawer ينزلق من اليمين + Overlay
+// - Desktop (≥1024): Sidebar ثابتة يمين (RTL) قابلة للتصغير + Tooltips + بحث
+// - Tablet/Mobile (<1024): Drawer من اليمين + Overlay + زر X
 // - Accordion للمراحل + قوائم حسب الدور (زائر/طالب/أدمن)
 // - إغلاق: X / Overlay / رابط / Escape — مع منع تمرير الخلفية
 // - يُولَّد كله داخل #siteHeaderRoot — الصفحات لا تُعدَّل
@@ -15,7 +15,7 @@ const { doc, getDoc } = fbStoreNS;
 const ROOT = location.pathname.includes('/admin/') ? '../' : '';
 const LOGO = ROOT + 'assets/icons/logo.svg';
 
-/* ---------- رمزان إضافيان للقائمة (يُحقنان في Sprite الموجود) ---------- */
+/* رمزان إضافيان للقائمة (يُحقنان في Sprite الموجود) */
 const EXTRA_SYMBOLS = `
 <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10.5 9-7 9 7"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></symbol>
 <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></symbol>`;
@@ -32,9 +32,9 @@ const ITEMS = {
   courses: { href: 'courses.html',           icon: 'i-cap',        label: 'الكورسات',       pages: ['courses', 'courseDetail'] },
   lessons: { href: 'lessons.html',           icon: 'i-book',       label: 'الدروس',         pages: ['lessons'] },
   quizzes: { href: 'quizzes.html',           icon: 'i-list-check', label: 'الاختبارات',     pages: ['quizzes', 'quiz'] },
-  results: { href: 'results.html',           icon: 'i-award',      label: 'نتائجي',         pages: ['results'],            student: true },
-  progress:{ href: 'student-dashboard.html', icon: 'i-chart',      label: 'تقدمي',          pages: ['dashboard'],          student: true },
-  profile: { href: 'profile.html',           icon: 'i-user',       label: 'الملف الشخصي',   pages: ['profile'],            student: true },
+  results: { href: 'results.html',           icon: 'i-award',      label: 'نتائجي',         pages: ['results'],   student: true },
+  progress:{ href: 'student-dashboard.html', icon: 'i-chart',      label: 'تقدمي',          pages: ['dashboard'], student: true },
+  profile: { href: 'profile.html',           icon: 'i-user',       label: 'الملف الشخصي',   pages: ['profile'],   student: true },
   about:   { href: 'about.html',             icon: 'i-info',       label: 'عن المنصة',      pages: ['about'] },
   contact: { href: 'contact.html',           icon: 'i-mail',       label: 'تواصل معنا',     pages: ['contact'] },
 };
@@ -56,7 +56,13 @@ const logoHTML = () => `
        onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
   <span class="brand-mark" style="display:none"><svg class="icon"><use href="#i-atom"/></svg></span>`;
 
-/* ---------- قائمة عناصر مشتركة (تُحقن في الـ Sidebar والـ Drawer) ---------- */
+const sbSearchHTML = `
+  <form class="sb-search" action="${ROOT}search.html" role="search">
+    <input type="search" name="q" placeholder="ابحث في المنصة…" aria-label="بحث في المنصة">
+    <button type="submit" aria-label="ابحث"><svg class="icon"><use href="#i-search"/></svg></button>
+  </form>`;
+
+/* ---------- قائمة العناصر (تُحقن في الـ Sidebar والـ Drawer) ---------- */
 function navListHTML() {
   const page = document.body.dataset.page;
   const link = (it, extra = '') => {
@@ -71,7 +77,7 @@ function navListHTML() {
   };
 
   const stagesSub = ITEMS.stages.children.map((c) => {
-    const active = page === 'stages' && location.hash && location.hash === '#' + c.href.split('#')[1];
+    const active = page === 'stages' && location.hash === '#' + c.href.split('#')[1];
     return `<li><a class="sb-sublink${active ? ' is-active' : ''}" href="${ROOT}${c.href}"><span class="sb-label">${c.label}</span></a></li>`;
   }).join('');
 
@@ -80,7 +86,7 @@ function navListHTML() {
     if (it.children) {
       return `
       <li class="sb-item sb-acc">
-        <button class="sb-link sb-acc-btn${page && it.pages.includes(page) ? ' is-active' : ''}" type="button"
+        <button class="sb-link sb-acc-btn${it.pages.includes(page) ? ' is-active' : ''}" type="button"
                 data-acc aria-expanded="false" aria-controls="sbSubStages" data-tip="${it.label}">
           <svg class="icon"><use href="#${it.icon}"/></svg>
           <span class="sb-label">${it.label}</span>
@@ -102,7 +108,7 @@ function navListHTML() {
 
   return `
   <ul class="sb-list">${mainItems}</ul>
-  <div class="sb-sep sb-label"></div>
+  <div class="sb-sep sb-label js-admin-only" hidden>الإدارة</div>
   <ul class="sb-list js-admin-only" hidden>${adminItems}</ul>`;
 }
 
@@ -130,6 +136,7 @@ function sidebarHTML() {
   <aside class="app-sidebar" id="appSidebar" aria-label="القائمة الجانبية">
     <a class="sb-brand" href="${ROOT}index.html">${logoHTML()}<span class="sb-label sb-brand-name">الدكتور <b>في العلوم</b></span></a>
     ${userBlockHTML()}
+    ${sbSearchHTML}
     <nav class="sb-nav">${navListHTML()}</nav>
     <div class="sb-foot">
       ${authSlotHTML}
@@ -195,6 +202,7 @@ function drawerHTML() {
       </button>
     </div>
     ${userBlockHTML()}
+    ${sbSearchHTML}
     <nav class="sb-nav">${navListHTML()}</nav>
     <div class="sb-foot">${authSlotHTML}</div>
   </aside>`;
@@ -263,17 +271,18 @@ function applyAvatar(el, userDoc, name) {
 function renderAuthState(user, userDoc) {
   const logged = !!user;
   const name = (userDoc?.name || user?.displayName || '').trim();
+  const isAdmin = userDoc?.role === 'admin';
 
   document.querySelectorAll('.js-when-guest').forEach((el) => (el.hidden = logged));
   document.querySelectorAll('.js-when-user').forEach((el) => (el.hidden = !logged));
   document.querySelectorAll('.js-student-only').forEach((el) => (el.hidden = !logged));
-  document.querySelector('.js-admin-only')?.toggleAttribute('hidden', !(userDoc?.role === 'admin'));
+  document.querySelectorAll('.js-admin-only').forEach((el) => (el.hidden = !isAdmin));
 
+  const chip = document.getElementById('userChip');
+  const links = document.getElementById('authLinks');
   if (logged) {
     document.querySelectorAll('[data-av]').forEach((el) => applyAvatar(el, userDoc, name));
     document.querySelectorAll('.sb-name').forEach((el) => (el.textContent = name || 'حسابي'));
-    const chip = document.getElementById('userChip');
-    const links = document.getElementById('authLinks');
     if (chip) chip.hidden = false;
     if (links) links.hidden = true;
     const init = document.getElementById('userInitial');
@@ -281,8 +290,6 @@ function renderAuthState(user, userDoc) {
     const nm = document.getElementById('userName');
     if (nm) nm.textContent = name || 'حسابي';
   } else {
-    const chip = document.getElementById('userChip');
-    const links = document.getElementById('authLinks');
     if (chip) chip.hidden = true;
     if (links) links.hidden = false;
   }
@@ -308,7 +315,10 @@ export function initLayout() {
   const fRoot = document.getElementById('siteFooterRoot');
   if (fRoot) fRoot.innerHTML = footerHTML();
 
-  /* ---------- Drawer: فتح/إغلاق (Overlay + X + رابط + Escape) ---------- */
+  /* إزاحة المحتوى بمقدار الـ Sidebar (كمبيوتر فقط — صفحات الأدمن مستثناة تلقائيًا) */
+  if (document.getElementById('appSidebar')) document.body.classList.add('has-sidebar');
+
+  /* ---------- Drawer: فتح/إغلاق (X + Overlay + رابط + Escape) ---------- */
   const drawer = document.getElementById('mDrawer');
   const backdrop = document.getElementById('navBackdrop');
   const menuBtn = document.getElementById('menuBtn');
@@ -340,13 +350,14 @@ export function initLayout() {
   /* ---------- Accordion: فتح واحد في كل مرة ---------- */
   document.querySelectorAll('[data-acc]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const collapsed = document.body.classList.contains('sb-collapsed') && window.innerWidth >= 1024;
-      if (collapsed) { toggleCollapse(false); } // مفعّل: اضغط المراحل والقائمة مصغرة → تتوسع أولًا
+      /* إذا كانت الـ Sidebar مصغرة: وسّعها أولًا ثم افتح الأكورديون */
+      if (document.body.classList.contains('sb-collapsed') && window.innerWidth >= 1024) {
+        toggleCollapse(false);
+      }
       const item = btn.closest('.sb-acc');
       const sub = item?.querySelector('.sb-sub');
       if (!sub) return;
       const isOpen = item.classList.contains('is-open');
-      /* إغلاق بقية الأكورديونات في نفس القائمة */
       item.closest('.sb-nav')?.querySelectorAll('.sb-acc.is-open').forEach((o) => {
         if (o !== item) {
           o.classList.remove('is-open');
@@ -361,7 +372,7 @@ export function initLayout() {
     });
   });
 
-  /* ---------- تصغير الـ Sidebar (كمبيوتر) ---------- */
+  /* ---------- تصغير الـ Sidebar (كمبيوتر) + حفظ التفضيل ---------- */
   function toggleCollapse(collapsed) {
     document.body.classList.toggle('sb-collapsed', collapsed);
     try { localStorage.setItem('sbCollapsed', collapsed ? '1' : '0'); } catch { /* تجاهل */ }
