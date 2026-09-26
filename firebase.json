@@ -17,6 +17,11 @@
         "source": "**/*.@(jpg|jpeg|png|webp)",
         "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000" }]
       }
+      {
+  "hosting": { "public": ".", "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "SECURITY.md", "firestore.rules", "storage.rules", "firebase-debug.log"] },
+  "firestore": { "rules": "firestore.rules" },
+  "storage": { "rules": "storage.rules" }
+     }
     ]
   }
 }
