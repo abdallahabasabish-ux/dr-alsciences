@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
+  <!-- شاشة التحميل: تُفعَّل من أول بكسل + شبكة أمان 7 ثوانٍ حتى بدون JS -->
   <script>document.documentElement.classList.add('preloading');window.__preloaderStart=Date.now();setTimeout(function(){document.documentElement.classList.remove('preloading','preloading-done')},7000);</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>الدكتور في العلوم | منصة تعليم العلوم للمراحل الابتدائية والإعدادية والثانوية</title>
@@ -12,16 +13,20 @@
   <meta property="og:title" content="الدكتور في العلوم | تعلَّم العلوم بطريقة أسهل وأوضح">
   <meta property="og:description" content="دروس منظمة بالفيديو وملفات PDF واختبارات إلكترونية ومتابعة تقدمك — لجميع المراحل الدراسية.">
   <meta property="og:url" content="https://abdallahabasabish-ux.github.io/dr-alsciences/">
+  <meta property="og:image" content="https://abdallahabasabish-ux.github.io/dr-alsciences/assets/images/og-cover.jpg">
+  <meta property="og:locale" content="ar_AR">
   <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=5">
-  <link rel="stylesheet" href="css/responsive.css?v=5">
+  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/responsive.css?v=7">
 </head>
 <body data-page="home">
 
   <a class="skip-link" href="#main">تخطَّ إلى المحتوى</a>
+
+  <!-- الهيدر + Sidebar + Drawer + الفوتر يُولَّدان تلقائيًا من js/layout.js -->
   <div id="siteHeaderRoot"></div>
 
   <main id="main">
@@ -43,6 +48,7 @@
           </ul>
         </div>
 
+        <!-- لوحة «درس حي» توضح تجربة المنصة -->
         <div class="hero-visual reveal">
           <div class="demo-panel">
             <div class="demo-head">
@@ -106,7 +112,7 @@
       </div>
     </section>
 
-    <!-- ===================== لماذا نحن ===================== -->
+    <!-- ===================== لماذا «الدكتور في العلوم»؟ ===================== -->
     <section class="section section-alt" aria-labelledby="why-title">
       <div class="container">
         <div class="section-head center reveal">
@@ -138,6 +144,7 @@
           <a href="courses.html" class="btn btn-ghost">عرض جميع الكورسات <svg class="icon"><use href="#i-arrow-left"/></svg></a>
         </div>
         <div class="courses-grid" id="coursesGrid">
+          <!-- يُملأ من js/app.js: سكيبتون ثم البيانات أو حالة فراغ -->
           <div class="skeleton-card"><div class="sk sk-img"></div><div class="sk-body"><div class="sk sk-line w60"></div><div class="sk sk-line"></div><div class="sk sk-line w40"></div></div></div>
           <div class="skeleton-card"><div class="sk sk-img"></div><div class="sk-body"><div class="sk sk-line w60"></div><div class="sk sk-line"></div><div class="sk sk-line w40"></div></div></div>
           <div class="skeleton-card"><div class="sk sk-img"></div><div class="sk-body"><div class="sk sk-line w60"></div><div class="sk sk-line"></div><div class="sk sk-line w40"></div></div></div>
@@ -145,7 +152,7 @@
       </div>
     </section>
 
-    <!-- ===================== الإحصائيات ===================== -->
+    <!-- ===================== الإحصائيات (تُقرأ من stats/counters) ===================== -->
     <section class="stats-strip" aria-label="إحصائيات المنصة">
       <div class="container stats-grid">
         <div class="stat"><svg class="icon"><use href="#i-book"/></svg><b class="stat-num" data-stat="lessons">—</b><span>درس تعليمي</span></div>
@@ -165,6 +172,7 @@
     </section>
   </main>
 
+  <!-- الفوتر يُولَّد تلقائيًا من js/layout.js -->
   <div id="siteFooterRoot"></div>
 
   <script type="module" src="js/app.js"></script>
