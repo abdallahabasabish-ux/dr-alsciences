@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <script>document.documentElement.classList.add('preloading');window.__preloaderStart=Date.now();setTimeout(function(){document.documentElement.classList.remove('preloading','preloading-done')},7000);</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الرسائل | لوحة الإدارة</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css?v=9">
+  <link rel="stylesheet" href="../css/responsive.css?v=9">
+  <style>
+    /* أنماط خاصة بصفحة الرسائل (مستقلة داخل الصفحة) */
+    .msg-grid{display:grid;gap:14px}
+    .msg-card{background:#fff;border:1px solid var(--c-line);border-radius:var(--radius);padding:18px 20px}
+    .msg-card.is-replied{border-inline-start:4px solid var(--c-success)}
+    .msg-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+    .msg-who b{display:block;font-size:1rem}
+    .msg-who span{color:var(--c-ink-2);font-size:.85rem}
+    .msg-body{white-space:pre-wrap;color:var(--c-ink);margin-top:10px;line-height:1.95;font-size:.97rem}
+    .msg-reply{background:var(--c-brand-soft);border-radius:10px;padding:12px 14px;margin-top:12px}
+    .msg-reply b{color:var(--c-brand);display:block;margin-bottom:4px;font-size:.88rem}
+    .msg-reply p{white-space:pre-wrap;color:var(--c-ink);font-size:.92rem;line-height:1.8}
+    .msg-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap}
+    .msg-foot .item-meta{font-size:.8rem}
+    @media (max-width:640px){
+      .msg-card{padding:14px}
+      .msg-foot{flex-direction:column;align-items:stretch}
+      .msg-foot .row-actions{justify-content:flex-end}
+    }
+  </style>
+</head>
+<body data-page="adminMessages">
+
+<div id="adminRoot" hidden>
+
+  <div class="admin-topbar">
+    <div class="admin-topbar-inner">
+      <button class="menu-btn" id="adminMenuBtn" aria-label="فتح القائمة">
+        <svg class="icon"><use href="#i-menu"/></svg>
+      </button>
+      <a class="admin-brand" href="index.html">
+        <span class="brand-mark"><svg class="icon"><use href="#i-atom"/></svg></span>
+        لوحة الإدارة
+      </a>
+      <div class="admin-user">
+        <span class="avatar" id="adminInitial">أ</span>
+        <span id="adminName">…</span>
+        <button class="btn btn-ghost btn-sm" id="adminLogoutBtn">
+          <svg class="icon"><use href="#i-logout"/></svg> خروج
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="adminSidebar">
+      <nav aria-label="قائمة الإدارة">
+        <a href="index.html"><svg class="icon"><use href="#i-chart"/></svg> لوحة التحكم</a>
+        <a href="students.html"><svg class="icon"><use href="#i-users"/></svg> الطلاب</a>
+        <span class="sep">المحتوى التعليمي</span>
+        <a href="stages.html"><svg class="icon"><use href="#i-layers"/></svg> المراحل والصفوف</a>
+        <a href="subjects.html"><svg class="icon"><use href="#i-flask"/></svg> المواد</a>
+        <a href="lessons.html"><svg class="icon"><use href="#i-book"/></svg> الدروس</a>
+        <a href="quizzes.html"><svg class="icon"><use href="#i-list-check"/></svg> الاختبارات</a>
+        <a href="courses.html"><svg class="icon"><use href="#i-cap"/></svg> الكورسات</a>
+        <span class="sep">التقارير</span>
+        <a href="results.html"><svg class="icon"><use href="#i-award"/></svg> النتائج</a>
+        <a href="messages.html" class="is-active"><svg class="icon"><use href="#i-mail"/></svg> الرسائل</a>
+        <span class="sep">عام</span>
+        <a href="../index.html"><svg class="icon"><use href="#i-atom"/></svg> عرض الموقع</a>
+      </nav>
+    </aside>
+    <div class="admin-backdrop" id="adminBackdrop"></div>
+
+    <main class="admin-main">
+      <div class="admin-head">
+        <div>
+          <h1>رسائل التواصل</h1>
+          <p><span id="messagesCount"></span> — ابحث بالاسم أو البريد أو نص الرسالة.</p>
+        </div>
+        <div class="admin-head-actions">
+          <input type="search" class="form-input search-input" id="messagesSearch"
+                 placeholder="ابحث…" aria-label="بحث في الرسائل">
+        </div>
+      </div>
+
+      <div class="admin-note">
+        <svg class="icon"><use href="#i-info"/></svg>
+        <span>الرسائل تصل من صفحة «تواصل معنا». زر «الرد» يحفظ ردك في المنصة، وزر البريد يفتح بريدك بالإجابة جاهزة للإرسال.</span>
+      </div>
+
+      <div class="msg-grid" id="messagesList">
+        <div class="skeleton-card"><div class="sk-body"><div class="sk sk-line w40"></div><div class="sk sk-line"></div><div class="sk sk-line w60"></div></div></div>
+        <div class="skeleton-card"><div class="sk-body"><div class="sk sk-line w40"></div><div class="sk sk-line"></div></div></div>
+      </div>
+    </main>
+  </div>
+
+</div><!-- /adminRoot -->
+
+<script type="module" src="../js/admin-messages.js"></script>
+</body>
+</html>
