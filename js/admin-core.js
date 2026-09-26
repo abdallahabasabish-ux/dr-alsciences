@@ -124,8 +124,9 @@ function sidebarHTML(activeKey) {
 export function initAdminShell(ctx) {
   injectIcons();
   const { user, userDoc } = ctx;
-  const name = userDoc?.name || user.displayName || 'الأدمن';
-
+  const fullName = userDoc?.name || user.displayName || 'الأدمن';
+  const name = fullName.trim().split(/\s+/).filter(Boolean).slice(0, 2).join(' ') || fullName;
+  
   const topRoot = document.getElementById('adminTopbarRoot');
   const sideRoot = document.getElementById('adminSidebarRoot');
   if (topRoot) topRoot.innerHTML = topbarHTML(name, name.charAt(0));
