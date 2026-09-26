@@ -2,61 +2,120 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <script>document.documentElement.classList.add('preloading');window.__preloaderStart=Date.now();setTimeout(function(){document.documentElement.classList.remove('preloading','preloading-done')},5000);</script>
+  <script>document.documentElement.classList.add('preloading');window.__preloaderStart=Date.now();setTimeout(function(){document.documentElement.classList.remove('preloading','preloading-done')},7000);</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>الدرس | الدكتور في العلوم</title>
-  <meta name="description" content="درس تعليمي من منصة الدكتور في العلوم — شرح مبسط بالفيديو والنص مع ملفات واختبارات.">
-  <link rel="canonical" href="https://www.dr-alsciences.com/lesson.html">
+  <title>الدروس | الدكتور في العلوم</title>
+  <meta name="description" content="تصفح جميع دروس العلوم المنشورة في منصة الدكتور في العلوم — مرتبة حسب المادة مع فيديوهات وملفات PDF.">
+  <link rel="canonical" href="https://abdallahabasabish-ux.github.io/dr-alsciences/lessons.html">
   <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/responsive.css?v=6">
 </head>
-<body data-page="lesson">
+<body data-page="lessons">
 
   <div id="siteHeaderRoot"></div>
 
   <main id="main">
     <div class="page-hero">
       <div class="container">
-        <!-- يُبنى من Firestore: الرئيسية / المراحل / المرحلة / الصف / المادة / الدرس -->
-        <nav class="breadcrumb" aria-label="مسار التنقل" id="crumbHere">
+        <nav class="breadcrumb" aria-label="مسار التنقل">
           <a href="index.html">الرئيسية</a>
           <span class="sep" aria-hidden="true">/</span>
-          <a href="stages.html">المراحل الدراسية</a>
+          <span aria-current="page">الدروس</span>
         </nav>
-        <h1 id="lessonTitle">جارٍ تحميل الدرس…</h1>
-        <div class="meta-chips" id="lessonMeta"></div>
+        <h1>الدروس</h1>
+        <p class="page-desc">جميع الدروس المنشورة — اختر مادة لتصفية القائمة.</p>
       </div>
     </div>
 
     <div class="container browse-page">
-      <div class="lesson-layout">
-        <div class="lesson-main" id="lessonMain">
-          <div class="video-frame" hidden></div>
-          <div class="lesson-content">
-            <div class="sk sk-line"></div><div class="sk sk-line"></div>
-            <div class="sk sk-line w60" style="margin-top:10px"></div>
-            <div class="sk sk-line" style="margin-top:10px"></div><div class="sk sk-line w40"></div>
-          </div>
+      <div class="filter-bar">
+        <select class="form-select" id="subjectFilter" aria-label="تصفية حسب المادة">
+          <option value="">كل المواد</option>
+        </select>
+      </div>
+      <div id="lessonsRoot">
+        <div class="lesson-list">
+          <div class="skeleton-card" style="padding:16px"><div class="sk sk-line w60"></div></div>
+          <div class="skeleton-card" style="padding:16px"><div class="sk sk-line"></div></div>
+          <div class="skeleton-card" style="padding:16px"><div class="sk sk-line w40"></div></div>
         </div>
-
-        <aside class="lesson-aside">
-          <div class="aside-panel">
-            <h2 id="asideTitle">دروس المادة</h2>
-            <div class="aside-list" id="asideList">
-              <div class="sk sk-line"></div><div class="sk sk-line w60"></div><div class="sk sk-line"></div>
-            </div>
-          </div>
-        </aside>
       </div>
     </div>
   </main>
 
   <div id="siteFooterRoot"></div>
 
-  <script type="module" src="js/lessons.js"></script>
+  <script type="module">
+    import { db, isConfigured, fbStoreNS } from './js/firebase-config.js';
+    import { initLayout } from './js/layout.js';
+    import { esc, formatNumber, emptyStateHTML, setPageMeta } from './js/utils.js';
+    import './js/utils.js';
+
+    initLayout();
+
+    const { collection, query, where, getDocs } = fbStoreNS;
+    const root = document.getElementById('lessonsRoot');
+    const filter = document.getElementById('subjectFilter');
+    const byOrder = (a, b) => (a.order ?? 9999) - (b.order ?? 9999);
+
+    function row(l) {
+      const badges = [
+        l.videoUrl ? '<span class="mini-badge">فيديو</span>' : '',
+        l.pdfUrl ? '<span class="mini-badge">PDF</span>' : '',
+      ].join('');
+      const num = l.order != null ? esc(formatNumber(l.order)) : '•';
+      return `
+      <a class="lesson-row" href="lesson.html?id=${encodeURIComponent(l.id)}">
+        <span class="lesson-num">${num}</span>
+        <span class="item-text"><b>${esc(l.title)}</b>
+          ${l.description ? `<span class="item-meta">${esc(l.description)}</span>` : ''}
+        </span>
+        <span class="lesson-badges">${badges}</span>
+      </a>`;
+    }
+
+    async function init() {
+      if (!isConfigured) {
+        root.innerHTML = emptyStateHTML('i-info', 'الدروس تظهر هنا بعد ربط Firebase',
+          'استبدل قيم PASTE- في js/firebase-config.js ببيانات مشروعك.');
+        return;
+      }
+      try {
+        const [lSnap, sSnap] = await Promise.all([
+          getDocs(query(collection(db, 'lessons'), where('isPublished', '==', true))),
+          getDocs(collection(db, 'subjects')),
+        ]);
+        const subjects = new Map(sSnap.docs.map((d) => [d.id, d.data().name]));
+        let lessons = lSnap.docs.map((d) => ({ id: d.id, ...d.data() }))
+          .map((l) => ({ ...l, subjectName: subjects.get(l.subjectId) ?? 'مادة' }));
+
+        [...new Set(lessons.map((l) => l.subjectName))].sort()
+          .forEach((n) => filter.add(new Option(n, n)));
+        setPageMeta('الدروس', 'تصفح جميع دروس العلوم المنشورة مرتبة حسب المادة.');
+
+        const render = () => {
+          const f = filter.value;
+          const list = lessons.filter((l) => !f || l.subjectName === f)
+            .sort((a, b) => a.subjectName.localeCompare(b.subjectName, 'ar') || byOrder(a, b));
+          root.innerHTML = list.length
+            ? `<p class="more-hint" style="margin-bottom:12px">${formatNumber(list.length)} درس</p>
+               <div class="lesson-list">${list.map(row).join('')}</div>`
+            : emptyStateHTML('i-book', 'لا توجد دروس منشورة بعد',
+              'ستظهر الدروس هنا فور إضافتها من لوحة التحكم.');
+        };
+        filter.addEventListener('change', render);
+        render();
+      } catch (err) {
+        console.error('خطأ في تحميل الدروس:', err);
+        root.innerHTML = emptyStateHTML('i-x-circle', 'تعذر تحميل الدروس',
+          'حدث خطأ أثناء الاتصال، حدّث الصفحة لإعادة المحاولة.');
+      }
+    }
+    init();
+  </script>
 </body>
 </html>
