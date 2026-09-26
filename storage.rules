@@ -1,0 +1,38 @@
+rules_version = '2';
+
+// النشر: firebase deploy --only storage
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() { return request.auth != null; }
+    function isAdmin()    { return isSignedIn() && request.auth.token.admin == true; }
+    function isOwner(uid) { return isSignedIn() && request.auth.uid == uid; }
+    function isImage()    { return request.resource.contentType.matches('image/(jpeg|png|webp|gif)'); }
+    function isPdf()      { return request.resource.contentType == 'application/pdf'; }
+
+    // صور المحتوى التعليمي: قراءة عامة — رفع/تعديل/حذف للأدمن (5MB صور فقط)
+    match /uploads/images/{fileName} {
+      allow read: if true;
+      allow write, delete: if isAdmin()
+        && request.resource.size < 5 * 1024 * 1024
+        && isImage();
+    }
+
+    // ملفات PDF التعليمية: قراءة عامة — للأدمن (10MB)
+    match /uploads/pdf/{fileName} {
+      allow read: if true;
+      allow write, delete: if isAdmin()
+        && request.resource.size < 10 * 1024 * 1024
+        && isPdf();
+    }
+
+    // صورة الملف الشخصي: ملكية UID صريحة — المالك فقط يرفع (2MB صور فقط)
+    match /avatars/{uid} {
+      allow read: if true; // ضروري لعرض الصورة في الهيدر
+      allow write: if isOwner(uid)
+        && request.resource.size < 2 * 1024 * 1024
+        && isImage();
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+  }
+}
