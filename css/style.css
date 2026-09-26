@@ -1,7 +1,7 @@
 /* ============================================================
    «الدكتور في العلوم» — ورقة الأنماط الأساسية (النسخة النهائية)
    01) متغيرات الهوية   02) أساسيات   03) مكوّنات عامة
-   04) الهيدر   05) الهيرو   06) المراحل   07) المزايا
+   04) الهيدر (+ حقل البحث)   05) الهيرو   06) المراحل   07) المزايا
    08) الكورسات   09) الإحصائيات   10) دعوة التسجيل   11) الفوتر
    12) توست/مودال/سكيبتون/فراغ   13) النماذج   14) حركات
    15) المصادقة + لوحة الطالب + الملف الشخصي
@@ -80,7 +80,7 @@ p{margin:0}
 .section-head p{color:var(--c-ink-2);margin-top:10px}
 .section-head.row{max-width:none;display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
 
-/* ---------- 04) الهيدر ---------- */
+/* ---------- 04) الهيدر + حقل البحث ---------- */
 .site-header{position:sticky;top:0;z-index:60;background:rgba(250,249,246,.92);backdrop-filter:blur(8px);border-bottom:1px solid transparent;transition:border-color .25s,box-shadow .25s}
 .site-header.is-scrolled{border-bottom-color:var(--c-line);box-shadow:0 2px 14px rgba(26,36,32,.05)}
 .header-inner{display:flex;align-items:center;gap:24px;height:var(--header-h)}
@@ -98,6 +98,15 @@ p{margin:0}
 .menu-btn{display:none;width:44px;height:44px;border:1px solid var(--c-line);background:var(--c-card);border-radius:12px;place-items:center;cursor:pointer;color:var(--c-ink)}
 .menu-btn .icon{width:22px;height:22px}
 
+/* حقل البحث في الهيدر (يُخفى <1024 عبر responsive.css) */
+.header-search{position:relative;display:flex;align-items:center}
+.header-search input{width:190px;padding:.5em 1em;padding-inline-end:2.6em;border:1.5px solid var(--c-line);border-radius:999px;font:inherit;font-size:.9rem;background:var(--c-card);color:var(--c-ink);transition:border-color .2s,width .25s}
+.header-search input:focus{outline:none;border-color:var(--c-brand);width:230px;box-shadow:0 0 0 3px rgba(13,107,88,.1)}
+.header-search button{position:absolute;inset-inline-end:6px;width:28px;height:28px;border:0;background:none;color:var(--c-ink-2);cursor:pointer;display:grid;place-items:center;border-radius:50%;padding:0}
+.header-search button:hover{color:var(--c-brand)}
+.header-search button .icon{width:16px;height:16px}
+
+/* بطاقة المستخدم المسجل */
 .user-chip{position:relative}
 .user-chip-btn{display:flex;align-items:center;gap:10px;background:var(--c-card);border:1px solid var(--c-line);border-radius:999px;padding:5px 12px;cursor:pointer;font:inherit;color:var(--c-ink);transition:border-color .2s}
 .user-chip-btn:hover{border-color:var(--c-brand)}
