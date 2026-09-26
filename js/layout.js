@@ -1,10 +1,11 @@
 // ============================================================
-// نظام التنقل الاحترافي:
-// - Desktop (≥1024): Sidebar ثابتة يمين (RTL) قابلة للتصغير + Tooltips + بحث
-// - Tablet/Mobile (<1024): Drawer من اليمين + Overlay + زر X
+// نظام التنقل والهوية المشتركة — منصة «الدكتور في العلوم»
+// - Desktop (≥1024): Sidebar ثابتة يمين (RTL) قابلة للتصغير + Tooltips
+// - Tablet/Mobile (<1024): Drawer ينزلق من اليمين + Overlay
 // - Accordion للمراحل + قوائم حسب الدور (زائر/طالب/أدمن)
 // - إغلاق: X / Overlay / رابط / Escape — مع منع تمرير الخلفية
-// - يُولَّد كله داخل #siteHeaderRoot — الصفحات لا تُعدَّل
+// - الفوتر يُولَّد من footerHTML() أدناه — عدّل بياناته من SITE_INFO
+// - الشعار: assets/icons/logo.svg — يُولَّد كله داخل #siteHeaderRoot
 // ============================================================
 import { auth, isConfigured, fbAuthNS, fbStoreNS } from './firebase-config.js';
 import { injectIcons, showToast, hidePreloader } from './utils.js';
@@ -15,7 +16,21 @@ const { doc, getDoc } = fbStoreNS;
 const ROOT = location.pathname.includes('/admin/') ? '../' : '';
 const LOGO = ROOT + 'assets/icons/logo.svg';
 
-/* رمزان إضافيان للقائمة (يُحقنان في Sprite الموجود) */
+/* ============================================================
+   ⚙️ بيانات الموقع — عدّل كل بيانات الفوتر من هنا فقط
+============================================================ */
+const SITE_INFO = {
+  brandName: 'الدكتور',
+  brandSuffix: 'في العلوم',
+  description: 'منصة عربية متخصصة في تعليم العلوم لجميع المراحل الدراسية: دروس مبسطة، فيديوهات، ملفات، واختبارات إلكترونية مع متابعة تقدم الطالب خطوة بخطوة.',
+  phone: '+20 100 000 0000',
+  email: 'support@example.com',
+  location: 'مصر',
+  tagline: 'صُنع بعناية من أجل طلاب العلوم.',
+  copyright: 'الدكتور في العلوم — جميع الحقوق محفوظة.',
+};
+
+/* ---------- رمزان إضافيان للقائمة (يُحقنان في Sprite الموجود) ---------- */
 const EXTRA_SYMBOLS = `
 <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10.5 9-7 9 7"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></symbol>
 <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></symbol>`;
@@ -51,11 +66,13 @@ const ADMIN_ITEMS = [
   { href: 'admin/results.html',  icon: 'i-award',      label: 'النتائج' },
 ];
 
+/* ---------- الشعار (صورة مع بديل تلقائي إن غاب الملف) ---------- */
 const logoHTML = () => `
   <img class="brand-logo" src="${LOGO}" alt="شعار الدكتور في العلوم"
        onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
   <span class="brand-mark" style="display:none"><svg class="icon"><use href="#i-atom"/></svg></span>`;
 
+/* ---------- حقل البحث داخل الـ Sidebar والـ Drawer ---------- */
 const sbSearchHTML = `
   <form class="sb-search" action="${ROOT}search.html" role="search">
     <input type="search" name="q" placeholder="ابحث في المنصة…" aria-label="بحث في المنصة">
@@ -130,11 +147,11 @@ const userBlockHTML = `
     <span class="sb-label sb-user-text"><b>زائر</b><small>سجّل الدخول للتعلم</small></span>
   </a>`;
 
-/* ---------- الـ Sidebar (كمبيوتر) ---------- */
+/* ---------- الـ Sidebar (كمبيوتر ≥1024) ---------- */
 function sidebarHTML() {
   return `
   <aside class="app-sidebar" id="appSidebar" aria-label="القائمة الجانبية">
-    <a class="sb-brand" href="${ROOT}index.html">${logoHTML()}<span class="sb-label sb-brand-name">الدكتور <b>في العلوم</b></span></a>
+    <a class="sb-brand" href="${ROOT}index.html">${logoHTML()}<span class="sb-label sb-brand-name">${SITE_INFO.brandName} <b>${SITE_INFO.brandSuffix}</b></span></a>
     ${userBlockHTML()}
     ${sbSearchHTML}
     <nav class="sb-nav">${navListHTML()}</nav>
@@ -159,8 +176,8 @@ function headerHTML() {
   return `
   <header class="site-header" id="siteHeader">
     <div class="container header-inner">
-      <a href="${ROOT}index.html" class="brand" aria-label="الدكتور في العلوم — الرئيسية">
-        ${logoHTML()}<span class="brand-name">الدكتور <b>في العلوم</b></span>
+      <a href="${ROOT}index.html" class="brand" aria-label="${SITE_INFO.brandName} ${SITE_INFO.brandSuffix} — الرئيسية">
+        ${logoHTML()}<span class="brand-name">${SITE_INFO.brandName} <b>${SITE_INFO.brandSuffix}</b></span>
       </a>
       <nav class="main-nav top-links" aria-label="روابط سريعة">${short}</nav>
       <div class="header-actions">
@@ -196,7 +213,7 @@ function drawerHTML() {
   <div class="nav-backdrop" id="navBackdrop"></div>
   <aside class="m-drawer" id="mDrawer" aria-label="قائمة التنقل" aria-hidden="true">
     <div class="m-head">
-      <a class="sb-brand" href="${ROOT}index.html">${logoHTML()}<span class="sb-brand-name">الدكتور <b>في العلوم</b></span></a>
+      <a class="sb-brand" href="${ROOT}index.html">${logoHTML()}<span class="sb-brand-name">${SITE_INFO.brandName} <b>${SITE_INFO.brandSuffix}</b></span></a>
       <button class="m-close" id="drawerClose" aria-label="إغلاق القائمة">
         <svg class="icon"><use href="#i-close"/></svg>
       </button>
@@ -208,24 +225,34 @@ function drawerHTML() {
   </aside>`;
 }
 
+/* ============================================================
+   الفوتر — يُولَّد في كل الصفحات، بياناته من SITE_INFO أعلاه
+============================================================ */
 function footerHTML() {
   return `
   <footer class="site-footer">
     <div class="container footer-grid">
+
       <div class="footer-brand">
-        <a href="${ROOT}index.html" class="brand" aria-label="الدكتور في العلوم">${logoHTML()}<span class="brand-name">الدكتور <b>في العلوم</b></span></a>
-        <p>منصة عربية متخصصة في تعليم العلوم لجميع المراحل الدراسية: دروس مبسطة، فيديوهات، ملفات، واختبارات إلكترونية مع متابعة تقدم الطالب خطوة بخطوة.</p>
+        <a href="${ROOT}index.html" class="brand" aria-label="${SITE_INFO.brandName} ${SITE_INFO.brandSuffix}">
+          ${logoHTML()}
+          <span class="brand-name">${SITE_INFO.brandName} <b>${SITE_INFO.brandSuffix}</b></span>
+        </a>
+        <p>${SITE_INFO.description}</p>
       </div>
+
       <nav aria-label="روابط الموقع">
         <h4>روابط سريعة</h4>
         <ul class="footer-links">
           <li><a href="${ROOT}index.html">الرئيسية</a></li>
           <li><a href="${ROOT}courses.html">الكورسات</a></li>
           <li><a href="${ROOT}quizzes.html">الاختبارات</a></li>
+          <li><a href="${ROOT}lessons.html">الدروس</a></li>
           <li><a href="${ROOT}about.html">من نحن</a></li>
           <li><a href="${ROOT}contact.html">تواصل معنا</a></li>
         </ul>
       </nav>
+
       <nav aria-label="المراحل الدراسية">
         <h4>المراحل الدراسية</h4>
         <ul class="footer-links">
@@ -234,23 +261,24 @@ function footerHTML() {
           <li><a href="${ROOT}stages.html#secondary">المرحلة الثانوية</a></li>
         </ul>
       </nav>
+
       <div>
         <h4>تواصل معنا</h4>
-        <!-- عدّل بيانات التواصل من هنا فقط -->
         <ul class="footer-contact">
-          <li><svg class="icon"><use href="#i-phone"/></svg> <span dir="ltr">+20 100 000 0000</span></li>
-          <li><svg class="icon"><use href="#i-mail"/></svg> <span dir="ltr">support@example.com</span></li>
-          <li><svg class="icon"><use href="#i-map-pin"/></svg> <span>مصر</span></li>
+          <li><svg class="icon"><use href="#i-phone"/></svg> <span dir="ltr">${SITE_INFO.phone}</span></li>
+          <li><svg class="icon"><use href="#i-mail"/></svg> <span dir="ltr">${SITE_INFO.email}</span></li>
+          <li><svg class="icon"><use href="#i-map-pin"/></svg> <span>${SITE_INFO.location}</span></li>
         </ul>
         <div class="footer-legal">
           <a href="${ROOT}privacy.html">سياسة الخصوصية</a>
           <a href="${ROOT}terms.html">الشروط والأحكام</a>
         </div>
       </div>
+
     </div>
     <div class="footer-bar container">
-      <span>© <span id="year"></span> الدكتور في العلوم — جميع الحقوق محفوظة.</span>
-      <span>صُنع بعناية من أجل طلاب العلوم.</span>
+      <span>© <span id="year"></span> ${SITE_INFO.copyright}</span>
+      <span>${SITE_INFO.tagline}</span>
     </div>
   </footer>`;
 }
@@ -306,6 +334,9 @@ export async function refreshHeaderUser() {
   } catch { /* تجاهل */ }
 }
 
+/* ============================================================
+   التهيئة
+============================================================ */
 export function initLayout() {
   injectIcons();
   document.getElementById('icon-sprite')?.insertAdjacentHTML('beforeend', EXTRA_SYMBOLS);
