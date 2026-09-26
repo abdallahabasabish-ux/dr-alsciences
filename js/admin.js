@@ -323,7 +323,7 @@ async function initAdminSubjects() {
   await refresh();
 }
 
-/* ==================== admin/students.html — الطلاب ==================== */
+/* ==================== admin/students.html — الطلاب (مع إدارة الدور) ==================== */
 async function initAdminStudents() {
   const ctx = await requireAdmin(); if (!ctx) return;
   initAdminShell(ctx);
@@ -349,6 +349,12 @@ async function initAdminStudents() {
     }
   }
 
+  function rolePill(s) {
+    return s.role === 'admin'
+      ? '<span class="pill pill-admin">أدمن</span>'
+      : '<span class="pill pill-student">طالب</span>';
+  }
+
   function render() {
     const q = searchEl.value.trim().toLowerCase();
     const list = students.filter((s) =>
@@ -363,16 +369,21 @@ async function initAdminStudents() {
           <span dir="ltr">${esc(s.email || '')}</span></div></td>
         <td data-label="الهاتف" dir="ltr">${esc(s.phone || '—')}</td>
         <td data-label="الصف">${esc(s.gradeId ? gradeMap.get(s.gradeId) ?? '—' : '—')}</td>
-        <td data-label="الدور"><span class="pill ${isAdminRow ? 'pill-admin' : 'pill-student'}">${isAdminRow ? 'أدمن' : 'طالب'}</span></td>
+        <td data-label="الدور">${rolePill(s)}</td>
         <td data-label="التسجيل">${formatDate(s.createdAt)}</td>
         <td data-label="الحالة">${s.isBlocked
           ? '<span class="pill pill-blocked">معطّل</span>'
           : '<span class="pill pill-on">مفعّل</span>'}</td>
         <td data-label="إجراءات">
-          ${isAdminRow
-            ? '<span class="item-meta">—</span>'
-            : `<button class="btn btn-sm ${s.isBlocked ? 'btn-outline' : 'btn-ghost'}" data-block="${s.id}">
-                 ${s.isBlocked ? 'تفعيل' : 'تعطيل'}</button>`}
+          <div class="row-actions">
+            <button class="btn btn-sm ${s.role === 'admin' ? 'btn-outline' : 'btn-ghost'}"
+                    data-role="${s.id}" title="تغيير الصلاحية">
+              ${s.role === 'admin' ? 'تخفيض لطالب' : 'ترقية لأدمن'}</button>
+            ${isAdminRow
+              ? '<span class="item-meta">—</span>'
+              : `<button class="btn btn-sm ${s.isBlocked ? 'btn-outline' : 'btn-ghost'}" data-block="${s.id}">
+                   ${s.isBlocked ? 'تفعيل' : 'تعطيل'}</button>`}
+          </div>
         </td>
       </tr>`;
     }).join('')
@@ -381,27 +392,78 @@ async function initAdminStudents() {
 
   searchEl.addEventListener('input', render);
 
+  /* --- تعطيل/تفعيل الحساب --- */
   tbody.addEventListener('click', async (e) => {
-    const btn = e.target.closest('[data-block]');
-    if (!btn) return;
-    const student = students.find((s) => s.id === btn.dataset.block);
-    const blocking = !student.isBlocked;
-    const ok = await confirmDialog({
-      title: blocking ? 'تعطيل الحساب؟' : 'تفعيل الحساب؟',
-      message: blocking
-        ? `لن يستطيع "${student?.name}" تسجيل الدخول أو استخدام المنصة حتى إعادة التفعيل.`
-        : `سيتمكن "${student?.name}" من استخدام المنصة مجددًا.`,
-      confirmText: blocking ? 'تعطيل' : 'تفعيل',
-      danger: blocking,
-    });
-    if (!ok) return;
-    try {
-      await updateIn('users', student.id, { isBlocked: blocking });
-      showToast(blocking ? 'تم تعطيل الحساب' : 'تم تفعيل الحساب');
-      refresh();
-    } catch (err) {
-      console.error(err);
-      showToast('تعذر تنفيذ العملية', 'error');
+    const blockBtn = e.target.closest('[data-block]');
+    if (blockBtn) {
+      const student = students.find((s) => s.id === blockBtn.dataset.block);
+      const blocking = !student.isBlocked;
+      const ok = await confirmDialog({
+        title: blocking ? 'تعطيل الحساب؟' : 'تفعيل الحساب؟',
+        message: blocking
+          ? `لن يستطيع "${student?.name}" تسجيل الدخول أو استخدام المنصة حتى إعادة التفعيل.`
+          : `سيتمكن "${student?.name}" من استخدام المنصة مجددًا.`,
+        confirmText: blocking ? 'تعطيل' : 'تفعيل',
+        danger: blocking,
+      });
+      if (!ok) return;
+      try {
+        await updateIn('users', student.id, { isBlocked: blocking });
+        showToast(blocking ? 'تم تعطيل الحساب' : 'تم تفعيل الحساب');
+        refresh();
+      } catch (err) {
+        console.error(err);
+        showToast('تعذر تنفيذ العملية', 'error');
+      }
+      return;
+    }
+
+    /* --- تغيير الصلاحية (ترقية/تخفيض) --- */
+    const roleBtn = e.target.closest('[data-role]');
+    if (roleBtn) {
+      const target = students.find((s) => s.id === roleBtn.dataset.role);
+      if (!target) return;
+
+      const promoting = target.role !== 'admin';
+
+      /* حماية أخيرة: منع آخر أدمن من تخفيض نفسه — وإلا تُقفل اللوحة على الجميع */
+      const adminCount = students.filter((s) => s.role === 'admin' && !s.isBlocked).length;
+      if (!promoting && target.role === 'admin' && adminCount <= 1) {
+        showToast('لا يمكن تخفيض آخر أدمن — رقّ حسابًا آخر أولًا', 'error');
+        return;
+      }
+
+      const ok = await confirmDialog({
+        title: promoting ? 'ترقية إلى أدمن؟' : 'تخفيض إلى طالب؟',
+        message: promoting
+          ? `سيحصل "${target?.name}" على صلاحيات إدارة المحتوى والطلاب والنتائج.`
+          : `سيفقد "${target?.name}" صلاحيات الإدارة وسيصبح طالبًا عاديًا.`,
+        confirmText: promoting ? 'ترقية' : 'تخفيض',
+        danger: !promoting,
+      });
+      if (!ok) return;
+
+      setBtnLoading(roleBtn, true);
+      try {
+        await updateIn('users', target.id, { role: promoting ? 'admin' : 'student' });
+        showToast(promoting
+          ? 'تمت الترقية — يظهر له قسم الإدارة عند تحديث صفحته'
+          : 'تم التخفيض إلى طالب');
+        refresh();
+
+        /* تذكير بالـ Claim عند الترقية (المصدر الأمني الحقيقي) */
+        if (promoting) {
+          showToast('مهم: لتفعيل صلاحياته الكاملة على لوحة الإدارة، شغّل محليًا: node set-admin.js ' + target.id, 'info', 8000);
+        }
+      } catch (err) {
+        console.error(err);
+        const msg = err?.code?.includes('permission-denied')
+          ? 'قواعد Firestore لم تُحدَّث بعد — انشر firestore.rules الجديدة'
+          : 'تعذر تنفيذ العملية';
+        showToast(msg, 'error');
+      } finally {
+        setBtnLoading(roleBtn, false);
+      }
     }
   });
 
