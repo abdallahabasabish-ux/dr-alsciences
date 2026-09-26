@@ -1,12 +1,28 @@
 /* ============================================================
-   05) التنقل النهائي:
-   كمبيوتر = قائمة أفقية أعلى (لا Sidebar إطلاقًا)
-   هاتف/تابلت = زر أعلى اليسار + Drawer من اليسار + Overlay
+   06) الإصدار النهائي المحصّن:
+   كمبيوتر = قائمة أفقية أعلى الهيدر + بحث مرئي
+   هاتف/تابلت = زر أعلى اليسار + Drawer من اليسار + بحث داخل الدرج
+   (هذه الكتلة مستقلة وتتجاوز أي قواعد سابقة بترتيبها في نهاية الملف)
 ============================================================ */
 html,body{overflow-x:clip}
 html.nav-locked,html.nav-locked body{overflow:hidden}
 
-/* ---------- الكمبيوتر (≥1024): الهيدر الأفقي هو الملك ---------- */
+/* ---------- مكونات البحث (الهيدر + الدرج) ---------- */
+.header-search{position:relative;display:flex;align-items:center}
+.header-search input{width:190px;padding:.5em 1em;padding-inline-end:2.6em;border:1.5px solid var(--c-line);border-radius:999px;font:inherit;font-size:.9rem;background:var(--c-card);color:var(--c-ink);transition:border-color .2s,width .25s}
+.header-search input:focus{outline:none;border-color:var(--c-brand);width:230px}
+.header-search button{position:absolute;inset-inline-end:6px;width:28px;height:28px;border:0;background:none;color:var(--c-ink-2);cursor:pointer;display:grid;place-items:center;border-radius:50%;padding:0}
+.header-search button:hover{color:var(--c-brand)}
+.header-search button .icon{width:16px;height:16px}
+
+.sb-search{position:relative;display:flex;margin:0 0 12px}
+.sb-search input{width:100%;min-width:0;padding-block:.65em;padding-inline:1em 2.7em;border:1.5px solid var(--c-line);border-radius:12px;font:inherit;font-size:.95rem;background:var(--c-paper);color:var(--c-ink);transition:border-color .2s,background .2s}
+.sb-search input:focus{outline:none;border-color:var(--c-brand);background:#fff;box-shadow:0 0 0 3px rgba(13,107,88,.1)}
+.sb-search button{position:absolute;inset-inline-end:9px;top:50%;transform:translateY(-50%);width:30px;height:30px;border:0;background:none;color:var(--c-ink-2);cursor:pointer;display:grid;place-items:center;border-radius:50%;padding:0}
+.sb-search button:hover{color:var(--c-brand)}
+.sb-search button .icon{width:17px;height:17px}
+
+/* ---------- الكمبيوتر (≥1024): قائمة أفقية — لا درج ولا زر ---------- */
 @media (min-width:1024px){
   .header-inner .menu-btn{display:none!important}
   .nav-backdrop{display:none!important}
@@ -17,20 +33,19 @@ html.nav-locked,html.nav-locked body{overflow:hidden}
 @media (max-width:1023px){
   :root{--header-h:60px}
 
-  /* صف الهيدر: الشعار يمين — زر القائمة أقصى اليسار، بلا فيض */
+  /* الهيدر: الشعار يمين — زر القائمة أقصى اليسار */
   .header-inner{gap:10px}
   .brand{flex:1;min-width:0}
   .brand-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .header-inner .menu-btn{display:grid!important;flex-shrink:0}
-  /* البحث وأزرار الدخول من الشريط: مخفية (موجودة داخل الدرج) */
-  .header-actions .header-search,
+  .header-inner .menu-btn{display:grid!important;flex-shrink:0;width:44px;height:44px}
+  .main-nav.top-links{display:none!important}
+  .header-actions .header-search{display:none!important}
   .header-actions .hdr-auth{display:none!important}
   .header-actions{gap:8px;flex-shrink:0}
-  /* شارة المستخدم تبقى ظاهرة في الهيدر إن كان مسجلًا */
   .user-chip-btn{padding:4px 8px}
   .user-chip-btn .user-name{display:none}
 
-  /* الدرج: من اليسار — فيزيائي صريح (left:0) لا يتأثر بالاتجاه */
+  /* الدرج: ينزلق من اليسار (فيزيائي صريح) */
   .m-drawer{
     display:flex;flex-direction:column;
     position:fixed;top:0;bottom:0;
@@ -50,7 +65,7 @@ html.nav-locked,html.nav-locked body{overflow:hidden}
   }
   body.nav-open .nav-backdrop{opacity:1;pointer-events:auto}
 
-  /* رأس الدرج */
+  /* رأس الدرج + زر X */
   .m-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--c-line);margin-bottom:12px}
   .m-close{width:42px;height:42px;border:1px solid var(--c-line);background:#fff;border-radius:11px;display:grid;place-items:center;color:var(--c-ink);cursor:pointer;flex-shrink:0}
   .m-close:hover{color:var(--c-brand);border-color:var(--c-brand)}
@@ -65,14 +80,7 @@ html.nav-locked,html.nav-locked body{overflow:hidden}
   .m-drawer .sb-user-text b{font-size:.9rem}
   .m-drawer .sb-user-text small{color:var(--c-ink-2);font-size:.75rem}
 
-  /* البحث داخل الدرج */
-  .m-drawer .sb-search{position:relative;display:flex;margin:0 0 12px}
-  .m-drawer .sb-search input{width:100%;min-width:0;padding-block:.6em;padding-inline:1em 2.6em;border:1.5px solid var(--c-line);border-radius:11px;font:inherit;font-size:.92rem;background:var(--c-paper);color:var(--c-ink);transition:border-color .2s}
-  .m-drawer .sb-search input:focus{outline:none;border-color:var(--c-brand);background:#fff}
-  .m-drawer .sb-search button{position:absolute;inset-inline-end:8px;top:50%;transform:translateY(-50%);width:28px;height:28px;border:0;background:none;color:var(--c-ink-2);cursor:pointer;display:grid;place-items:center;border-radius:50%;padding:0}
-  .m-drawer .sb-search button:hover{color:var(--c-brand)}
-
-  /* عناصر القائمة داخل الدرج */
+  /* عناصر القائمة داخل الدرج — أزرار مريحة للمس */
   .m-drawer .sb-list{list-style:none;margin:0;padding:0;display:grid;gap:2px}
   .m-drawer .sb-link{
     display:flex;align-items:center;gap:12px;width:100%;
@@ -93,9 +101,59 @@ html.nav-locked,html.nav-locked body{overflow:hidden}
   .m-drawer .sb-sublink.is-active::before{content:"";position:absolute;inset-inline-start:0;top:50%;transform:translateY(-50%);width:3px;height:60%;border-radius:3px;background:var(--c-accent)}
   .m-drawer .sb-sep{border-top:1px solid var(--c-line);margin:12px 6px;padding-top:10px;font-size:.72rem;color:var(--c-ink-2)}
   .m-drawer .sb-foot{border-top:1px solid var(--c-line);padding-top:10px;display:grid;gap:2px;margin-top:12px}
+
+  /* الهيرو والأقسام على التابلت */
+  .hero{padding-block:56px 64px}
+  .hero-grid{grid-template-columns:1fr;gap:40px}
+  .hero-visual{max-width:520px}
+  .stages-grid{grid-template-columns:1fr;max-width:540px;margin-inline:auto}
+  .courses-grid{grid-template-columns:repeat(2,1fr)}
+  .features-grid{grid-template-columns:repeat(2,1fr)}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .stat:nth-child(2n+1)::before{display:none}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .grades-grid{grid-template-columns:repeat(2,1fr)}
+  .stat-cards{grid-template-columns:repeat(2,1fr)}
+  .dash-grid{grid-template-columns:1fr}
+  .profile-grid{grid-template-columns:1fr}
+  .lesson-layout{grid-template-columns:1fr}
+  .lesson-aside{position:static;order:2}
+  .contact-grid{grid-template-columns:1fr}
 }
 
-/* هواتف صغيرة: الشعار فقط */
+/* ---------- هواتف (<640) ---------- */
+@media (max-width:640px){
+  .section{padding-block:48px}
+  .hero{padding-block:44px}
+  .hero-actions .btn{flex:1;min-width:150px}
+  .courses-grid{grid-template-columns:1fr}
+  .features-grid{grid-template-columns:1fr}
+  .section-head.row{flex-direction:column;align-items:flex-start}
+  .demo-score{inset-inline-end:12px;bottom:12px}
+  .stat-num{font-size:2rem}
+  .footer-grid{grid-template-columns:1fr;gap:28px}
+  .footer-bar{flex-direction:column;text-align:center;align-items:center}
+  .grades-grid{grid-template-columns:1fr}
+  .quiz-list{grid-template-columns:1fr}
+  .lesson-badges .mini-badge:not(.accent){display:none}
+  .page-hero-flex{flex-direction:column}
+  .qcard{padding:20px 16px}
+  .qtext{font-size:1.05rem}
+  .quiz-nav .btn{flex:1}
+  .opt-tag{display:none}
+}
+
+/* ---------- هواتف صغيرة (<420) ---------- */
+@media (max-width:420px){
+  body{font-size:15px}
+  .hero h1{font-size:1.65rem}
+  .stat-cards{grid-template-columns:1fr}
+  .auth-card{padding:28px 20px}
+  .panel{padding:18px}
+  .item-end{display:none}
+  .lesson-nav{grid-template-columns:1fr}
+  .lesson-content{padding:20px}
+}
 @media (max-width:400px){
   .brand-name{display:none}
 }
