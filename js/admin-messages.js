@@ -3,7 +3,7 @@
 // قراءة رسائل "تواصل معنا" + البحث + الرد (يُحفظ في Firestore)
 // + زر mailto يفتح بريد الأدمن بالرد جاهزًا للإرسال
 // ============================================================
-import { fbStoreNS } from './firebase-config.js';
+import { db, fbStoreNS } from './firebase-config.js';
 import { requireAdmin, initAdminShell, updateIn, errorState } from './admin-core.js';
 import { esc, showToast, formatNumber, formatDate, confirmDialog, setBtnLoading } from './utils.js';
 
@@ -22,7 +22,7 @@ function statusPill(m) {
 }
 
 function mailtoHref(m) {
-  const subject = encodeURIComponent(`رد بخصوص رسالتك — الدكتور في العلوم`);
+  const subject = encodeURIComponent('رد بخصوص رسالتك — الدكتور في العلوم');
   const body = encodeURIComponent(
     (m.reply ? m.reply + '\n\n' : '') +
     '—\nأصل رسالتك:\n' + (m.message || '')
@@ -137,7 +137,7 @@ function replyModal(m) {
 
 async function refresh() {
   try {
-    const snap = await getDocs(collection(db(), 'messages'));
+    const snap = await getDocs(collection(db, 'messages'));
     messages = snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort(byNewest);
     render();
   } catch (err) {
@@ -145,9 +145,6 @@ async function refresh() {
     listEl().innerHTML = errorState();
   }
 }
-
-/* db() عبر الاستيراد المباشر */
-import { db } from './firebase-config.js';
 
 async function initAdminMessages() {
   const ctx = await requireAdmin();
