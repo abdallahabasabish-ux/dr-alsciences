@@ -1,13 +1,12 @@
 /* ============================================================
    «الدكتور في العلوم» — النسخة النهائية
-   01) محتوى عام ≤1199 / ≤720 / ≤640 / ≤520
-   02) لوحة الطالب + الدرس + الاختبارات
-   03) لوحة الإدارة
+   01) محتوى عام ≤1199 / ≤720 / ≤640 / ≤520 / ≤420
+   02) الدرس + الاختبارات (موبايل)
+   03) لوحة الإدارة (شل مستقل)
    04) نظام التنقل: Sidebar (كمبيوتر) + Drawer (تابلت/هاتف)
 ============================================================ */
 
 /* ---------- 01) محتوى عام ---------- */
-/* ≤1199: مع الـ Sidebar (272px) يقل العرض الفعلي — نكسر الأعمدة مبكرًا */
 @media (max-width:1199px){
   .hero{padding-block:60px 72px}
   .hero-grid{grid-template-columns:1fr;gap:44px}
@@ -26,7 +25,6 @@
   .lesson-aside{position:static;order:2}
   .contact-grid{grid-template-columns:1fr}
 }
-
 @media (max-width:720px){
   .section{padding-block:56px}
   .hero{padding-block:48px}
@@ -39,21 +37,18 @@
   .footer-grid{grid-template-columns:1fr;gap:32px}
   .footer-bar{flex-direction:column;text-align:center;align-items:center}
 }
-
 @media (max-width:640px){
   .grades-grid{grid-template-columns:1fr}
   .quiz-list{grid-template-columns:1fr}
   .lesson-badges .mini-badge:not(.accent){display:none}
   .page-hero-flex{flex-direction:column}
 }
-
 @media (max-width:520px){
   .stat-cards{grid-template-columns:1fr}
   .auth-card{padding:28px 20px}
   .panel{padding:18px}
   .item-end{display:none}
 }
-
 @media (max-width:420px){
   body{font-size:15px}
   .hero h1{font-size:1.65rem}
@@ -202,9 +197,9 @@ html.nav-locked,html.nav-locked body{overflow:hidden}
 
 /* ---------- الهيدر: ضبط الأدوار عبر نقاط التوقف ---------- */
 @media (max-width:1023px){
-  .main-nav.top-links{display:none!important}   /* روابط الهيدر المختصرة: كمبيوتر فقط */
+  .main-nav.top-links{display:none!important}
   .header-inner .menu-btn{display:grid!important;flex-shrink:0}
-  .hdr-auth .btn .btn-label{display:none}       /* أيقونة الحساب بدون نص */
+  .hdr-auth .btn .btn-label{display:none}
   .hdr-auth .btn{padding:.55em .7em}
 }
 @media (min-width:1024px){
