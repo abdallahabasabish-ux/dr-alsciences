@@ -157,3 +157,62 @@ html.nav-locked,html.nav-locked body{overflow:hidden}
 @media (max-width:400px){
   .brand-name{display:none}
 }
+/* ============================================================
+   07) لوحة الإدارة — تجاوب محصّن لكل الأجهزة
+   (يتفوق على القسم 03 القديم بترتيبه — يمكن حذف 03 بأمان)
+============================================================ */
+body.admin-nav-open{overflow:hidden} /* منع تمرير الخلفية أثناء فتح درج الإدارة */
+
+@media (max-width:1024px){
+  .admin-topbar .menu-btn{display:grid!important}
+  .admin-sidebar{
+    position:fixed;top:64px;bottom:0;inset-inline-start:0;z-index:70;
+    width:min(290px,85vw);height:auto;
+    transform:translateX(105%);transition:transform .28s ease;
+    overscroll-behavior:contain;-webkit-overflow-scrolling:touch;box-shadow:var(--shadow-md);
+  }
+  body.admin-nav-open .admin-sidebar{transform:none}
+  .admin-backdrop{
+    display:block;position:fixed;inset:0;top:64px;z-index:65;
+    background:rgba(20,27,24,.45);opacity:0;pointer-events:none;transition:opacity .28s;
+  }
+  body.admin-nav-open .admin-backdrop{opacity:1;pointer-events:auto}
+  .admin-main{padding:20px 14px}
+  .quick-grid{grid-template-columns:1fr 1fr}
+  .stat-cards{grid-template-columns:repeat(2,1fr)}
+}
+
+@media (max-width:760px){
+  /* الجداول تتحول بطاقات بأسماء الأعمدة */
+  .admin-table thead{display:none}
+  .admin-table,.admin-table tbody,.admin-table tr,.admin-table td{display:block;width:100%;min-width:0}
+  .admin-table tr{background:#fff;border-bottom:1px solid var(--c-line);padding:6px 0}
+  .admin-table td{display:flex;justify-content:space-between;align-items:center;gap:12px;border:0;padding:8px 14px;text-align:start}
+  .admin-table td::before{content:attr(data-label);font-weight:600;color:var(--c-ink-2);font-size:.8rem;flex-shrink:0}
+  .admin-table .cell-main{text-align:end}
+  .row-actions{justify-content:flex-end}
+}
+
+@media (max-width:640px){
+  /* رأس الصفحة: يتحول عموديًا والأزرار بعرض كامل */
+  .admin-head{flex-direction:column;align-items:stretch;gap:12px}
+  .admin-head-actions{width:100%;flex-wrap:wrap}
+  .admin-head-actions .btn{flex:1 1 auto}
+  .admin-head-actions .search-input,
+  .admin-head-actions .form-select{flex:1;width:100%;max-width:none}
+  /* المودالات: شبه شاشة كاملة ومريحة للمس */
+  .modal{width:calc(100vw - 20px);max-width:none;max-height:calc(100dvh - 80px);overflow-y:auto;padding:20px 16px}
+  .modal-lg{width:calc(100vw - 12px)}
+  .modal-actions{flex-direction:column-reverse}
+  .modal-actions .btn{width:100%}
+  .quick-grid{grid-template-columns:1fr}
+  .stat-cards{grid-template-columns:1fr}
+}
+
+@media (max-width:480px){
+  .admin-topbar-inner{gap:8px;padding-inline:10px}
+  .admin-brand{font-size:.88rem}
+  #adminName{display:none} /* الاسم يختفي — يبقى الصورة وزر الخروج */
+  .admin-main{padding:14px 10px}
+  .admin-note{font-size:.8rem}
+}
