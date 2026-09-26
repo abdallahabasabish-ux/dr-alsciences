@@ -1,0 +1,161 @@
+rules_version = '2';
+
+// ============================================================
+// قواعد الإنتاج — منصة «الدكتور في العلوم»
+// مصدر الصلاحية الحقيقي: Custom Claim  admin == true
+// (يُصدر حصريًا من Admin SDK — لا يمكن لأي عميل إنشاؤه)
+// النشر: firebase deploy --only firestore:rules
+// ============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /* ---------- دوال الأمان ---------- */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // الصلاحية الحقيقية الوحيدة للأدمن
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function str(v, minLen, maxLen) {
+      return v is string && v.size() >= minLen && v.size() <= maxLen;
+    }
+
+    function validEmail(v) {
+      return v is string && v.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$');
+    }
+
+    /* ============================================================
+       المحتوى التعليمي العام
+       قراءة: للجميع (تصفح الزوار) — كتابة: الأدمن (Claim) فقط
+       الطالب لا يستطيع تعديل أي عنوان/محتوى/سعر/حالة نشر
+    ============================================================ */
+    match /stages/{id}   { allow read: if true; allow write: if isAdmin(); }
+    match /grades/{id}   { allow read: if true; allow write: if isAdmin(); }
+    match /subjects/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /lessons/{id}  { allow read: if true; allow write: if isAdmin(); }
+    match /courses/{id}  { allow read: if true; allow write: if isAdmin(); }
+    match /stats/{id}    { allow read: if true; allow write: if isAdmin(); }
+
+    // الاختبارات + الأسئلة (المجموعة الفرعية تحتاج قاعدة صريحة)
+    // ملاحظة أمان: correctIndex مقروء من العميل حاليًا — الإصلاح
+    // الكامل (Cloud Function) موثق في SECURITY.md
+    match /quizzes/{quizId} {
+      allow read: if true;
+      allow write: if isAdmin();
+      match /questions/{questionId} {
+        allow read: if true;
+        allow write: if isAdmin();
+      }
+    }
+
+    /* ============================================================
+       users
+       - الطالب: يقرأ مستنده فقط — لا يستطيع سرد (list) المجموعة
+       - الإنشاء: role إجباري student + تحقق حقول
+       - التعديل الذاتي: قائمة حقول بيضاء صريحة
+         (role / createdAt / isBlocked / أي حقل صلاحيات = ممنوع)
+       - الحذف: ممنوع من العميل إطلاقًا (Admin SDK فقط)
+    ============================================================ */
+    match /users/{uid} {
+      allow get: if isOwner(uid) || isAdmin();
+      allow list: if isAdmin();
+
+      allow create: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(
+             ['name','phone','email','countryCode','governorate','city','gradeId','role','photoUrl','isBlocked','createdAt'])
+        && request.resource.data.role == 'student'
+        && str(request.resource.data.name, 2, 100)
+        && str(request.resource.data.phone, 7, 20)
+        && validEmail(request.resource.data.email)
+        && request.resource.data.countryCode is string
+        && request.resource.data.governorate is string;
+
+      allow update: if isAdmin()
+        || (isOwner(uid)
+            && request.resource.data.diff(resource.data).affectedKeys()
+                 .hasOnly(['name','phone','countryCode','governorate','city','gradeId','photoUrl'])
+            && (!('name' in request.resource.data) || str(request.resource.data.name, 2, 100))
+            && (!('phone' in request.resource.data) || str(request.resource.data.phone, 7, 20))
+            && (!('photoUrl' in request.resource.data) || request.resource.data.photoUrl is string));
+
+      allow delete: if false;
+    }
+
+    /* ============================================================
+       تقدم الدروس — يملكه الطالب حصريًا
+       completedAt إجباري من خادم الوقت (serverTimestamp) وليس من العميل
+    ============================================================ */
+    match /progress/{id} {
+      allow read: if isOwner(resource.data.userId);
+      allow create: if isOwner(request.resource.data.userId)
+        && request.resource.data.keys().hasOnly(
+             ['userId','lessonId','lessonTitle','subjectId','subjectName','gradeId','gradeName','completedAt'])
+        && request.resource.data.lessonId is string
+        && request.resource.data.lessonId.size() <= 150
+        && request.resource.data.completedAt == request.time;
+      allow update, delete: if isOwner(resource.data.userId);
+    }
+
+    /* ============================================================
+       النتائج — سجل غير قابل للمساس
+       الطالب ينشئ نتيجته مرة واحدة فقط بحدود حسابية معقولة.
+       لا تعديل ولا حذف من العميل إطلاقًا (حتى الأدمن).
+    ============================================================ */
+    match /results/{id} {
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+      allow create: if isOwner(request.resource.data.userId)
+        && request.resource.data.keys().hasOnly(
+             ['userId','quizId','quizTitle','gradeId','subjectId','score','total','percent','passed','answers','createdAt'])
+        && request.resource.data.quizId is string
+        && request.resource.data.quizId.size() <= 150
+        && request.resource.data.total is number && request.resource.data.total > 0
+        && request.resource.data.score is number
+        && request.resource.data.score >= 0
+        && request.resource.data.score <= request.resource.data.total
+        && request.resource.data.percent is number
+        && request.resource.data.percent >= 0
+        && request.resource.data.percent <= 100
+        && request.resource.data.passed is bool;
+      allow update, delete: if false;
+    }
+
+    /* ============================================================
+       التسجيل في الكورسات
+       v1: المجاني فقط من العميل (type=free). المدفوع مستقبلًا
+       يُفعَّل حصريًا من Cloud Function (بوابة الدفع) — البنية جاهزة
+    ============================================================ */
+    match /enrollments/{id} {
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+      allow create: if isOwner(request.resource.data.userId)
+        && request.resource.data.courseId is string
+        && request.resource.data.courseId.size() <= 150
+        && request.resource.data.status == 'active'
+        && request.resource.data.type == 'free';
+      allow update, delete: if false;
+    }
+
+    /* ============================================================
+       رسائل التواصل
+       إنشاء عام مُحقَّن — قراءة للأدمن — تعديل للأدمن بحقول الرد فقط
+    ============================================================ */
+    match /messages/{id} {
+      allow read: if isAdmin();
+      allow create: if str(request.resource.data.name, 2, 100)
+        && validEmail(request.resource.data.email)
+        && str(request.resource.data.phone, 0, 30)
+        && str(request.resource.data.message, 10, 2000);
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['reply','repliedAt']);
+      allow delete: if false;
+    }
+  }
+}
