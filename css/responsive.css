@@ -1,8 +1,14 @@
 /* ============================================================
-   «الدكتور في العلوم» — نقاط التوقف (Mobile First / تحسينات تدريجية)
+   «الدكتور في العلوم» — النسخة النهائية
+   01) محتوى عام ≤1199 / ≤720 / ≤640 / ≤520
+   02) لوحة الطالب + الدرس + الاختبارات
+   03) لوحة الإدارة
+   04) نظام التنقل: Sidebar (كمبيوتر) + Drawer (تابلت/هاتف)
 ============================================================ */
-/* أجهزة لوحية أفقية ولابتوب صغير */
-@media (max-width:1080px){
+
+/* ---------- 01) محتوى عام ---------- */
+/* ≤1199: مع الـ Sidebar (272px) يقل العرض الفعلي — نكسر الأعمدة مبكرًا */
+@media (max-width:1199px){
   .hero{padding-block:60px 72px}
   .hero-grid{grid-template-columns:1fr;gap:44px}
   .hero-visual{max-width:540px}
@@ -10,29 +16,17 @@
   .courses-grid{grid-template-columns:repeat(2,1fr)}
   .features-grid{grid-template-columns:repeat(2,1fr)}
   .stats-grid{grid-template-columns:repeat(2,1fr)}
-  .stat:nth-child(2n+1)::before{display:none} /* إخفاء الفاصل أول الصف */
+  .stat:nth-child(2n+1)::before{display:none}
   .footer-grid{grid-template-columns:1fr 1fr}
+  .grades-grid{grid-template-columns:repeat(2,1fr)}
+  .stat-cards{grid-template-columns:repeat(2,1fr)}
+  .dash-grid{grid-template-columns:1fr}
+  .profile-grid{grid-template-columns:1fr}
+  .lesson-layout{grid-template-columns:1fr}
+  .lesson-aside{position:static;order:2}
+  .contact-grid{grid-template-columns:1fr}
 }
 
-/* الهواتف الكبيرة + التابلت العمودي: تحويل القائمة إلى Drawer */
-@media (max-width:992px){
-  .menu-btn{display:grid}
-  .auth-links{display:none}
-  .main-nav{position:fixed;top:var(--header-h);bottom:0;inset-inline-end:0;z-index:90;
-    width:min(320px,85vw);background:#fff;flex-direction:column;align-items:stretch;
-    gap:2px;margin:0;padding:22px;box-shadow:var(--shadow-md);overflow-y:auto;
-    transform:translateX(-105%);transition:transform .3s ease}
-  body.nav-open .main-nav{transform:none}
-  .main-nav a{padding:.8em 1em;font-size:1.02rem}
-  .main-nav a.is-active::after{display:none}
-  .main-nav a.is-active{background:var(--c-brand-soft)}
-  .nav-auth{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-top:18px;border-top:1px solid var(--c-line)}
-  .nav-backdrop{position:fixed;inset:0;top:var(--header-h);z-index:80;background:rgba(20,27,24,.42);
-    opacity:0;pointer-events:none;transition:opacity .3s}
-  body.nav-open .nav-backdrop{opacity:1;pointer-events:auto}
-}
-
-/* الهواتف */
 @media (max-width:720px){
   .section{padding-block:56px}
   .hero{padding-block:48px}
@@ -40,58 +34,44 @@
   .courses-grid{grid-template-columns:1fr}
   .features-grid{grid-template-columns:1fr}
   .section-head.row{flex-direction:column;align-items:flex-start}
-  .demo-score{inset-inline-end:12px;bottom:12px} /* إدخال البطاقة العائمة داخل الحدود */
+  .demo-score{inset-inline-end:12px;bottom:12px}
   .stat-num{font-size:2rem}
   .footer-grid{grid-template-columns:1fr;gap:32px}
   .footer-bar{flex-direction:column;text-align:center;align-items:center}
 }
 
-/* هواتف صغيرة */
-@media (max-width:420px){
-  body{font-size:15px}
-  .brand-name{font-size:.95rem}
-  .hero h1{font-size:1.65rem}
-  .user-chip-btn .user-name{display:none}
-}
-/* لوحة الطالب والمصادقة */
-@media (max-width:960px){
-  .stat-cards{grid-template-columns:repeat(2,1fr)}
-  .dash-grid{grid-template-columns:1fr}
-  .profile-grid{grid-template-columns:1fr}
-}
-@media (max-width:520px){
-  .stat-cards{grid-template-columns:1fr}
-  .auth-card{padding:28px 20px}
-  .panel{padding:18px}
-  .item-end{display:none}
-}
-/* صفحات التصفح */
-@media (max-width:900px){
-  .grades-grid{grid-template-columns:repeat(2,1fr)}
-}
 @media (max-width:640px){
   .grades-grid{grid-template-columns:1fr}
   .quiz-list{grid-template-columns:1fr}
   .lesson-badges .mini-badge:not(.accent){display:none}
   .page-hero-flex{flex-direction:column}
 }
-/* صفحة الدرس */
-@media (max-width:960px){
-  .lesson-layout{grid-template-columns:1fr}
-  .lesson-aside{position:static;order:2}
+
+@media (max-width:520px){
+  .stat-cards{grid-template-columns:1fr}
+  .auth-card{padding:28px 20px}
+  .panel{padding:18px}
+  .item-end{display:none}
 }
+
+@media (max-width:420px){
+  body{font-size:15px}
+  .hero h1{font-size:1.65rem}
+}
+
+/* ---------- 02) الدرس + الاختبارات ---------- */
 @media (max-width:520px){
   .lesson-nav{grid-template-columns:1fr}
   .lesson-content{padding:20px}
 }
-/* الاختبارات */
 @media (max-width:640px){
   .qcard{padding:20px 16px}
   .qtext{font-size:1.05rem}
   .quiz-nav .btn{flex:1}
   .opt-tag{display:none}
 }
-/* لوحة الإدارة */
+
+/* ---------- 03) لوحة الإدارة (شل مستقل) ---------- */
 @media (max-width:1024px){
   .admin-topbar .menu-btn{display:grid}
   .admin-sidebar{position:fixed;top:64px;bottom:0;inset-inline-start:0;z-index:70;height:auto;transform:translateX(105%);transition:transform .3s}
@@ -102,7 +82,6 @@
   .quick-grid{grid-template-columns:1fr 1fr}
 }
 @media (max-width:760px){
-  /* الجداول تتحول إلى بطاقات */
   .admin-table thead{display:none}
   .admin-table,.admin-table tbody,.admin-table tr,.admin-table td{display:block;width:100%;min-width:0}
   .admin-table tr{background:#fff;border-bottom:1px solid var(--c-line);padding:6px 0}
@@ -115,77 +94,9 @@
   .quick-grid{grid-template-columns:1fr}
   .search-input{max-width:none;width:100%}
 }
-/* ===== تحصين قائمة الموبايل (الموقع + الإدارة) — أضيف آخرًا ويفوز بالأولوية ===== */
-html.nav-locked, html.nav-locked body{overflow:hidden}
-@media (max-width:992px){
-  .menu-btn{display:grid!important}
-  .main-nav{width:min(340px,88vw);
-    padding:18px 18px calc(20px + env(safe-area-inset-bottom, 0px));
-    overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y}
-}
-@media (max-width:1024px){
-  .admin-topbar .menu-btn{display:grid!important}
-  .admin-sidebar{width:min(300px,86vw);
-    padding-bottom:calc(16px + env(safe-area-inset-bottom, 0px));
-    overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
-}
+
 /* ============================================================
-   28) الإصلاح النهائي: الهيدر + القائمة الجانبية — كل الأجهزة
-============================================================ */
-
-/* ---- الكمبيوتر (أكبر من 992px): قائمة أفقية وزر القائمة مخفي ---- */
-@media (min-width:993px){
-  .header-inner .menu-btn{display:none!important}
-  html.nav-locked,html.nav-locked body{overflow:visible}
-}
-
-/* ---- تابلت وهاتف (992px وأقل) ---- */
-@media (max-width:992px){
-  :root{--header-h:60px}
-  /* الهيدر: صف واحد بلا فيض — الشعار يمين وزر القائمة أقصى اليسار */
-  .header-inner{gap:10px}
-  .brand{flex:1;min-width:0}
-  .brand-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .header-inner .menu-btn{display:grid!important;flex-shrink:0}
-  /* أزرار الدخول والبحث من الشريط مخفية — موجودة داخل القائمة الجانبية */
-  .header-actions{gap:8px;flex-shrink:0}
-  .header-actions .auth-links,
-  .header-actions .header-search{display:none!important}
-
-  /* القائمة الجانبية: درج كامل من اليسار — من أسفل الهيدر حتى أسفل الشاشة */
-  .main-nav{
-    position:fixed;top:var(--header-h);bottom:0;
-    left:0;right:auto;z-index:90;margin:0;
-    width:min(330px,88vw);
-    display:flex;flex-direction:column;align-items:stretch;
-    background:#fff;padding:16px 16px calc(18px + env(safe-area-inset-bottom,0px));
-    box-shadow:var(--shadow-md);
-    overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
-    transform:translateX(-105%);transition:transform .28s ease;
-  }
-  body.nav-open .main-nav{transform:none}
-  .main-nav a{padding:.85em 1em;font-size:1rem;border-radius:10px}
-  .nav-search{flex:0 0 auto;margin-bottom:14px}
-  .nav-auth{margin-top:auto;padding-top:16px}
-  .nav-backdrop{
-    position:fixed;inset:0;top:var(--header-h);z-index:80;
-    background:rgba(20,27,24,.45);
-    opacity:0;pointer-events:none;transition:opacity .28s;
-  }
-  body.nav-open .nav-backdrop{opacity:1;pointer-events:auto}
-}
-
-/* ---- هواتف صغيرة ---- */
-@media (max-width:480px){
-  .brand-name{font-size:.95rem}
-  .user-chip-btn .user-name{display:none}
-  .header-actions .user-chip-btn{padding:4px 8px}
-}
-@media (max-width:360px){
-  .brand-name{display:none} /* الشعار فقط على أصغر الشاشات */
-}
-/* ============================================================
-   30) نظام التنقل الجديد: Sidebar (كمبيوتر) + Drawer (تابلت/هاتف)
+   04) نظام التنقل: Sidebar (كمبيوتر) + Drawer (تابلت/هاتف)
    متغيرات الهوية — عدّل الألوان من مكان واحد
 ============================================================ */
 :root{
@@ -201,12 +112,20 @@ html.nav-locked, html.nav-locked body{overflow:hidden}
 html,body{overflow-x:clip} /* لا تمرير أفقي أبدًا */
 html.nav-locked,html.nav-locked body{overflow:hidden}
 
-/* ---------- Sidebar (يظهر ≥1024 فقط) ---------- */
+/* حقل البحث داخل الـ Sidebar والـ Drawer */
+.sb-search{position:relative;display:flex;margin:0 0 12px}
+.sb-search input{width:100%;min-width:0;padding-block:.6em;padding-inline:1em 2.6em;border:1.5px solid var(--border);border-radius:11px;font:inherit;font-size:.92rem;background:var(--background);color:var(--text);transition:border-color .2s,background .2s}
+.sb-search input:focus{outline:none;border-color:var(--primary);background:#fff}
+.sb-search button{position:absolute;inset-inline-end:8px;top:50%;transform:translateY(-50%);width:28px;height:28px;border:0;background:none;color:var(--c-ink-2);cursor:pointer;display:grid;place-items:center;border-radius:50%;padding:0}
+.sb-search button:hover{color:var(--primary)}
+
+/* الـ Sidebar مخفي افتراضيًا — يظهر ≥1024 فقط */
 .app-sidebar{display:none}
 
+/* ---------- الكمبيوتر (≥1024): Sidebar ثابتة يمين (RTL) ---------- */
 @media (min-width:1024px){
-  body{padding-inline-start:var(--sidebar-w);transition:padding .25s ease}
-  body.sb-collapsed{padding-inline-start:var(--sidebar-w-sm)}
+  body.has-sidebar{padding-inline-start:var(--sidebar-w);transition:padding .25s ease}
+  body.has-sidebar.sb-collapsed{padding-inline-start:var(--sidebar-w-sm)}
 
   .app-sidebar{
     display:flex;flex-direction:column;
@@ -216,7 +135,7 @@ html.nav-locked,html.nav-locked body{overflow:hidden}
     padding:14px 12px;overflow-y:auto;overscroll-behavior:contain;
     transition:width .25s ease;
   }
-  body.sb-collapsed .app-sidebar{width:var(--sidebar-w-sm)}
+  body.has-sidebar.sb-collapsed .app-sidebar{width:var(--sidebar-w-sm)}
 
   .sb-brand{display:flex;align-items:center;gap:10px;padding:6px 8px 14px;border-bottom:1px solid var(--border);margin-bottom:12px}
   .sb-brand-name{font-weight:700;white-space:nowrap}
@@ -231,7 +150,6 @@ html.nav-locked,html.nav-locked body{overflow:hidden}
 
   .sb-nav{flex:1;min-height:0}
   .sb-list{list-style:none;margin:0;padding:0;display:grid;gap:2px}
-  .sb-item{margin:0}
   .sb-link{
     display:flex;align-items:center;gap:12px;width:100%;
     min-height:44px;padding:10px 12px;border:0;border-radius:12px;
@@ -250,26 +168,27 @@ html.nav-locked,html.nav-locked body{overflow:hidden}
   .sb-acc.is-open .sb-acc-btn .sb-chev{transform:rotate(180deg)}
   .sb-sub{list-style:none;margin:0;padding:0;max-height:0;overflow:hidden;transition:max-height .28s ease}
   .sb-sublink{
-    display:block;padding:9px 12px;margin:2px 0 2px 0;
-    inset-inline-start:14px;position:relative;
+    display:block;padding:9px 12px;margin:2px 0;position:relative;
+    inset-inline-start:14px;
     font-size:.9rem;color:var(--c-ink-2);border-radius:9px;transition:.18s;
   }
   .sb-sublink:hover{color:var(--primary);background:var(--background)}
   .sb-sublink.is-active{color:var(--primary);font-weight:600}
   .sb-sublink.is-active::before{content:"";position:absolute;inset-inline-start:0;top:50%;transform:translateY(-50%);width:3px;height:60%;border-radius:3px;background:var(--secondary)}
 
-  .sb-sep{border-top:1px solid var(--border);margin:12px 6px;font-size:.72rem;color:var(--c-ink-2)}
+  .sb-sep{border-top:1px solid var(--border);margin:12px 6px;padding-top:10px;font-size:.72rem;color:var(--c-ink-2)}
   .sb-foot{border-top:1px solid var(--border);padding-top:10px;display:grid;gap:2px;margin-top:12px}
   .sb-collapse{color:var(--c-ink-2)}
   .sb-collapse:hover{color:var(--primary)}
   body.sb-collapsed .sb-collapse .icon{transform:rotate(180deg)}
 
   /* حالة التصغير: أيقونات فقط + Tooltip */
-  body.sb-collapsed .sb-label{opacity:0;pointer-events:none;width:0}
-  body.sb-collapsed .sb-link{justify-content:center;padding:10px}
-  body.sb-collapsed .sb-user{justify-content:center}
-  body.sb-collapsed .sb-brand{justify-content:center}
-  body.sb-collapsed .sb-acc.is-open .sb-sub{max-height:0} /* لا قوائم فرعية والتصغير مفعّل */
+  body.sb-collapsed .app-sidebar .sb-label{opacity:0;pointer-events:none;width:0}
+  body.sb-collapsed .app-sidebar .sb-link{justify-content:center;padding:10px}
+  body.sb-collapsed .app-sidebar .sb-user{justify-content:center}
+  body.sb-collapsed .app-sidebar .sb-brand{justify-content:center}
+  body.sb-collapsed .app-sidebar .sb-search{display:none}
+  body.sb-collapsed .sb-acc.is-open .sb-sub{max-height:0}
 
   body.sb-collapsed .app-sidebar .sb-link[data-tip]:hover::after{
     content:attr(data-tip);
@@ -284,18 +203,17 @@ html.nav-locked,html.nav-locked body{overflow:hidden}
 /* ---------- الهيدر: ضبط الأدوار عبر نقاط التوقف ---------- */
 @media (max-width:1023px){
   .main-nav.top-links{display:none!important}   /* روابط الهيدر المختصرة: كمبيوتر فقط */
-  .header-search{display:none!important}
   .header-inner .menu-btn{display:grid!important;flex-shrink:0}
-  /* أيقونة الحساب بدون نص (هاتف/تابلت) */
-  .hdr-auth .btn .btn-label{display:none}
+  .hdr-auth .btn .btn-label{display:none}       /* أيقونة الحساب بدون نص */
   .hdr-auth .btn{padding:.55em .7em}
 }
 @media (min-width:1024px){
   .header-inner .menu-btn{display:none!important}
   .nav-backdrop{display:none!important}
+  .m-drawer{display:none!important}
 }
 
-/* ---------- Drawer (تابلت + هاتف) — ينزلق من اليمين ---------- */
+/* ---------- الـ Drawer (تابلت + هاتف) — ينزلق من اليمين ---------- */
 .m-drawer{
   display:flex;flex-direction:column;
   position:fixed;top:0;bottom:0;right:0;left:auto;
@@ -315,7 +233,7 @@ body.nav-open .m-drawer{transform:none;visibility:visible}
 body.nav-open .nav-backdrop{opacity:1;pointer-events:auto}
 
 .m-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:12px}
-.m-close{width:42px;height:42px;border:1px solid var(--border);background:#fff;border-radius:11px;display:grid;place-items:center;color:var(--c-ink);cursor:pointer}
+.m-close{width:42px;height:42px;border:1px solid var(--border);background:#fff;border-radius:11px;display:grid;place-items:center;color:var(--c-ink);cursor:pointer;flex-shrink:0}
 .m-close:hover{color:var(--primary);border-color:var(--primary)}
 .m-head .sb-brand-name{font-weight:700}
 .m-head .sb-brand-name b{color:var(--primary)}
@@ -344,10 +262,10 @@ body.nav-open .nav-backdrop{opacity:1;pointer-events:auto}
 .m-drawer .sb-sublink:hover{color:var(--primary);background:var(--background)}
 .m-drawer .sb-sublink.is-active{color:var(--primary);font-weight:600}
 .m-drawer .sb-sublink.is-active::before{content:"";position:absolute;inset-inline-start:0;top:50%;transform:translateY(-50%);width:3px;height:60%;border-radius:3px;background:var(--secondary)}
-.m-drawer .sb-sep{border-top:1px solid var(--border);margin:12px 6px;font-size:.72rem;color:var(--c-ink-2)}
+.m-drawer .sb-sep{border-top:1px solid var(--border);margin:12px 6px;padding-top:10px;font-size:.72rem;color:var(--c-ink-2)}
 .m-drawer .sb-foot{border-top:1px solid var(--border);padding-top:10px;display:grid;gap:2px;margin-top:12px}
 
-/* الهاتف: شعار بدون نص إن ضاقت المساحة */
+/* هواتف صغيرة */
 @media (max-width:400px){
   .brand-name{display:none}
 }
