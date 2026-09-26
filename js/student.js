@@ -184,7 +184,8 @@ async function initProfile() {
     const newCity = form.elements.city.value.trim();
     const newGrade = form.elements.grade.value;
 
-    if (newName.length < 3) { showToast('يرجى إدخال الاسم كاملًا', 'error'); return; }
+    const nameParts = newName.split(/\s+/).filter(Boolean);
+    if (nameParts.length < 3) { showToast('يرجى إدخال الاسم الثلاثي كاملًا (ثلاث كلمات على الأقل)', 'error'); return; }
     if (!/^\d{7,12}$/.test(newPhone)) { showToast('أدخل رقم هاتف صحيح بدون كود الدولة', 'error'); return; }
     if (!newGov) { showToast('يرجى تحديد المحافظة', 'error'); return; }
 
