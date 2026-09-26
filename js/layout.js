@@ -1,9 +1,9 @@
 // ============================================================
-// نظام التنقل الاحترافي:
-// - Desktop (≥1024): Sidebar ثابتة يمين (RTL) قابلة للتصغير + Tooltips + بحث
-// - Tablet/Mobile (<1024): Drawer من اليمين + Overlay + زر X
+// نظام التنقل:
+// - الكمبيوتر: قائمة أفقية كاملة أعلى الهيدر (بدون Sidebar جانبية)
+// - الهاتف/التابلت: زر القائمة أعلى اليسار + Drawer ينزلق من اليسار
+//   مع Overlay + زر X + إغلاق بالرابط/Escape + منع تمرير الخلفية
 // - Accordion للمراحل + قوائم حسب الدور (زائر/طالب/أدمن)
-// - إغلاق: X / Overlay / رابط / Escape — مع منع تمرير الخلفية
 // - يُولَّد كله داخل #siteHeaderRoot — الصفحات لا تُعدَّل
 // ============================================================
 import { auth, db, isConfigured, fbAuthNS, fbStoreNS } from './firebase-config.js';
@@ -15,10 +15,10 @@ const { doc, getDoc } = fbStoreNS;
 const ROOT = location.pathname.includes('/admin/') ? '../' : '';
 const LOGO = ROOT + 'assets/icons/logo.svg';
 
-/* رمزان إضافيان للقائمة (يُحقنان في Sprite الموجود) */
-const EXTRA_SYMBOLS = `
-<symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10.5 9-7 9 7"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></symbol>
-<symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></symbol>`;
+const logoHTML = () => `
+  <img class="brand-logo" src="${LOGO}" alt="شعار الدكتور في العلوم"
+       onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
+  <span class="brand-mark" style="display:none"><svg class="icon"><use href="#i-atom"/></svg></span>`;
 
 /* ---------- تعريف عناصر القائمة ---------- */
 const ITEMS = {
@@ -51,27 +51,14 @@ const ADMIN_ITEMS = [
   { href: 'admin/results.html',  icon: 'i-award',      label: 'النتائج' },
 ];
 
-/* ---------- الشعار (صورة مع بديل تلقائي إن غاب الملف) ---------- */
-const logoHTML = () => `
-  <img class="brand-logo" src="${LOGO}" alt="شعار الدكتور في العلوم"
-       onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
-  <span class="brand-mark" style="display:none"><svg class="icon"><use href="#i-atom"/></svg></span>`;
-
-/* ---------- حقل البحث داخل الـ Sidebar والـ Drawer (نص ثابت) ---------- */
-const sbSearchHTML = `
-  <form class="sb-search" action="${ROOT}search.html" role="search">
-    <input type="search" name="q" placeholder="ابحث في المنصة…" aria-label="بحث في المنصة">
-    <button type="submit" aria-label="ابحث"><svg class="icon"><use href="#i-search"/></svg></button>
-  </form>`;
-
-/* ---------- قائمة العناصر (تُحقن في الـ Sidebar والـ Drawer) ---------- */
+/* ---------- القائمة (تُحقن في الهيدر الأفقي والـ Drawer) ---------- */
 function navListHTML() {
   const page = document.body.dataset.page;
   const link = (it, extra = '') => {
     const active = it.pages?.includes(page);
     return `
     <li class="sb-item ${extra}">
-      <a class="sb-link${active ? ' is-active' : ''}" href="${ROOT}${it.href}" data-tip="${it.label}"${active ? ' aria-current="page"' : ''}>
+      <a class="sb-link${active ? ' is-active' : ''}" href="${ROOT}${it.href}"${active ? ' aria-current="page"' : ''}>
         <svg class="icon"><use href="#${it.icon}"/></svg>
         <span class="sb-label">${it.label}</span>
       </a>
@@ -89,7 +76,7 @@ function navListHTML() {
       return `
       <li class="sb-item sb-acc">
         <button class="sb-link sb-acc-btn${it.pages.includes(page) ? ' is-active' : ''}" type="button"
-                data-acc aria-expanded="false" aria-controls="sbSubStages" data-tip="${it.label}">
+                data-acc aria-expanded="false" aria-controls="sbSubStages">
           <svg class="icon"><use href="#${it.icon}"/></svg>
           <span class="sb-label">${it.label}</span>
           <svg class="icon sb-chev"><use href="#i-chevron-down"/></svg>
@@ -102,7 +89,7 @@ function navListHTML() {
 
   const adminItems = ADMIN_ITEMS.map((it) => `
     <li class="sb-item">
-      <a class="sb-link" href="${ROOT}${it.href}" data-tip="${it.label}">
+      <a class="sb-link" href="${ROOT}${it.href}">
         <svg class="icon"><use href="#${it.icon}"/></svg>
         <span class="sb-label">${it.label}</span>
       </a>
@@ -114,7 +101,6 @@ function navListHTML() {
   <ul class="sb-list js-admin-only" hidden>${adminItems}</ul>`;
 }
 
-/* ---------- نصوص ثابتة (لا تستدعَ كدوال — تُستخدم هكذا: ${اسمها}) ---------- */
 const authSlotHTML = `
   <a class="sb-link js-when-guest" href="${ROOT}login.html">
     <svg class="icon"><use href="#i-user"/></svg><span class="sb-label">تسجيل الدخول</span>
@@ -133,31 +119,15 @@ const userBlockHTML = `
     <span class="sb-label sb-user-text"><b>زائر</b><small>سجّل الدخول للتعلم</small></span>
   </a>`;
 
-/* ---------- الـ Sidebar (كمبيوتر ≥1024) ---------- */
-function sidebarHTML() {
-  return `
-  <aside class="app-sidebar" id="appSidebar" aria-label="القائمة الجانبية">
-    <a class="sb-brand" href="${ROOT}index.html">${logoHTML()}<span class="sb-label sb-brand-name">الدكتور <b>في العلوم</b></span></a>
-    ${userBlockHTML}
-    ${sbSearchHTML}
-    <nav class="sb-nav">${navListHTML()}</nav>
-    <div class="sb-foot">
-      ${authSlotHTML}
-      <button class="sb-link sb-collapse" id="sbCollapse" type="button" aria-label="تصغير القائمة">
-        <svg class="icon"><use href="#i-arrow-left"/></svg><span class="sb-label">تصغير القائمة</span>
-      </button>
-    </div>
-  </aside>`;
-}
-
-/* ---------- الهيدر ---------- */
+/* ---------- الهيدر (كمبيوتر: قائمة أفقية — هاتف: زر القائمة أعلى اليسار) ---------- */
 function headerHTML() {
   const page = document.body.dataset.page;
-  const short = [
-    { href: 'index.html', label: 'الرئيسية', on: page === 'home' },
-    { href: 'courses.html', label: 'الكورسات', on: page === 'courses' || page === 'courseDetail' },
-    { href: 'quizzes.html', label: 'الاختبارات', on: page === 'quizzes' || page === 'quiz' },
-  ].map((l) => `<a href="${ROOT}${l.href}" class="${l.on ? 'is-active' : ''}">${l.label}</a>`).join('');
+  const fullLinks = ['home', 'stages', 'courses', 'quizzes', 'about', 'contact']
+    .map((key) => {
+      const it = ITEMS[key];
+      const on = it.pages.includes(page);
+      return `<a href="${ROOT}${it.href}" class="${on ? 'is-active' : ''}"${on ? ' aria-current="page"' : ''}>${it.label}</a>`;
+    }).join('');
 
   return `
   <header class="site-header" id="siteHeader">
@@ -165,12 +135,18 @@ function headerHTML() {
       <a href="${ROOT}index.html" class="brand" aria-label="الدكتور في العلوم — الرئيسية">
         ${logoHTML()}<span class="brand-name">الدكتور <b>في العلوم</b></span>
       </a>
-      <nav class="main-nav top-links" aria-label="روابط سريعة">${short}</nav>
+      <!-- قائمة الكمبيوتر الأفقية: مخفية <1024 عبر CSS -->
+      <nav class="main-nav top-links" aria-label="التنقل الرئيسي">${fullLinks}</nav>
       <div class="header-actions">
+        <form class="header-search" action="${ROOT}search.html" role="search">
+          <input type="search" name="q" placeholder="ابحث…" aria-label="بحث في المنصة">
+          <button type="submit" aria-label="ابحث"><svg class="icon"><use href="#i-search"/></svg></button>
+        </form>
         <div class="hdr-auth" id="authLinks">
           <a href="${ROOT}login.html" class="btn btn-ghost btn-sm">
             <svg class="icon"><use href="#i-user"/></svg><span class="btn-label">تسجيل الدخول</span>
           </a>
+          <a href="${ROOT}register.html" class="btn btn-primary btn-sm">إنشاء حساب</a>
         </div>
         <div class="user-chip" id="userChip" hidden>
           <button id="userChipBtn" class="user-chip-btn" aria-haspopup="true">
@@ -184,6 +160,7 @@ function headerHTML() {
             <button id="logoutBtn" class="danger"><svg class="icon"><use href="#i-logout"/></svg> تسجيل الخروج</button>
           </div>
         </div>
+        <!-- زر القائمة: آخر عنصر في الصف = أعلى اليسار في RTL دائمًا -->
         <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mDrawer" aria-label="فتح القائمة">
           <svg class="icon icon-open"><use href="#i-menu"/></svg>
           <svg class="icon icon-close" hidden><use href="#i-close"/></svg>
@@ -193,7 +170,7 @@ function headerHTML() {
   </header>`;
 }
 
-/* ---------- الـ Drawer (تابلت/هاتف) — ينزلق من اليمين ---------- */
+/* ---------- الـ Drawer (هاتف/تابلت) — ينزلق من اليسار ---------- */
 function drawerHTML() {
   return `
   <div class="nav-backdrop" id="navBackdrop"></div>
@@ -204,8 +181,11 @@ function drawerHTML() {
         <svg class="icon"><use href="#i-close"/></svg>
       </button>
     </div>
-    ${userBlockHTML}
-    ${sbSearchHTML}
+    ${userBlockHTML()}
+    <form class="sb-search" action="${ROOT}search.html" role="search">
+      <input type="search" name="q" placeholder="ابحث في المنصة…" aria-label="بحث في المنصة">
+      <button type="submit" aria-label="ابحث"><svg class="icon"><use href="#i-search"/></svg></button>
+    </form>
     <nav class="sb-nav">${navListHTML()}</nav>
     <div class="sb-foot">${authSlotHTML}</div>
   </aside>`;
@@ -318,15 +298,11 @@ export async function refreshHeaderUser() {
 ============================================================ */
 export function initLayout() {
   injectIcons();
-  document.getElementById('icon-sprite')?.insertAdjacentHTML('beforeend', EXTRA_SYMBOLS);
 
   const hRoot = document.getElementById('siteHeaderRoot');
-  if (hRoot) hRoot.innerHTML = sidebarHTML() + headerHTML() + drawerHTML();
+  if (hRoot) hRoot.innerHTML = headerHTML() + drawerHTML();
   const fRoot = document.getElementById('siteFooterRoot');
   if (fRoot) fRoot.innerHTML = footerHTML();
-
-  /* إزاحة المحتوى بمقدار الـ Sidebar (كمبيوتر فقط — صفحات الأدمن مستثناة تلقائيًا) */
-  if (document.getElementById('appSidebar')) document.body.classList.add('has-sidebar');
 
   /* ---------- Drawer: فتح/إغلاق (X + Overlay + رابط + Escape) ---------- */
   const drawer = document.getElementById('mDrawer');
@@ -360,9 +336,6 @@ export function initLayout() {
   /* ---------- Accordion: فتح واحد في كل مرة ---------- */
   document.querySelectorAll('[data-acc]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      if (document.body.classList.contains('sb-collapsed') && window.innerWidth >= 1024) {
-        toggleCollapse(false);
-      }
       const item = btn.closest('.sb-acc');
       const sub = item?.querySelector('.sb-sub');
       if (!sub) return;
@@ -380,15 +353,6 @@ export function initLayout() {
       sub.style.maxHeight = !isOpen ? sub.scrollHeight + 'px' : '0px';
     });
   });
-
-  /* ---------- تصغير الـ Sidebar (كمبيوتر) + حفظ التفضيل ---------- */
-  function toggleCollapse(collapsed) {
-    document.body.classList.toggle('sb-collapsed', collapsed);
-    try { localStorage.setItem('sbCollapsed', collapsed ? '1' : '0'); } catch { /* تجاهل */ }
-  }
-  try { if (localStorage.getItem('sbCollapsed') === '1') toggleCollapse(true); } catch { /* تجاهل */ }
-  document.getElementById('sbCollapse')?.addEventListener('click', () =>
-    toggleCollapse(!document.body.classList.contains('sb-collapsed')));
 
   /* ---------- ظل الهيدر ---------- */
   const header = document.getElementById('siteHeader');
