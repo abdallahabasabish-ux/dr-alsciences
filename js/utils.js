@@ -1,10 +1,10 @@
 // ============================================================
 // أدوات مشتركة لكل الصفحات:
-// الأيقونات (Sprite)، تنسيقات، توست، مودال تأكيد، أخطاء عربية،
-// مكوّنات عرض مشتركة (بطاقات، حالة فراغ، مسار تنقل)
+// الأيقونات (Sprite كامل)، تنسيقات، توست، مودال تأكيد، أخطاء عربية،
+// Preloader، ومكوّنات عرض مشتركة (بطاقات، حالة فراغ، مسار تنقل)
 // ============================================================
 
-// Sprite الأيقونات — يُحقن تلقائيًا في أي صفحة عبر injectIcons()
+// Sprite الأيقونات — 36 رمزًا يغطي كل الموقع (يُحقن عبر injectIcons())
 const SPRITE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" style="display:none" id="icon-sprite">
   <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
   <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></symbol>
@@ -41,6 +41,8 @@ const SPRITE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" style="display:none"
   <symbol id="i-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m4 4 16 16M9.9 5.9A9.9 9.9 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17.6 17.6 0 0 1-3.2 4M6.1 8.3A16.9 16.9 0 0 0 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 3.5-.7"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10.5 9-7 9 7"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></symbol>
 </svg>`;
 
 export function injectIcons() {
@@ -168,8 +170,8 @@ export function setPageMeta(title, description) {
   }
 }
 
-/* ---------- حالة فراغ جاهزة (تُستخدم في كل الصفحات) ----------
-   ملاحظة: action يُحقن كما هو (HTML نتحكم فيه نحن)، أما النصوص فمحمية */
+/* ---------- حالة فراغ جاهزة ----------
+   action يُحقن كما هو (HTML نتحكم فيه نحن)، أما النصوص فمحمية */
 export function emptyStateHTML(icon, title, text, { action = '', compact = false } = {}) {
   return `<div class="empty-state ${compact ? 'empty-compact' : ''}">
     <svg class="icon"><use href="#${icon}"/></svg>
@@ -233,19 +235,17 @@ export function breadcrumbHTML(items) {
       : `<span aria-current="page">${esc(item.text)}</span>`
   ).join('<span class="sep" aria-hidden="true">/</span>');
 }
+
 /* ============================================================
-   شاشة التحميل (Preloader)
-   تظهر تلقائيًا من style.css في كل صفحة، وتُخفى عبر hidePreloader()
-   عند جهوزية الواجهة — مع شبكة أمان تمنع تعليقها أكثر من 7 ثوانٍ.
+   شاشة التحميل (Preloader) — تُخفى عند جهوزية الواجهة
+   مع شبكة أمان زمنية تمنع تعليقها أكثر من 7 ثوانٍ
 ============================================================ */
 window.__preloaderStart = window.__preloaderStart || Date.now();
 
-/* شبكة أمان: إخفاء قسري بعد 7 ثوانٍ مهما حدث */
 setTimeout(() => {
   document.documentElement.classList.remove('preloading', 'preloading-done');
 }, 7000);
 
-/* عند العودة من زر "رجوع" (bfcache) لا تعلق الشاشة */
 window.addEventListener('pageshow', (e) => {
   if (e.persisted) hidePreloader();
 });
@@ -253,7 +253,7 @@ window.addEventListener('pageshow', (e) => {
 export function hidePreloader() {
   const root = document.documentElement;
   if (!root.classList.contains('preloading') || root.classList.contains('preloading-done')) return;
-  /* حد أدنى للعرض (400ms) حتى لا ترمش بسرعة على التحميل السريع */
+  /* حد أدنى للعرض (400ms) حتى لا ترمش على التحميل السريع */
   const wait = Math.max(0, 400 - (Date.now() - window.__preloaderStart));
   setTimeout(() => {
     root.classList.add('preloading-done');
