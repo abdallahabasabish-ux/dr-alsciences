@@ -6,7 +6,7 @@
 // - إغلاق: X / Overlay / رابط / Escape — مع منع تمرير الخلفية
 // - يُولَّد كله داخل #siteHeaderRoot — الصفحات لا تُعدَّل
 // ============================================================
-import { auth, isConfigured, fbAuthNS, fbStoreNS } from './firebase-config.js';
+import { auth, db, isConfigured, fbAuthNS, fbStoreNS } from './firebase-config.js';
 import { injectIcons, showToast, hidePreloader } from './utils.js';
 
 const { onAuthStateChanged, signOut } = fbAuthNS;
@@ -20,7 +20,7 @@ const EXTRA_SYMBOLS = `
 <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10.5 9-7 9 7"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></symbol>
 <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></symbol>`;
 
-/* ---------- تعريف عناصر القائمة (الترتيب حسب المواصفة) ---------- */
+/* ---------- تعريف عناصر القائمة ---------- */
 const ITEMS = {
   home:    { href: 'index.html',             icon: 'i-home',       label: 'الرئيسية',       pages: ['home'] },
   stages:  { href: 'stages.html',            icon: 'i-layers',     label: 'المراحل الدراسية', pages: ['stages', 'grade', 'subject', 'lesson'],
@@ -51,11 +51,13 @@ const ADMIN_ITEMS = [
   { href: 'admin/results.html',  icon: 'i-award',      label: 'النتائج' },
 ];
 
+/* ---------- الشعار (صورة مع بديل تلقائي إن غاب الملف) ---------- */
 const logoHTML = () => `
   <img class="brand-logo" src="${LOGO}" alt="شعار الدكتور في العلوم"
        onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
   <span class="brand-mark" style="display:none"><svg class="icon"><use href="#i-atom"/></svg></span>`;
 
+/* ---------- حقل البحث داخل الـ Sidebar والـ Drawer (نص ثابت) ---------- */
 const sbSearchHTML = `
   <form class="sb-search" action="${ROOT}search.html" role="search">
     <input type="search" name="q" placeholder="ابحث في المنصة…" aria-label="بحث في المنصة">
@@ -112,6 +114,7 @@ function navListHTML() {
   <ul class="sb-list js-admin-only" hidden>${adminItems}</ul>`;
 }
 
+/* ---------- نصوص ثابتة (لا تستدعَ كدوال — تُستخدم هكذا: ${اسمها}) ---------- */
 const authSlotHTML = `
   <a class="sb-link js-when-guest" href="${ROOT}login.html">
     <svg class="icon"><use href="#i-user"/></svg><span class="sb-label">تسجيل الدخول</span>
@@ -130,12 +133,12 @@ const userBlockHTML = `
     <span class="sb-label sb-user-text"><b>زائر</b><small>سجّل الدخول للتعلم</small></span>
   </a>`;
 
-/* ---------- الـ Sidebar (كمبيوتر) ---------- */
+/* ---------- الـ Sidebar (كمبيوتر ≥1024) ---------- */
 function sidebarHTML() {
   return `
   <aside class="app-sidebar" id="appSidebar" aria-label="القائمة الجانبية">
     <a class="sb-brand" href="${ROOT}index.html">${logoHTML()}<span class="sb-label sb-brand-name">الدكتور <b>في العلوم</b></span></a>
-    ${userBlockHTML()}
+    ${userBlockHTML}
     ${sbSearchHTML}
     <nav class="sb-nav">${navListHTML()}</nav>
     <div class="sb-foot">
@@ -201,13 +204,17 @@ function drawerHTML() {
         <svg class="icon"><use href="#i-close"/></svg>
       </button>
     </div>
-    ${userBlockHTML()}
+    ${userBlockHTML}
     ${sbSearchHTML}
     <nav class="sb-nav">${navListHTML()}</nav>
     <div class="sb-foot">${authSlotHTML}</div>
   </aside>`;
 }
 
+/* ============================================================
+   الفوتر — يُولَّد في كل الصفحات
+   ⚙️ عدّل بيانات التواصل من الأسطر المعلَّمة أدناه فقط
+============================================================ */
 function footerHTML() {
   return `
   <footer class="site-footer">
@@ -222,6 +229,7 @@ function footerHTML() {
           <li><a href="${ROOT}index.html">الرئيسية</a></li>
           <li><a href="${ROOT}courses.html">الكورسات</a></li>
           <li><a href="${ROOT}quizzes.html">الاختبارات</a></li>
+          <li><a href="${ROOT}lessons.html">الدروس</a></li>
           <li><a href="${ROOT}about.html">من نحن</a></li>
           <li><a href="${ROOT}contact.html">تواصل معنا</a></li>
         </ul>
@@ -236,7 +244,6 @@ function footerHTML() {
       </nav>
       <div>
         <h4>تواصل معنا</h4>
-        <!-- عدّل بيانات التواصل من هنا فقط -->
         <ul class="footer-contact">
           <li><svg class="icon"><use href="#i-phone"/></svg> <span dir="ltr">+20 100 000 0000</span></li>
           <li><svg class="icon"><use href="#i-mail"/></svg> <span dir="ltr">support@example.com</span></li>
@@ -306,6 +313,9 @@ export async function refreshHeaderUser() {
   } catch { /* تجاهل */ }
 }
 
+/* ============================================================
+   التهيئة
+============================================================ */
 export function initLayout() {
   injectIcons();
   document.getElementById('icon-sprite')?.insertAdjacentHTML('beforeend', EXTRA_SYMBOLS);
@@ -350,7 +360,6 @@ export function initLayout() {
   /* ---------- Accordion: فتح واحد في كل مرة ---------- */
   document.querySelectorAll('[data-acc]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      /* إذا كانت الـ Sidebar مصغرة: وسّعها أولًا ثم افتح الأكورديون */
       if (document.body.classList.contains('sb-collapsed') && window.innerWidth >= 1024) {
         toggleCollapse(false);
       }
