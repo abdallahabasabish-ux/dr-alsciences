@@ -285,20 +285,19 @@ function renderAuthState(user, userDoc) {
   const links = document.getElementById('authLinks');
   if (logged) {
     document.querySelectorAll('[data-av]').forEach((el) => applyAvatar(el, userDoc, name));
-    document.querySelectorAll('.sb-name').forEach((el) => (el.textContent = name || 'حسابي'));
+    /* أعلى الموقع: الاسم الثنائي فقط — الكامل في الملف الشخصي */
+    document.querySelectorAll('.sb-name').forEach((el) => (el.textContent = shortName(name)));
     if (chip) chip.hidden = false;
     if (links) links.hidden = true;
     const init = document.getElementById('userInitial');
     if (init) applyAvatar(init, userDoc, name);
     const nm = document.getElementById('userName');
-    if (nm) nm.textContent = name || 'حسابي';
+    if (nm) nm.textContent = shortName(name);
   } else {
     if (chip) chip.hidden = true;
     if (links) links.hidden = false;
   }
 }
-
-let currentUser = null;
 
 /** تحديث الهوية بعد رفع صورة أو حفظ الملف */
 export async function refreshHeaderUser() {
