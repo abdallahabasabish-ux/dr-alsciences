@@ -253,7 +253,11 @@ function footerHTML() {
     </div>
   </footer>`;
 }
-
+/** العرض الثنائي: أول كلمتين من الاسم فقط (الاسم الكامل يبقى محفوظًا) */
+function shortName(fullName) {
+  const parts = (fullName || '').trim().split(/\s+/).filter(Boolean);
+  return parts.slice(0, 2).join(' ') || 'حسابي';
+}
 /* ---------- حالة المستخدم في كل مواضع الهوية ---------- */
 function applyAvatar(el, userDoc, name) {
   if (userDoc?.photoUrl) {
