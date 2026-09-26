@@ -1,9 +1,12 @@
 // ============================================================
 // الصفحة الرئيسية (index.html): الإحصائيات + الكورسات
+// - الإحصائيات: مستند stats/counters (تحديث لحظي عبر onSnapshot)
+// - الكورسات: مجموعة courses حيث isPublished == true
+// - سلوكيات الهيدر والقائمة في js/layout.js
 // ============================================================
 import { db, isConfigured, fbStoreNS } from './firebase-config.js';
 import { initLayout } from './layout.js';
-import { emptyStateHTML as emptyHTML, courseCardHTML } from './utils.js';
+import { emptyStateHTML, courseCardHTML } from './utils.js';
 
 initLayout();
 
@@ -42,31 +45,47 @@ if (isConfigured) {
   );
 }
 
-new IntersectionObserver((entries, obs) => {
-  entries.forEach((e) => {
-    if (e.isIntersecting) { statsVisible = true; renderStats(); obs.disconnect(); }
-  });
-}, { threshold: 0.3 }).observe(document.querySelector('.stats-strip'));
+const statsStrip = document.querySelector('.stats-strip');
+if (statsStrip) {
+  new IntersectionObserver((entries, obs) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) { statsVisible = true; renderStats(); obs.disconnect(); }
+    });
+  }, { threshold: 0.3 }).observe(statsStrip);
+}
 
 /* ---------- الكورسات المنشورة ---------- */
 const coursesGrid = document.getElementById('coursesGrid');
 
 async function loadCourses() {
+  if (!coursesGrid) return;
+
   if (!isConfigured) {
-    coursesGrid.innerHTML = emptyHTML('الكورسات قادمة قريبًا', 'نجهّز لك كورسات مجانية ومدفوعة تغطي جميع المراحل الدراسية.');
+    coursesGrid.innerHTML = emptyStateHTML(
+      'i-layers', 'الكورسات قادمة قريبًا',
+      'نجهّز لك كورسات مجانية ومدفوعة تغطي جميع المراحل الدراسية.'
+    );
     return;
   }
+
   try {
-    const snap = await getDocs(query(collection(db, 'courses'), where('isPublished', '==', true), limit(6)));
+    const snap = await getDocs(
+      query(collection(db, 'courses'), where('isPublished', '==', true), limit(6))
+    );
     const items = snap.docs
       .map((d) => ({ id: d.id, ...d.data() }))
       .sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0));
+
     coursesGrid.innerHTML = items.length
       ? items.map(courseCardHTML).join('')
-      : emptyHTML('لا توجد كورسات منشورة بعد', 'ستظهر الكورسات هنا فور إضافتها من لوحة التحكم.');
+      : emptyStateHTML('i-layers', 'لا توجد كورسات منشورة بعد',
+        'ستظهر الكورسات هنا فور إضافتها من لوحة التحكم.');
   } catch (err) {
     console.error('خطأ في تحميل الكورسات:', err);
-    coursesGrid.innerHTML = emptyHTML('تعذر تحميل الكورسات', 'حدث خطأ أثناء الاتصال بقاعدة البيانات. حدّث الصفحة لإعادة المحاولة.');
+    coursesGrid.innerHTML = emptyStateHTML(
+      'i-x-circle', 'تعذر تحميل الكورسات',
+      'حدث خطأ أثناء الاتصال بقاعدة البيانات. حدّث الصفحة لإعادة المحاولة.'
+    );
   }
 }
 loadCourses();
