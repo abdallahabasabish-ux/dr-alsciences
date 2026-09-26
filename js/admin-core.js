@@ -1,7 +1,9 @@
 // ============================================================
-// لوحة الإدارة — البنية المشتركة:
-// حماية الصفحات بالدور، هيكل الشل (شريط جانبي محصّن + توب بار)،
-// مودال النماذج، حقول جاهزة، رفع الملفات، وعمليات Firestore
+// لوحة الإدارة — البنية المشتركة (النسخة المؤمّنة):
+// - الصلاحية من Custom Claims (request.auth.token.admin)
+//   مع شاشة ترحيل واضحة لحساب role بلا Claim
+// - التوب بار والشريط الجانبي يُولَّدان تلقائيًا (صفر تكرار HTML)
+// - تحقق عميل من نوع/حجم الملفات قبل الرفع + قواعد Storage خادمية
 // ============================================================
 import { auth, db, storage, isConfigured, fbAuthNS, fbStoreNS, fbStorageNS } from './firebase-config.js';
 import { injectIcons, esc, showToast, confirmDialog, setBtnLoading, hidePreloader } from './utils.js';
@@ -10,17 +12,51 @@ const { doc, getDoc, addDoc, updateDoc, deleteDoc, collection, serverTimestamp }
 const { signOut, onAuthStateChanged } = fbAuthNS;
 const { ref, uploadBytesResumable, getDownloadURL } = fbStorageNS;
 
-/* ---------- حماية صفحات الأدمن ----------
-   الصفحات كاملة داخل <div id="adminRoot" hidden> — لا يُكشف أي شيء
-   إلا بعد التحقق الناجح من الجلسة والدور */
-export async function requireAdmin() {
-  const reveal = () => {
-    const root = document.getElementById('adminRoot');
-    if (root) root.hidden = false;
-  };
+/* ---------- بنية قائمة الإدارة (الرابط النشط يُحتسب تلقائيًا) ---------- */
+const ADMIN_NAV = [
+  { key: 'adminHome',     href: 'index.html',    icon: 'i-chart',       label: 'لوحة التحكم', group: 'main' },
+  { key: 'adminStudents', href: 'students.html', icon: 'i-users',       label: 'الطلاب',      group: 'main' },
+  { sep: 'المحتوى التعليمي' },
+  { key: 'adminStages',   href: 'stages.html',   icon: 'i-layers',      label: 'المراحل والصفوف' },
+  { key: 'adminSubjects', href: 'subjects.html', icon: 'i-flask',       label: 'المواد' },
+  { key: 'adminLessons',  href: 'lessons.html',  icon: 'i-book',        label: 'الدروس' },
+  { key: 'adminQuizzes',  href: 'quizzes.html',  icon: 'i-list-check',  label: 'الاختبارات' },
+  { key: 'adminCourses',  href: 'courses.html',  icon: 'i-cap',         label: 'الكورسات' },
+  { sep: 'التقارير' },
+  { key: 'adminResults',  href: 'results.html',  icon: 'i-award',       label: 'النتائج' },
+  { key: 'adminMessages', href: 'messages.html', icon: 'i-mail',        label: 'الرسائل' },
+  { sep: 'عام' },
+  { key: '__site',        href: '../index.html', icon: 'i-atom',        label: 'عرض الموقع' },
+];
 
+/* ---------- حماية صفحات الأدمن: Claims أولًا ---------- */
+function revealAdmin() {
+  const root = document.getElementById('adminRoot');
+  if (root) root.hidden = false;
+}
+
+function waitForAuth() {
+  return new Promise((resolve) => {
+    const unsub = onAuthStateChanged(auth, (u) => { unsub(); resolve(u); });
+  });
+}
+
+function migrationNotice() {
+  const main = document.querySelector('.admin-main');
+  if (main) main.innerHTML = `
+    <div class="empty-state">
+      <svg class="icon"><use href="#i-lock"/></svg>
+      <h3>ترحيل الصلاحيات مطلوب</h3>
+      <p>حسابك أدمن في قاعدة البيانات لكنه ينقصه <b>admin claim</b>.
+         شغّل محليًا: <code>node set-admin.js ضع-UID-هنا</code>
+         ثم سجّل خروج ودخول، وحدّث الصفحة.</p>
+    </div>`;
+  hidePreloader();
+}
+
+export async function requireAdmin() {
   if (!isConfigured) {
-    reveal();
+    revealAdmin();
     document.querySelector('.admin-main').innerHTML =
       `<div class="empty-state"><svg class="icon"><use href="#i-info"/></svg>
         <h3>لوحة الإدارة تحتاج ربط Firebase</h3>
@@ -28,28 +64,97 @@ export async function requireAdmin() {
     hidePreloader();
     return null;
   }
-  const user = await new Promise((resolve) => {
-    const unsub = onAuthStateChanged(auth, (u) => { unsub(); resolve(u); });
-  });
+
+  const user = await waitForAuth();
   if (!user) {
     location.replace(`../login.html?next=${encodeURIComponent('admin/' + location.pathname.split('/').pop())}`);
     return null;
   }
-  const snap = await getDoc(doc(db, 'users', user.uid));
-  const userDoc = snap.exists() ? snap.data() : null;
-  if (userDoc?.isBlocked) { await signOut(auth); location.replace('../index.html'); return null; }
-  if (userDoc?.role !== 'admin') { location.replace('../student-dashboard.html'); return null; }
 
-  /* نجاح التحقق: كشف الصفحة الآن فقط */
-  reveal();
-  return { user, userDoc };
+  /* 1) المصدر الحقيقي: Custom Claim */
+  let hasClaim = false;
+  try {
+    const token = await user.getIdTokenResult(true); // forceRefresh لجلب Claim الجديد
+    hasClaim = token.claims.admin === true;
+  } catch { /* يكمل بالفحص البديل */ }
+
+  /* 2) قراءة مستند المستخدم (اسم/حالة) */
+  let userDoc = null;
+  try {
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    userDoc = snap.exists() ? snap.data() : null;
+  } catch { /* لا يمنع المتابعة */ }
+
+  if (userDoc?.isBlocked) {
+    await signOut(auth);
+    location.replace('../index.html');
+    return null;
+  }
+
+  if (hasClaim) {
+    revealAdmin();
+    return { user, userDoc };
+  }
+
+  /* 3) حساب role=admin بلا Claim: شاشة ترحيل — وليس منح صلاحية */
+  if (userDoc?.role === 'admin') {
+    revealAdmin();
+    initAdminShell({ user, userDoc });
+    migrationNotice();
+    return null;
+  }
+
+  /* 4) مستخدم عادي: خارج اللوحة فورًا — لا تُحمَّل أي بيانات إدارية */
+  location.replace('../student-dashboard.html');
+  return null;
 }
-/* ---------- هيكل الشل (الشريط الجانبي + التوب بار) ---------- */
+
+/* ---------- توليد هيكل اللوحة (توب بار + شريط جانبي) ---------- */
+function topbarHTML(name, initial) {
+  return `
+  <div class="admin-topbar">
+    <div class="admin-topbar-inner">
+      <button class="menu-btn" id="adminMenuBtn" aria-label="فتح القائمة">
+        <svg class="icon"><use href="#i-menu"/></svg>
+      </button>
+      <a class="admin-brand" href="index.html">
+        <span class="brand-mark"><svg class="icon"><use href="#i-atom"/></svg></span>
+        لوحة الإدارة
+      </a>
+      <div class="admin-user">
+        <span class="avatar" id="adminInitial">${esc(initial)}</span>
+        <span id="adminName">${esc(name)}</span>
+        <button class="btn btn-ghost btn-sm" id="adminLogoutBtn">
+          <svg class="icon"><use href="#i-logout"/></svg> خروج
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function sidebarHTML(activeKey) {
+  const items = ADMIN_NAV.map((n) => {
+    if (n.sep) return `<span class="sep">${esc(n.sep)}</span>`;
+    const active = n.key === activeKey;
+    return `<a href="${n.href}" class="${active ? 'is-active' : ''}"${active ? ' aria-current="page"' : ''}>
+      <svg class="icon"><use href="#${n.icon}"/></svg> ${esc(n.label)}</a>`;
+  }).join('');
+  return `
+  <aside class="admin-sidebar" id="adminSidebar">
+    <nav aria-label="قائمة الإدارة">${items}</nav>
+  </aside>
+  <div class="admin-backdrop" id="adminBackdrop"></div>`;
+}
+
 export function initAdminShell(ctx) {
   injectIcons();
   const { user, userDoc } = ctx;
-  document.getElementById('adminName').textContent = userDoc?.name || user.displayName || 'الأدمن';
-  document.getElementById('adminInitial').textContent = (userDoc?.name || user.displayName || 'أ').charAt(0);
+  const name = userDoc?.name || user.displayName || 'الأدمن';
+
+  const topRoot = document.getElementById('adminTopbarRoot');
+  const sideRoot = document.getElementById('adminSidebarRoot');
+  if (topRoot) topRoot.innerHTML = topbarHTML(name, name.charAt(0));
+  if (sideRoot) sideRoot.innerHTML = sidebarHTML(document.body.dataset.page);
 
   const y = document.getElementById('year');
   if (y) y.textContent = new Date().getFullYear();
@@ -59,19 +164,19 @@ export function initAdminShell(ctx) {
     catch { showToast('تعذر تسجيل الخروج', 'error'); }
   });
 
-  /* قائمة الإدارة (موبايل) — تفويض أحداث محصّن */
-  const adminNavOpen = () => document.body.classList.contains('admin-nav-open');
-  const setAdminNav = (open) => {
+  /* درج الإدارة (≤1024) — تفويض أحداث محصّن */
+  const isOpen = () => document.body.classList.contains('admin-nav-open');
+  const setNav = (open) => {
     document.body.classList.toggle('admin-nav-open', open);
     document.documentElement.classList.toggle('nav-locked', open);
   };
   document.addEventListener('click', (e) => {
-    if (e.target.closest('#adminMenuBtn')) { e.preventDefault(); setAdminNav(!adminNavOpen()); return; }
-    if (adminNavOpen() && e.target.closest('#adminBackdrop')) setAdminNav(false);
-    if (adminNavOpen() && e.target.closest('.admin-sidebar a')) setAdminNav(false);
+    if (e.target.closest('#adminMenuBtn')) { e.preventDefault(); setNav(!isOpen()); return; }
+    if (isOpen() && e.target.closest('#adminBackdrop')) setNav(false);
+    if (isOpen() && e.target.closest('.admin-sidebar a')) setNav(false);
   });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && adminNavOpen()) setAdminNav(false); });
-  window.addEventListener('resize', () => { if (window.innerWidth > 1024 && adminNavOpen()) setAdminNav(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isOpen()) setNav(false); });
+  window.addEventListener('resize', () => { if (window.innerWidth > 1024 && isOpen()) setNav(false); });
 
   hidePreloader();
 }
@@ -110,7 +215,7 @@ export function checkboxField(name, label, checked = false) {
   return `<label class="check-row"><input type="checkbox" name="${name}"${checked ? ' checked' : ''}> <span>${esc(label)}</span></label>`;
 }
 
-/* ---------- مودال النماذج (إضافة/تعديل) ---------- */
+/* ---------- مودال النماذج ---------- */
 export function openFormModal({ title, bodyHTML, submitText = 'حفظ', onSubmit }) {
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
@@ -174,9 +279,12 @@ export async function removeIn(coll, id, label = 'هذا العنصر') {
   }
 }
 
-/* ---------- رفع الملفات إلى Firebase Storage ---------- */
+/* ---------- رفع الملفات: تحقق عميل + قواعد Storage خادمية ---------- */
+const FILE_RULES = {
+  'uploads/images': { types: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'], maxMB: 5 },
+  'uploads/pdf':    { types: ['application/pdf'], maxMB: 10 },
+};
 
-/** يرفع ملفًا ويعيد رابط التحميل — مع تقارير تقدم */
 export function uploadFile(file, path, onProgress) {
   return new Promise((resolve, reject) => {
     const task = uploadBytesResumable(ref(storage, path), file);
@@ -192,11 +300,22 @@ export function uploadFile(file, path, onProgress) {
   });
 }
 
-/** يقرأ حقل ملف من نموذج مودال — يعيد '' إذا لم يُختر ملف */
 export async function uploadFormFile(form, fieldName, folder) {
   const input = form.elements[fieldName];
   const file = input?.files?.[0];
   if (!file) return '';
+
+  /* تحقق عميل (التحقق الخادمي في storage.rules إجباري إضافةً لهذا) */
+  const rule = FILE_RULES[folder];
+  if (rule) {
+    if (!rule.types.includes(file.type)) {
+      throw new Error('نوع الملف غير مسموح — الصور (jpg/png/webp/gif) أو PDF فقط');
+    }
+    if (file.size > rule.maxMB * 1024 * 1024) {
+      throw new Error(`حجم الملف يتجاوز الحد المسموح (${rule.maxMB} ميجابايت)`);
+    }
+  }
+
   const safeName = Date.now() + '_' + file.name.replace(/[^\w.\-]/g, '_');
   const wrap = input.closest('.form-group')?.querySelector('[data-progress]');
   const bar = wrap?.querySelector('.progress-fill');
@@ -207,7 +326,6 @@ export async function uploadFormFile(form, fieldName, folder) {
   return url;
 }
 
-/** حقل رفع ملف داخل المودال — مع عرض رابط الملف الحالي إن وجد */
 export function fileField(name, label, { hint = '', accept = '', currentUrl = '' } = {}) {
   const current = currentUrl
     ? `<p class="form-hint">الحالي: <a href="${esc(currentUrl)}" target="_blank" rel="noopener" dir="ltr">فتح الملف</a></p>`
@@ -221,7 +339,6 @@ export function fileField(name, label, { hint = '', accept = '', currentUrl = ''
   </div>`;
 }
 
-/** تفويض أحداث صفوف الجدول: أسئلة/نشر/تعديل/حذف — المفتاح "collection:id" */
 export function bindRowActions(container, handlers) {
   container.addEventListener('click', async (e) => {
     const btn = e.target.closest('[data-questions],[data-toggle],[data-edit],[data-del]');
@@ -235,7 +352,6 @@ export function bindRowActions(container, handlers) {
   });
 }
 
-/* ---------- مكوّنات عرض ---------- */
 export const pubPill = (v) =>
   v ? '<span class="pill pill-on">منشور</span>' : '<span class="pill pill-off">مخفي</span>';
 
