@@ -242,8 +242,9 @@ async function initRegisterPage() {
     const confirm = form.elements.confirm.value;
     const gradeId = form.elements.grade.value;
 
-    let valid = true;
-    if (name.length < 3) { setFieldError(form.elements.name, 'يرجى إدخال الاسم كاملًا (3 أحرف على الأقل).'); valid = false; }
+        let valid = true;
+    const nameParts = name.split(/\s+/).filter(Boolean);
+    if (nameParts.length < 3) { setFieldError(form.elements.name, 'يرجى إدخال الاسم الثلاثي كاملًا (ثلاث كلمات على الأقل).'); valid = false; }
     if (!/^\d{7,12}$/.test(phone)) { setFieldError(form.elements.phone, 'أدخل رقم الهاتف بدون كود الدولة (7-12 رقمًا).'); valid = false; }
     if (!governorate) { setFieldError(form.elements.governorateText || form.elements.governorate, 'يرجى تحديد المحافظة.'); valid = false; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setFieldError(form.elements.email, 'صيغة البريد الإلكتروني غير صحيحة.'); valid = false; }
