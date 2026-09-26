@@ -29,34 +29,18 @@ const ADMIN_NAV = [
   { key: '__site',        href: '../index.html', icon: 'i-atom',        label: 'عرض الموقع' },
 ];
 
-/* ---------- حماية صفحات الأدمن: Claims أولًا ---------- */
-function revealAdmin() {
-  const root = document.getElementById('adminRoot');
-  if (root) root.hidden = false;
-}
-
-function waitForAuth() {
-  return new Promise((resolve) => {
-    const unsub = onAuthStateChanged(auth, (u) => { unsub(); resolve(u); });
-  });
-}
-
-function migrationNotice() {
-  const main = document.querySelector('.admin-main');
-  if (main) main.innerHTML = `
-    <div class="empty-state">
-      <svg class="icon"><use href="#i-lock"/></svg>
-      <h3>ترحيل الصلاحيات مطلوب</h3>
-      <p>حسابك أدمن في قاعدة البيانات لكنه ينقصه <b>admin claim</b>.
-         شغّل محليًا: <code>node set-admin.js ضع-UID-هنا</code>
-         ثم سجّل خروج ودخول، وحدّث الصفحة.</p>
-    </div>`;
-  hidePreloader();
-}
-
+/* ---------- حماية صفحات الأدمن ----------
+   الصلاحية: Custom Claim أو role=admin في users
+   (القواعد الخادمية تفرض الحماية — الواجهة تعرض فقط)
+   الصفحة كلها داخل <div id="adminRoot" hidden> ولا تُكشف قبل التحقق */
 export async function requireAdmin() {
+  const reveal = () => {
+    const root = document.getElementById('adminRoot');
+    if (root) root.hidden = false;
+  };
+
   if (!isConfigured) {
-    revealAdmin();
+    reveal();
     document.querySelector('.admin-main').innerHTML =
       `<div class="empty-state"><svg class="icon"><use href="#i-info"/></svg>
         <h3>لوحة الإدارة تحتاج ربط Firebase</h3>
@@ -71,19 +55,12 @@ export async function requireAdmin() {
     return null;
   }
 
-  /* 1) المصدر الحقيقي: Custom Claim */
-  let hasClaim = false;
-  try {
-    const token = await user.getIdTokenResult(true); // forceRefresh لجلب Claim الجديد
-    hasClaim = token.claims.admin === true;
-  } catch { /* يكمل بالفحص البديل */ }
-
-  /* 2) قراءة مستند المستخدم (اسم/حالة) */
+  /* قراءة مستند المستخدم: الدور + حالة الحساب */
   let userDoc = null;
   try {
     const snap = await getDoc(doc(db, 'users', user.uid));
     userDoc = snap.exists() ? snap.data() : null;
-  } catch { /* لا يمنع المتابعة */ }
+  } catch { /* القواعد هي الحارس الحقيقي */ }
 
   if (userDoc?.isBlocked) {
     await signOut(auth);
@@ -91,24 +68,22 @@ export async function requireAdmin() {
     return null;
   }
 
-  if (hasClaim) {
-    revealAdmin();
+  /* الصلاحية: Claim (الأقوى) أو role=admin (يديره الأدمن من صفحة الطلاب) */
+  let hasClaim = false;
+  try {
+    const token = await user.getIdTokenResult();
+    hasClaim = token.claims.admin === true;
+  } catch { /* يكمل بفحص الدور */ }
+
+  if (hasClaim || userDoc?.role === 'admin') {
+    reveal();
     return { user, userDoc };
   }
 
-  /* 3) حساب role=admin بلا Claim: شاشة ترحيل — وليس منح صلاحية */
-  if (userDoc?.role === 'admin') {
-    revealAdmin();
-    initAdminShell({ user, userDoc });
-    migrationNotice();
-    return null;
-  }
-
-  /* 4) مستخدم عادي: خارج اللوحة فورًا — لا تُحمَّل أي بيانات إدارية */
+  /* مستخدم عادي: خارج اللوحة فورًا — بلا تحميل أي بيانات إدارية */
   location.replace('../student-dashboard.html');
   return null;
 }
-
 /* ---------- توليد هيكل اللوحة (توب بار + شريط جانبي) ---------- */
 function topbarHTML(name, initial) {
   return `
