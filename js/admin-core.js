@@ -49,7 +49,10 @@ export async function requireAdmin() {
     return null;
   }
 
-  const user = await waitForAuth();
+  /* انتظار تحديد حالة المصادقة — مباشرة عبر onAuthStateChanged */
+  const user = await new Promise((resolve) => {
+    const unsub = onAuthStateChanged(auth, (u) => { unsub(); resolve(u); });
+  });
   if (!user) {
     location.replace(`../login.html?next=${encodeURIComponent('admin/' + location.pathname.split('/').pop())}`);
     return null;
@@ -84,6 +87,7 @@ export async function requireAdmin() {
   location.replace('../student-dashboard.html');
   return null;
 }
+
 /* ---------- توليد هيكل اللوحة (توب بار + شريط جانبي) ---------- */
 function topbarHTML(name, initial) {
   return `
