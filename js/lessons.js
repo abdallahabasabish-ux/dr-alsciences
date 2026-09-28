@@ -5,6 +5,7 @@
 // - زر «تم إكمال الدرس» يكتب/يحذف مستند progress في Firestore
 //   بمعرّف ثابت `${uid}_${lessonId}` لمنع التكرار
 // - الدرس السابق/التالي + قائمة دروس المادة الجانبية
+// ⚠️ breadcrumbHTML يُستورد من utils.js — لا تعرّفه محليًا هنا
 // ============================================================
 import { db, isConfigured, fbStoreNS } from './firebase-config.js';
 import { initLayout } from './layout.js';
@@ -65,7 +66,7 @@ function renderRichText(text) {
 
 function completeBtnHTML(isDone) {
   return isDone
-    ? '<button class="btn btn-success-outline" id="completeBtn"><svg class="icon"><use href="#i-check"/></svg> مكتمل — نقر هنا للإلغاء</button>'
+    ? '<button class="btn btn-success-outline" id="completeBtn"><svg class="icon"><use href="#i-check"/></svg> مكتمل — اضغط هنا للإلغاء</button>'
     : '<button class="btn btn-success" id="completeBtn"><svg class="icon"><use href="#i-check-circle"/></svg> تم إكمال الدرس</button>';
 }
 
@@ -87,8 +88,8 @@ async function initLesson() {
   const asideList = qsEl('#asideList');
   const id = getQueryParam('id');
 
-  if (!id) { mainEl.innerHTML = notFoundHTML(); asideList.innerHTML = ''; return; }
-  if (!isConfigured) { mainEl.innerHTML = configEmptyHTML(); asideList.innerHTML = ''; return; }
+  if (!id) { qsEl('#lessonTitle').textContent = 'الدرس غير متاح'; mainEl.innerHTML = notFoundHTML(); asideList.innerHTML = ''; return; }
+  if (!isConfigured) { qsEl('#lessonTitle').textContent = 'الدروس'; mainEl.innerHTML = configEmptyHTML(); asideList.innerHTML = ''; return; }
 
   /* --- قراءة الدرس وسلسلة التصنيف --- */
   let lesson, subject = null, grade = null, stageName = null;
@@ -183,8 +184,8 @@ async function initLesson() {
 
   const prev = idx > 0 ? siblings[idx - 1] : null;
   const next = idx > -1 && idx < siblings.length - 1 ? siblings[idx + 1] : null;
-  const navCard = (label, l, cls = '') => l
-    ? `<a class="${cls}" href="lesson.html?id=${encodeURIComponent(l.id)}">
+  const navCard = (label, l) => l
+    ? `<a href="lesson.html?id=${encodeURIComponent(l.id)}">
          <span class="nav-label">${label}</span>
          <span class="nav-title">${esc(l.title)}</span></a>`
     : `<div class="nav-disabled">${label === 'الدرس السابق' ? 'هذا أول درس في المادة' : 'هذا آخر درس في المادة'}</div>`;
@@ -210,7 +211,7 @@ async function initLesson() {
     ${siblings.length > 1
       ? `<nav class="lesson-nav" aria-label="التنقل بين الدروس">
            ${navCard('الدرس السابق', prev)}
-           ${navCard('الدرس التالي', next, 'is-next')}
+           ${navCard('الدرس التالي', next)}
          </nav>`
       : ''}`;
 
