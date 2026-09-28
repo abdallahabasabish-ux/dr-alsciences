@@ -1,10 +1,10 @@
 // ============================================================
 // نظام الاختبارات: quiz.html (حل الاختبار) + quizzes.html (القائمة)
-// - قراءة الاختبار وأسئلته (subcollection) من Firestore
 // - مؤقّت اختياري من durationMinutes مع تسليم تلقائي عند انتهاء الوقت
 // - تصحيح تلقائي + نسبة النجاح من passScore في مستند الاختبار
-// - حفظ النتيجة في results (مرتبطة بحساب الطالب)
-// - مراجعة الإجابات الصحيحة والخاطئة بعد التسليم
+// - حفظ النتيجة في results + مراجعة الإجابات بعد التسليم
+// ⚠️ breadcrumbHTML وquizCardHTML يُستوردان من utils.js —
+//    لا تعرّفهما محليًا هنا إطلاقًا (سبب: Identifier already declared)
 // ============================================================
 import { db, isConfigured, fbStoreNS } from './firebase-config.js';
 import { initLayout } from './layout.js';
@@ -50,14 +50,6 @@ const errorHTML = () => emptyStateHTML(
   'i-x-circle', 'تعذر تحميل الاختبار',
   'حدث خطأ أثناء الاتصال بقاعدة البيانات. حدّث الصفحة لإعادة المحاولة.'
 );
-
-function breadcrumbHTML(items) {
-  return items.map((item, i) =>
-    item.href && i < items.length - 1
-      ? `<a href="${item.href}">${esc(item.text)}</a>`
-      : `<span aria-current="page">${esc(item.text)}</span>`
-  ).join('<span class="sep" aria-hidden="true">/</span>');
-}
 
 const pointsOf = (q) => (Number(q.points) > 0 ? Number(q.points) : 1);
 const pointsWord = (p) => (p === 1 ? 'درجة' : p === 2 ? 'درجتان' : 'درجات');
@@ -271,7 +263,7 @@ async function finishQuiz(auto = false) {
     }
   }
 
-  renderResult({ score, total, percent, passScore, passed, saved, auto });
+  renderResult({ score, total, percent, passScore, passed, saved });
 }
 
 /* ---------- شاشة النتيجة + المراجعة ---------- */
