@@ -237,8 +237,8 @@ function footerHTML() {
       <div>
         <h4>تواصل معنا</h4>
         <ul class="footer-contact">
-          <li><svg class="icon"><use href="#i-phone"/></svg> <span dir="ltr">+20 155 768 7560</span></li>
-          <li><svg class="icon"><use href="#i-mail"/></svg> <span dir="ltr">support@mr.wahid.com</span></li>
+          <li><svg class="icon"><use href="#i-phone"/></svg> <span dir="ltr">+20 100 000 0000</span></li>
+          <li><svg class="icon"><use href="#i-mail"/></svg> <span dir="ltr">support@example.com</span></li>
           <li><svg class="icon"><use href="#i-map-pin"/></svg> <span>مصر</span></li>
         </ul>
         <div class="footer-legal">
@@ -253,11 +253,7 @@ function footerHTML() {
     </div>
   </footer>`;
 }
-/** العرض الثنائي: أول كلمتين من الاسم فقط (الاسم الكامل يبقى محفوظًا) */
-function shortName(fullName) {
-  const parts = (fullName || '').trim().split(/\s+/).filter(Boolean);
-  return parts.slice(0, 2).join(' ') || 'حسابي';
-}
+
 /* ---------- حالة المستخدم في كل مواضع الهوية ---------- */
 function applyAvatar(el, userDoc, name) {
   if (userDoc?.photoUrl) {
@@ -285,19 +281,22 @@ function renderAuthState(user, userDoc) {
   const links = document.getElementById('authLinks');
   if (logged) {
     document.querySelectorAll('[data-av]').forEach((el) => applyAvatar(el, userDoc, name));
-    /* أعلى الموقع: الاسم الثنائي فقط — الكامل في الملف الشخصي */
-    document.querySelectorAll('.sb-name').forEach((el) => (el.textContent = shortName(name)));
+    document.querySelectorAll('.sb-name').forEach((el) => (el.textContent = name || 'حسابي'));
     if (chip) chip.hidden = false;
     if (links) links.hidden = true;
     const init = document.getElementById('userInitial');
     if (init) applyAvatar(init, userDoc, name);
     const nm = document.getElementById('userName');
-    if (nm) nm.textContent = shortName(name);
+    if (nm) nm.textContent = name || 'حسابي';
   } else {
     if (chip) chip.hidden = true;
     if (links) links.hidden = false;
   }
 }
+
+/* ⚠️ currentUser على مستوى الملف — تستخدمها refreshHeaderUser أيضًا
+   (تُستدعى من student.js بعد رفع الصورة أو حفظ الملف الشخصي) */
+let currentUser = null;
 
 /** تحديث الهوية بعد رفع صورة أو حفظ الملف */
 export async function refreshHeaderUser() {
